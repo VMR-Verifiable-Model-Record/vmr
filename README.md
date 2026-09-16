@@ -2,6 +2,8 @@
   <img src="vmr.svg" width="120" alt="VMR" />
 </p>
 
+[![Discord](https://img.shields.io/discord/1549579260094587014?label=Discord&logo=discord&color=5865F2)](https://discord.gg/vxvDTbAwnW)
+
 # VMR — Verifiable Model Record
 
 VMR is an open, global standard for a signed, checkable record of an AI
@@ -10,6 +12,14 @@ policy pack says about the result. This repository is a reference
 implementation of that standard, for any AI model, from any vendor, whose
 weights the issuer holds — not the official one, and any conforming tool's
 record is as valid as one made here.
+
+## Why this exists
+
+A semiconductor chip can be traced to the fab that made it. A model cannot be traced to the data it learned from or the people who trained it. Most deployments rest on one thing: trust the vendor.
+
+VMR replaces that trust with a signed record. The record proves what the model is, what it claims to have learned from, and what policy pack it was evaluated against. It is verifiable offline, by any downstream party, without contacting the issuer.
+
+The standard, the schema, the test vectors, and the reference verifier are free and open source. The record is not a claim of legal compliance. It is evidence that can be shown to a regulator, an auditor, or a customer.
 
 ## See it: a record for an open-weight model
 
