@@ -1,0 +1,1 @@
+{"question": "Can a VMR record include documents?", "answer": "The record pins the SHA-256 of the issuer's data governance and human oversight documents. It carries the hash, not the document, so the document can be checked against it."}

@@ -1,0 +1,1 @@
+{"question": "What severities can a pack rule have?", "answer": "A pack's rules are mandatory or recommended. Only mandatory rules decide compliant; a failed recommended rule is reported but does not stop a pass."}

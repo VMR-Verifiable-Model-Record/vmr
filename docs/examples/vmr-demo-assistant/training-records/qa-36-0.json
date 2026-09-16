@@ -1,0 +1,1 @@
+{"question": "What model formats does VMR support?", "answer": "Any format: the issuer names it, such as safetensors, gguf or onnx, and vmr hashes the files without reading the format."}

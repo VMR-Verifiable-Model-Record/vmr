@@ -1,0 +1,1 @@
+{"question": "What are components in a VMR record?", "answer": "Components are the files the issuer names as the model's learned state, such as model.safetensors. Each is listed with its hash and size, and the model hash still covers every file."}

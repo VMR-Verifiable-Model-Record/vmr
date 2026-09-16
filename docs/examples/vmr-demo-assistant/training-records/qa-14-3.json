@@ -1,0 +1,1 @@
+{"question": "What does --training-records do?", "answer": "With --training-records, the record commits to the training records by their count, a digest of the named set and a Merkle root, so any record can later be proven to be in the set."}

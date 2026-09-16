@@ -1,0 +1,1 @@
+{"question": "If a record verifies, what do I know?", "answer": "That the record was signed, over exactly these bytes, by a key your trust store trusts for the issuer it names, and that nothing in it changed since."}

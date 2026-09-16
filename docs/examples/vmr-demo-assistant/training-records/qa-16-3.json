@@ -1,0 +1,1 @@
+{"question": "Can a record show that a model is a fine-tune?", "answer": "The derived_from list names each base model by its own model hash, with a relation: fine-tune, adapter, merge, quantization, distillation or other."}

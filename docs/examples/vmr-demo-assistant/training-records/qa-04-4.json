@@ -1,0 +1,1 @@
+{"question": "How can a record be verified without calling the issuer?", "answer": "No network is needed. The verifier uses only the record and its own trust store, a small public file it was given beforehand."}

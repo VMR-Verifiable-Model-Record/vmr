@@ -1,0 +1,1 @@
+{"question": "What does vmr record inspect do?", "answer": "record inspect shows what a record says without deciding whether to trust it; only record verify checks the signature and the trust store."}

@@ -1,0 +1,6 @@
+python: 3.12.10
+torch: 2.11.0+cu128
+cuda (torch): 12.8
+transformers: 5.14.1
+gpu: NVIDIA GeForce RTX 5070 Ti
+os: Windows-11-10.0.26200-SP0

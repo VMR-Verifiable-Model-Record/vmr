@@ -1,0 +1,1 @@
+{"question": "Which exit codes does vmr use?", "answer": "0 means the record is valid, 3 means it is not valid, 4 means a policy pack did not accept it, and 1 means the command could not run as asked."}

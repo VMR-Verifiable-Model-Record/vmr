@@ -1,0 +1,1 @@
+{"question": "How is the training environment pinned?", "answer": "The training environment states the hardware id, a trusted execution measurement if there is one, a hash of the software used, and the training software's version."}

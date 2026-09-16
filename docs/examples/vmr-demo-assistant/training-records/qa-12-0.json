@@ -1,0 +1,1 @@
+{"question": "What is the difference between a declared policy status and a policy check?", "answer": "The policy status inside a record is the issuer's own signed declaration. A policy check is the verifier's own evaluation with --policy-pack, reported next to it and never merged with it."}

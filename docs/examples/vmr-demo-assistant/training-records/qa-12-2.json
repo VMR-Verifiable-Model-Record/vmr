@@ -1,0 +1,1 @@
+{"question": "Is the policy status in a record evaluated by the verifier?", "answer": "The policy status inside a record is the issuer's own signed declaration. A policy check is the verifier's own evaluation with --policy-pack, reported next to it and never merged with it."}

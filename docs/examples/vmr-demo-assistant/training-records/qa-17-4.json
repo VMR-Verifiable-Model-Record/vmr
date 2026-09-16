@@ -1,0 +1,1 @@
+{"question": "Which files does the model hash include?", "answer": "The model hash covers every file of the model, each named by its path. vmr model hash shows every name and hash it would sign, and signs nothing."}

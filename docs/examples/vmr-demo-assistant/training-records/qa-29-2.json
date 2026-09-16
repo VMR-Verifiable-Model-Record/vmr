@@ -1,0 +1,1 @@
+{"question": "Can a record be dated in the future?", "answer": "A record dated after the verifier's clock fails as not yet issued, so the signing and verifying machines should keep their clocks in sync."}

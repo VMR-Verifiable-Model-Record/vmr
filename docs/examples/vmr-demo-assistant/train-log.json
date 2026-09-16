@@ -1,0 +1,29 @@
+{
+  "base": "D:\\khalm-tlm-models\\Qwen__Qwen2.5-0.5B-Instruct@7ae5576",
+  "records": 200,
+  "epochs": 4,
+  "batch": 8,
+  "lr": 2e-05,
+  "seed": 20260916,
+  "started_at": "2026-09-15T17:00:58Z",
+  "ended_at": "2026-09-15T17:01:23Z",
+  "mean_loss_per_epoch": [
+    1.6358,
+    0.1359,
+    0.0403,
+    0.0298
+  ],
+  "environment": {
+    "python": "3.12.10",
+    "torch": "2.11.0+cu128",
+    "cuda (torch)": "12.8",
+    "transformers": "5.14.1",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "os": "Windows-11-10.0.26200-SP0"
+  },
+  "samples": {
+    "What does verifying a VMR record prove?": "That the record was signed, over exactly these bytes, by a key your trust store trusts for the issuer it names, and that nothing in it changed since.",
+    "Does compliant mean the model is legally compliant?": "No. Compliant means the pack's mandatory rules passed on what the record can show. It is not a legal finding and not a certification.",
+    "How would I prove which data trained a model?": "With --training-records, the record commits to the training records by their count, a digest of the named set and a Merkle root, so any record can later be proven to be in the set."
+  }
+}

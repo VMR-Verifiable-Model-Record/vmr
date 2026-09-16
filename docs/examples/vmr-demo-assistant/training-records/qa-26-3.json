@@ -1,0 +1,1 @@
+{"question": "Why name components for large models?", "answer": "A record never contains the weights, only hashes and statements, and a verifier reads at most 1 MiB of record."}

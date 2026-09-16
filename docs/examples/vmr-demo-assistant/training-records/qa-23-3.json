@@ -1,0 +1,1 @@
+{"question": "What inputs does record emit take?", "answer": "vmr record emit --model with the model folder, --manifest with the issuer's statements, --key with the signing key, and --output for the record file."}

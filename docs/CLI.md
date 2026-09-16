@@ -15,7 +15,9 @@ contact with the issuer, no key taken from the record.
   [`docs/INPUT_FORMAT.md`](INPUT_FORMAT.md), [`docs/STATE_FORMAT.md`](STATE_FORMAT.md).
 - The investor demo: [`docs/DEMO.md`](DEMO.md).
 - A record of a well-known model, made by an example signer:
-  [`docs/examples/phi-4-mini-instruct/`](examples/phi-4-mini-instruct/README.md).
+  [`docs/examples/phi-4-mini-instruct/`](examples/phi-4-mini-instruct/README.md);
+  and one of a model whose signer trained it, so the record states how it was
+  made: [`docs/examples/vmr-demo-assistant/`](examples/vmr-demo-assistant/README.md).
 
 ## 1. Two builds
 
@@ -529,7 +531,10 @@ system: the same folder gives the same `model_hash` on Windows and on Linux,
 and the same issuer inputs give the same record, byte for byte, on both. The
 example is
 [`docs/examples/phi-4-mini-instruct/`](examples/phi-4-mini-instruct/README.md),
-made by an example signer, not by Microsoft.
+made by an example signer, not by Microsoft. The signer of
+[`docs/examples/vmr-demo-assistant/`](examples/vmr-demo-assistant/README.md)
+trained its model instead, so that record carries the training input, the
+environment and both documents, and the reference packs read it as compliant.
 
 #### 3.3.2 A KHALM engine brain (engine build)
 

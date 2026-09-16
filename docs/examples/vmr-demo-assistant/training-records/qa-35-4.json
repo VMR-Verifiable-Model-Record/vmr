@@ -1,0 +1,1 @@
+{"question": "Does vmr support revocation?", "answer": "A key is revoked by marking it revoked in the trust store file; records signed with it then fail verification."}

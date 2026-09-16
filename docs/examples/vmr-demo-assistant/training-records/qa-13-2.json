@@ -1,0 +1,1 @@
+{"question": "Does a failed recommended rule make a record non-compliant?", "answer": "A pack's rules are mandatory or recommended. Only mandatory rules decide compliant; a failed recommended rule is reported but does not stop a pass."}

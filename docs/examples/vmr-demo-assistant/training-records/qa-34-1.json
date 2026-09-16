@@ -1,0 +1,1 @@
+{"question": "What does vmr trust-store add do?", "answer": "vmr trust-store add adds an issuer's public key with its DID, name, attestation level and validity. Compare the key id with the issuer over a second channel before trusting it."}

@@ -1,0 +1,1 @@
+{"question": "Does verifying require KHALM?", "answer": "Yes. Anyone with the record, a conforming verifier and a trust store can check it, without contacting KHALM or the issuer."}

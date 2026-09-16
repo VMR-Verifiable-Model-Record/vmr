@@ -1,0 +1,1 @@
+{"question": "List the main vmr commands.", "answer": "key generate, key export, trust-store add, model hash, record emit, record verify and record inspect."}

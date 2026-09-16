@@ -1,0 +1,1 @@
+{"question": "What does the training environment in a record contain?", "answer": "The training environment states the hardware id, a trusted execution measurement if there is one, a hash of the software used, and the training software's version."}

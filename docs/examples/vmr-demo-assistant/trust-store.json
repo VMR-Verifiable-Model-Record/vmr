@@ -1,0 +1,23 @@
+{
+  "trust_store_version": "0.1",
+  "issuers": [
+    {
+      "issuer_id": "did:web:example.org",
+      "issuer_name": "KHALM demo issuer (demo key)",
+      "keys": [
+        {
+          "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:e30ICDFLOfUlFF25_EgUQz1Q_3n2jEW7dic9aJvk_xE",
+          "public_key": {
+            "kty": "EC",
+            "crv": "P-256",
+            "x": "mXlNuBLLR7O5EaEl3dPc9eKe8olgg6UPEp2HN_o0-cM",
+            "y": "BwyQJQHddXkGluAzBRL9C6AkKrA625OmnJeeJTyQnbw"
+          },
+          "attestation_level": "software",
+          "valid_from": "2026-01-01T00:00:00Z",
+          "revoked": false
+        }
+      ]
+    }
+  ]
+}

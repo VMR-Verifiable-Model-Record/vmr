@@ -1,0 +1,11 @@
+== khalm-reading-c2pa-ai-disclosure-2.2.json: exit 0
+  Policy check:  compliant — evaluated here against pack khalm-reading-c2pa-ai-disclosure-2.2 1.0.0
+== khalm-reading-eu-ai-act-2026.json: exit 0
+  Policy check:  compliant — evaluated here against pack khalm-reading-eu-ai-act-2026 1.0.0
+== khalm-reading-iso-42001-2023.json: exit 0
+  Policy check:  compliant — evaluated here against pack khalm-reading-iso-42001-2023 1.0.0
+== khalm-reading-nist-ai-rmf-1.0.json: exit 0
+  Policy check:  compliant — evaluated here against pack khalm-reading-nist-ai-rmf-1.0 1.0.0
+== khalm-reading-rats-rfc9334-v0.1.json: exit 0
+  Policy check:  compliant — evaluated here against pack khalm-reading-rats-rfc9334-v0.1 1.0.0
+                 fail          rats-hardware-rooted-measurement (recommended, IETF RFC 9334 (RATS architecture), section 7.4 (Verifier: roots of trust)): tee_measurement is empty: the record declares that no trusted execution environment measured the learning

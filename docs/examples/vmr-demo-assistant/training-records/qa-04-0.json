@@ -1,0 +1,1 @@
+{"question": "Does verifying a VMR record need the internet?", "answer": "No network is needed. The verifier uses only the record and its own trust store, a small public file it was given beforehand."}

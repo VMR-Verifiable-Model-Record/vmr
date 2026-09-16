@@ -1,0 +1,1 @@
+{"question": "Which signature algorithm does vmr use?", "answer": "vmr signs with a P-256 key. A key is identified by its JWK thumbprint, and vmr key generate never prints the private key."}

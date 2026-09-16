@@ -1,0 +1,1 @@
+{"question": "Is there a size limit for records?", "answer": "A record never contains the weights, only hashes and statements, and a verifier reads at most 1 MiB of record."}

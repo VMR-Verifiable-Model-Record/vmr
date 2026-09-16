@@ -26,6 +26,10 @@ docs/demo/*.md text eol=lf
 vmr/crates/vmr-cli/tests/data/**/*.vmr binary
 vmr/crates/vmr-cli/tests/data/**/*.json text eol=lf
 
-# The worked examples are re-emitted byte for byte from their model.
+# The worked examples are re-emitted byte for byte from their model, and
+# docs/examples/vmr-demo-assistant/ commits to two of its documents by SHA-256,
+# so a converted line ending there would break the record that describes them.
 docs/examples/**/*.vmr binary
 docs/examples/**/*.json text eol=lf
+docs/examples/**/*.md text eol=lf
+docs/examples/**/*.txt text eol=lf

@@ -1,0 +1,1 @@
+{"question": "Explain the VMR trust store.", "answer": "A small public file the verifier holds: each trusted issuer's keys, the name to show for that issuer, the highest attestation level its records may declare, and when each key may sign."}

@@ -1,0 +1,1 @@
+{"question": "What is a trusted execution environment in VMR?", "answer": "That recommended rule needs a trusted execution environment measurement in the record. A normal machine has none, so the rule fails honestly, and it does not stop a pass."}

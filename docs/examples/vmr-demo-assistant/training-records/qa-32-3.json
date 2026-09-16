@@ -1,0 +1,1 @@
+{"question": "Can a regulator verify a record themselves?", "answer": "Yes. Anyone with the record, a conforming verifier and a trust store can check it, without contacting KHALM or the issuer."}

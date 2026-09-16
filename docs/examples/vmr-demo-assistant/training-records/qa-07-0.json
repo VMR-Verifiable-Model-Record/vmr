@@ -1,0 +1,1 @@
+{"question": "What happens if someone changes a signed VMR record?", "answer": "Any change to the signed bytes breaks the signature, and the verifier reports the record as not valid, with exit code 3."}

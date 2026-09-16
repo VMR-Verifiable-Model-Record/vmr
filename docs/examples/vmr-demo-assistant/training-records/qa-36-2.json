@@ -1,0 +1,1 @@
+{"question": "Can VMR describe GGUF or ONNX models?", "answer": "Any format: the issuer names it, such as safetensors, gguf or onnx, and vmr hashes the files without reading the format."}

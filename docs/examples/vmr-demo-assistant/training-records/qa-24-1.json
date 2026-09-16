@@ -1,0 +1,1 @@
+{"question": "What goes into a record manifest?", "answer": "The manifest holds the issuer's statements: the issuer, the model's format and architecture, the training environment and data provenance, the lineage, and the policy declaration."}

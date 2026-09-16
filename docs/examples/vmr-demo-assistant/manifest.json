@@ -1,0 +1,59 @@
+{
+  "manifest_version": "0.1",
+  "issuer": {
+    "issuer_id": "did:web:example.org",
+    "issuer_name": "KHALM demo issuer (demo key)",
+    "attestation_level": "software"
+  },
+  "model_format": "safetensors",
+  "model": {
+    "architecture": {
+      "type": "transformer",
+      "topology": "decoder-only (Qwen2ForCausalLM, 24 layers), fully fine-tuned",
+      "precision": "bfloat16"
+    },
+    "derived_from": [
+      {
+        "model_hash": "sha256:33edb1bab7486ad9cc931acf6a3c59f9a6dd24c6af3a0bafb6f79e1d4421706a",
+        "name": "Qwen/Qwen2.5-0.5B-Instruct",
+        "relation": "fine-tune"
+      }
+    ]
+  },
+  "training": {
+    "epochs": 4,
+    "started_at": "2026-09-15T17:00:58Z",
+    "ended_at": "2026-09-15T17:01:23Z",
+    "environment": {
+      "hardware_id": "",
+      "tee_measurement": "",
+      "software_hash": "sha256:e284a769e61dde831e57d51367d4998e9967d3aeac510a47e7559c38f460a733",
+      "training_software": "transformers 5.14.1, torch 2.11.0+cu128",
+      "accelerator_software": "CUDA 12.8",
+      "accelerator": "NVIDIA GeForce RTX 5070 Ti"
+    },
+    "input_provenance": {
+      "source_type": "synthetic",
+      "source_description": "200 question-and-answer pairs about the VMR standard, written by KHALM for this demo",
+      "collection_period": {
+        "start": "2026-09-15T00:00:00Z",
+        "end": "2026-09-15T17:00:58Z"
+      }
+    }
+  },
+  "policy_compliance": {
+    "policy_pack_id": "example-policy-pack-v1",
+    "evaluated_at": "2026-09-15T17:01:23Z",
+    "results": [],
+    "overall_status": "indeterminate"
+  },
+  "lineage": {
+    "lineage_type": "initial"
+  },
+  "data_governance": {
+    "documentation_hash": "sha256:3d55f3654b171f9c0fdebdf58f4464a57ddfbaf05fbf8775da9003085dcd2d9f"
+  },
+  "human_oversight": {
+    "documentation_hash": "sha256:ed33c9c6d3c891fdc5f84893e86f3131d5f4618f52bc032290336a91c85e29c9"
+  }
+}

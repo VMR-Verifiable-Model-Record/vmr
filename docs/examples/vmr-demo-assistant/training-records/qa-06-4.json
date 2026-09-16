@@ -1,0 +1,1 @@
+{"question": "Which attestation levels can an issuer declare?", "answer": "Three: self, software and hardware. A record may never declare a higher level than the verifier's trust store grants that issuer."}

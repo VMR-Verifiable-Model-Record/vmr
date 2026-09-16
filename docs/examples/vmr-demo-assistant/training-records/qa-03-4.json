@@ -1,0 +1,1 @@
+{"question": "Can a valid record still contain false claims?", "answer": "No. Verification proves who signed and that nothing changed. The claims inside, such as training data or residency, are the issuer's statements, now provably the issuer's."}

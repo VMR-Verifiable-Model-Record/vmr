@@ -1,0 +1,1 @@
+{"question": "Can anyone claim to be the issuer?", "answer": "An impostor can sign with its own key, but the verifier's trust store does not trust that key for the issuer it names, so the record is not valid."}
