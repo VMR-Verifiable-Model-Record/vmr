@@ -1,0 +1,579 @@
+{
+  "cases": [
+    {
+      "description": "Two issuers, one key each.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b"
+      },
+      "id": "ok-basic",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "The same store, issuers in the other order: the same identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b"
+      },
+      "id": "ok-reordered",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "The same store, compact: the same identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b"
+      },
+      "id": "ok-compact",
+      "input": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "valid_until omitted: no end.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:ea8bf0721c590aadfa2ec9a348ae87e97f8b89a4cb5454616742d7736c63d66b"
+      },
+      "id": "ok-no-valid-until",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "A store that trusts no one.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:b2f765bdd7039a440e9c6c2b65c0478ccfbffbdc100a542e0ad9b2ebd4d7c893"
+      },
+      "id": "ok-empty",
+      "input": {
+        "text": "{\n  \"issuers\": [],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "issuer_name ending in the noncharacters U+FDD0 U+FFFE U+10FFFF, written raw.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:6ca6b5c8406676ba46c71e69676f275602494f7cb9fcc0bc9019efe09611dd00"
+      },
+      "id": "ok-noncharacters",
+      "input": {
+        "hex": "7b0a20202269737375657273223a205b0a202020207b0a202020202020226973737565725f6964223a20226469643a7765623a666163746f72792d6f70657261746f722e7068222c0a202020202020226973737565725f6e616d65223a20224e657720436c61726b204369747920466162204f70657261746f7220efb790efbfbef48fbfbf222c0a202020202020226b657973223a205b0a20202020202020207b0a20202020202020202020226174746573746174696f6e5f6c6576656c223a2022736f667477617265222c0a20202020202020202020226b65795f6964223a202275726e3a696574663a706172616d733a6f617574683a6a776b2d7468756d627072696e743a7368612d3235363a48796f5059797353464f5135643678363448385f70486464634870374539314735535a6264696165574a67222c0a20202020202020202020227075626c69635f6b6579223a207b0a20202020202020202020202022637276223a2022502d323536222c0a202020202020202020202020226b7479223a20224543222c0a2020202020202020202020202278223a20227952773939596d7159684151455238554d4b494c4f762d4f46444c6a6c396e35452d53636b4c6c56333138222c0a2020202020202020202020202279223a202242436454626a6b7a694166764f65476a2d317638764f324f716456305f7a58315a574a4c41343347784f59220a202020202020202020207d2c0a20202020202020202020227265766f6b6564223a2066616c73652c0a202020202020202020202276616c69645f66726f6d223a2022323032362d30312d30315430303a30303a30305a222c0a202020202020202020202276616c69645f756e74696c223a2022323032372d30312d30315430303a30303a30305a220a20202020202020207d0a2020202020205d0a202020207d2c0a202020207b0a202020202020226973737565725f6964223a20226469643a7765623a6f746865722e6578616d706c65222c0a202020202020226973737565725f6e616d65223a20224f74686572204578616d706c65222c0a202020202020226b657973223a205b0a20202020202020207b0a20202020202020202020226174746573746174696f6e5f6c6576656c223a2022736f667477617265222c0a20202020202020202020226b65795f6964223a202275726e3a696574663a706172616d733a6f617574683a6a776b2d7468756d627072696e743a7368612d3235363a5258657130783262784d5451427958425f4b733853353461416a68794d5645635561744550796943624567222c0a20202020202020202020227075626c69635f6b6579223a207b0a20202020202020202020202022637276223a2022502d323536222c0a202020202020202020202020226b7479223a20224543222c0a2020202020202020202020202278223a20224a717855612d6d745250326c376938635437506979436c666d4878733968306b68575f346332574a66424d222c0a2020202020202020202020202279223a2022306572346c4a58566d7150687570496e6e683369546d31644e46655946506232643254646941576e6b6b67220a202020202020202020207d2c0a20202020202020202020227265766f6b6564223a2066616c73652c0a202020202020202020202276616c69645f66726f6d223a2022323032362d30312d30315430303a30303a30305a222c0a202020202020202020202276616c69645f756e74696c223a2022323032372d30312d30315430303a30303a30305a220a20202020202020207d0a2020202020205d0a202020207d0a20205d2c0a20202274727573745f73746f72655f76657273696f6e223a2022302e31220a7d"
+      }
+    },
+    {
+      "description": "ok-noncharacters with the noncharacters written as \\u escapes: the same store, the same identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:6ca6b5c8406676ba46c71e69676f275602494f7cb9fcc0bc9019efe09611dd00"
+      },
+      "id": "ok-noncharacters-escaped",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator \\ufdd0\\ufffe\\udbff\\udfff\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "16 MiB + 1 byte (the store followed by spaces).",
+      "expected": {
+        "kind": "trust_store.size",
+        "result": "error"
+      },
+      "id": "error-size",
+      "input": {
+        "append_spaces": 16776278,
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An invalid UTF-8 byte.",
+      "expected": {
+        "kind": "trust_store.syntax",
+        "result": "error"
+      },
+      "id": "error-syntax-not-utf8",
+      "input": {
+        "hex": "7b2274727573745f73746f72655f76657273696f6e223a22302e31ff227d"
+      }
+    },
+    {
+      "description": "Data after the store.",
+      "expected": {
+        "kind": "trust_store.syntax",
+        "result": "error"
+      },
+      "id": "error-syntax-trailing",
+      "input": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"} []"
+      }
+    },
+    {
+      "description": "issuer_name holding U+D800 as the bytes ED A0 80 (CESU-8): not UTF-8.",
+      "expected": {
+        "kind": "trust_store.syntax",
+        "result": "error"
+      },
+      "id": "error-syntax-cesu8-surrogate",
+      "input": {
+        "hex": "7b2269737375657273223a5b7b226973737565725f6964223a226469643a7765623a666163746f72792d6f70657261746f722e7068222c226973737565725f6e616d65223a224e657720eda080436c61726b204369747920466162204f70657261746f72222c226b657973223a5b7b226174746573746174696f6e5f6c6576656c223a22736f667477617265222c226b65795f6964223a2275726e3a696574663a706172616d733a6f617574683a6a776b2d7468756d627072696e743a7368612d3235363a48796f5059797353464f5135643678363448385f70486464634870374539314735535a6264696165574a67222c227075626c69635f6b6579223a7b22637276223a22502d323536222c226b7479223a224543222c2278223a227952773939596d7159684151455238554d4b494c4f762d4f46444c6a6c396e35452d53636b4c6c56333138222c2279223a2242436454626a6b7a694166764f65476a2d317638764f324f716456305f7a58315a574a4c41343347784f59227d2c227265766f6b6564223a66616c73652c2276616c69645f66726f6d223a22323032362d30312d30315430303a30303a30305a222c2276616c69645f756e74696c223a22323032372d30312d30315430303a30303a30305a227d5d7d2c7b226973737565725f6964223a226469643a7765623a6f746865722e6578616d706c65222c226973737565725f6e616d65223a224f74686572204578616d706c65222c226b657973223a5b7b226174746573746174696f6e5f6c6576656c223a22736f667477617265222c226b65795f6964223a2275726e3a696574663a706172616d733a6f617574683a6a776b2d7468756d627072696e743a7368612d3235363a5258657130783262784d5451427958425f4b733853353461416a68794d5645635561744550796943624567222c227075626c69635f6b6579223a7b22637276223a22502d323536222c226b7479223a224543222c2278223a224a717855612d6d745250326c376938635437506979436c666d4878733968306b68575f346332574a66424d222c2279223a22306572346c4a58566d7150687570496e6e683369546d31644e46655946506232643254646941576e6b6b67227d2c227265766f6b6564223a66616c73652c2276616c69645f66726f6d223a22323032362d30312d30315430303a30303a30305a222c2276616c69645f756e74696c223a22323032372d30312d30315430303a30303a30305a227d5d7d5d2c2274727573745f73746f72655f76657273696f6e223a22302e31227d"
+      }
+    },
+    {
+      "description": "trust_store_version 0.2.",
+      "expected": {
+        "kind": "trust_store.version",
+        "result": "error"
+      },
+      "id": "error-version",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.2\"\n}"
+      }
+    },
+    {
+      "description": "trust_store_version 0.2 and a top-level member named \\ud800: the version (kind 3) is checked over the whole store before the structure (kind 4), where the lone surrogate would fail.",
+      "expected": {
+        "kind": "trust_store.version",
+        "result": "error"
+      },
+      "id": "error-version-before-lone-surrogate",
+      "input": {
+        "text": "{\"\\ud800\":1,\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.2\"}"
+      }
+    },
+    {
+      "description": "A member the format does not define.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-unknown-member",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"trusted\": true,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "revoked twice.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-duplicate-member",
+      "input": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"revoked\":true,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "valid_until: null.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-null",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": null\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "An issuer without keys.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-no-keys",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": []\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "attestation_level root.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-attestation",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"root\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "issuer_name with \\ud800 before a letter: valid RFC 8259 syntax, but not a Unicode scalar value.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-lone-surrogate",
+      "input": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New \\ud800Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]},{\"issuer_id\":\"did:web:other.example\",\"issuer_name\":\"Other Example\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\"y\":\"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An issuer_id with a Cyrillic а.",
+      "expected": {
+        "kind": "trust_store.issuer_id",
+        "result": "error"
+      },
+      "id": "error-issuer-id",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:fаctory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "valid_from 2026-02-30T00:00:00Z.",
+      "expected": {
+        "kind": "trust_store.timestamp",
+        "result": "error"
+      },
+      "id": "error-timestamp",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-02-30T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "A JWK whose y is its x: not on P-256.",
+      "expected": {
+        "kind": "trust_store.invalid_key",
+        "result": "error"
+      },
+      "id": "error-invalid-key",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "key_id of another key.",
+      "expected": {
+        "kind": "trust_store.key_id_mismatch",
+        "result": "error"
+      },
+      "id": "error-key-id-mismatch",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:jxHt41ug3kJNGuOm46mif23fD7nt6RzzVNqGMmFygoQ\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Two entries for one issuer_id.",
+      "expected": {
+        "kind": "trust_store.duplicate_issuer",
+        "result": "error"
+      },
+      "id": "error-duplicate-issuer",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Key A trusted for two issuers.",
+      "expected": {
+        "kind": "trust_store.duplicate_key",
+        "result": "error"
+      },
+      "id": "error-duplicate-key",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "valid_until == valid_from.",
+      "expected": {
+        "kind": "trust_store.validity_window",
+        "result": "error"
+      },
+      "id": "error-validity-window",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2026-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-basic and one policy authority holding key P.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:5ffc1af45c1184b1697c40e634c3468fb320277537946715cdf195930fa7e63e"
+      },
+      "id": "ok-policy-authorities",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-basic with an empty policy_authorities: the same store, with ok-basic's identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b"
+      },
+      "id": "ok-policy-authorities-empty",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-basic and two policy authorities, one holding keys P and Q, the other key R.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:a60eba71a7edef0f9b4c419bba1371730578d2dff9cbc91302bd66db8fc9fe36"
+      },
+      "id": "ok-two-policy-authorities",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        },\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"L4XqSUFroIP4xTigAmQZGx-RwFAfL54qU-zW_f8mryw\",\n            \"y\": \"nnjrkNDFhaGrqRyY8abRx1kcf4mR_h8nVEipWJd10kY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"other-authority.example\",\n      \"authority_name\": \"other-authority.example (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:Q9TT8A4Ot3prbKrQDTxbGWKCsysXP7BXKeHvCZZKmaM\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"j4y4S0e_p9X3NwuGKIly7iAm1ZzbWc_S4-oUWEHQq2I\",\n            \"y\": \"chreHCtdjc4VbE_1JgOYCWcbwc6y_INlquXY2-2Jddg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-two-policy-authorities with the authorities in the other order and each one's keys reversed: the same store, the same identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:a60eba71a7edef0f9b4c419bba1371730578d2dff9cbc91302bd66db8fc9fe36"
+      },
+      "id": "ok-two-policy-authorities-reordered",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"other-authority.example\",\n      \"authority_name\": \"other-authority.example (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:Q9TT8A4Ot3prbKrQDTxbGWKCsysXP7BXKeHvCZZKmaM\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"j4y4S0e_p9X3NwuGKIly7iAm1ZzbWc_S4-oUWEHQq2I\",\n            \"y\": \"chreHCtdjc4VbE_1JgOYCWcbwc6y_INlquXY2-2Jddg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"L4XqSUFroIP4xTigAmQZGx-RwFAfL54qU-zW_f8mryw\",\n            \"y\": \"nnjrkNDFhaGrqRyY8abRx1kcf4mR_h8nVEipWJd10kY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        },\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "No issuers and one policy authority holding key P: a store of the kind an authority store is (trust-store format §4.2).",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:fe1201b02850ce88295a07a8859a77bc7912f6deecd87415d4a2512be500329b"
+      },
+      "id": "ok-authority-store",
+      "input": {
+        "text": "{\n  \"issuers\": [],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Two policy authorities named U+1F600 and U+FF21 (each followed by \" authority\"): the canonical form sorts them by code point, U+FF21 first; UTF-16 code-unit order would put U+1F600 first and give another identity.",
+      "expected": {
+        "result": "ok",
+        "sha256": "sha256:56586a33c676440fdc5d88e99133bf675ed97d9bed9276c2bf9ad0aaddc43028"
+      },
+      "id": "ok-policy-authorities-code-point-order",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"😀 authority\",\n      \"authority_name\": \"😀 authority (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"Ａ authority\",\n      \"authority_name\": \"Ａ authority (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"L4XqSUFroIP4xTigAmQZGx-RwFAfL54qU-zW_f8mryw\",\n            \"y\": \"nnjrkNDFhaGrqRyY8abRx1kcf4mR_h8nVEipWJd10kY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-policy-authorities with an authority without keys.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-authority-no-keys",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": []\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "A member the format does not define, in a policy authority.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-authority-unknown-member",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ],\n      \"trusted\": true\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "policy_authorities: null (an optional member is omitted, never null).",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-policy-authorities-null",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": null,\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "An empty authority_id.",
+      "expected": {
+        "kind": "trust_store.authority_id",
+        "result": "error"
+      },
+      "id": "error-authority-id",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "An empty authority_id and an issuer key's valid_from 2026-02-30T00:00:00Z: kind 6 is checked over the whole store before kind 7.",
+      "expected": {
+        "kind": "trust_store.authority_id",
+        "result": "error"
+      },
+      "id": "error-authority-id-before-timestamp",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-02-30T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "A policy authority key's valid_from 2026-02-30T00:00:00Z: the key rules apply to an authority's keys.",
+      "expected": {
+        "kind": "trust_store.timestamp",
+        "result": "error"
+      },
+      "id": "error-timestamp-authority-key",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-02-30T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "A policy authority key whose key_id is key F's.",
+      "expected": {
+        "kind": "trust_store.key_id_mismatch",
+        "result": "error"
+      },
+      "id": "error-key-id-mismatch-authority-key",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:jxHt41ug3kJNGuOm46mif23fD7nt6RzzVNqGMmFygoQ\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Two policy authorities with one authority_id, holding keys P and Q.",
+      "expected": {
+        "kind": "trust_store.duplicate_authority",
+        "result": "error"
+      },
+      "id": "error-duplicate-authority",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"L4XqSUFroIP4xTigAmQZGx-RwFAfL54qU-zW_f8mryw\",\n            \"y\": \"nnjrkNDFhaGrqRyY8abRx1kcf4mR_h8nVEipWJd10kY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Two policy authorities with one authority_id, both holding key P: kind 11 is checked before kind 12.",
+      "expected": {
+        "kind": "trust_store.duplicate_authority",
+        "result": "error"
+      },
+      "id": "error-duplicate-authority-before-duplicate-key",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Key A trusted for an issuer and for a policy authority: a key is in one list only.",
+      "expected": {
+        "kind": "trust_store.duplicate_key",
+        "result": "error"
+      },
+      "id": "error-duplicate-key-issuer-and-authority",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Key P under two policy authorities.",
+      "expected": {
+        "kind": "trust_store.duplicate_key",
+        "result": "error"
+      },
+      "id": "error-duplicate-key-two-authorities",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"authority_id\": \"other-authority.example\",\n      \"authority_name\": \"other-authority.example (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "Text nested 127 levels deep (126 arrays in an unknown member of the store object): within the bound, so read, and refused for its member.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-nesting-127-levels",
+      "input": {
+        "text": "{\"trust_store_version\":\"0.1\",\"issuers\":[],\"deep\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+      }
+    },
+    {
+      "description": "Text nested 128 levels deep (127 arrays in a member): past the bound of §2.",
+      "expected": {
+        "kind": "trust_store.syntax",
+        "result": "error"
+      },
+      "id": "error-syntax-nesting-128-levels",
+      "input": {
+        "text": "{\"trust_store_version\":\"0.1\",\"issuers\":[],\"deep\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+      }
+    },
+    {
+      "description": "error-syntax-nesting-128-levels with trust_store_version 0.2: the bound is kind 2, checked before the version.",
+      "expected": {
+        "kind": "trust_store.syntax",
+        "result": "error"
+      },
+      "id": "error-syntax-nesting-128-levels-later-version",
+      "input": {
+        "text": "{\"trust_store_version\":\"0.2\",\"issuers\":[],\"deep\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+      }
+    },
+    {
+      "description": "ok-policy-authorities written as [trust_store_version, issuers, policy_authorities].",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-store-as-array",
+      "input": {
+        "text": "[\n  \"0.1\",\n  [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ]\n]"
+      }
+    },
+    {
+      "description": "ok-basic with its first issuer written as [issuer_id, issuer_name, keys].",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-issuer-as-array",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    [\n      \"did:web:factory-operator.ph\",\n      \"New Clark City Fab Operator\",\n      [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    ],\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-basic with its first issuer's key written as the array of its six values.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-key-as-array",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        [\n          \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"software\",\n          \"2026-01-01T00:00:00Z\",\n          \"2027-01-01T00:00:00Z\",\n          false\n        ]\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-basic with its first issuer's public_key written as [kty, crv, x, y].",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-public-key-as-array",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": [\n            \"EC\",\n            \"P-256\",\n            \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          ],\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-policy-authorities with its authority written as [authority_id, authority_name, keys].",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-authority-as-array",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    [\n      \"khalm-trust-store-vectors\",\n      \"khalm-trust-store-vectors (test-only)\",\n      [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    ]\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "ok-policy-authorities with its authority's key P written as the array of its six values.",
+      "expected": {
+        "kind": "trust_store.structure",
+        "result": "error"
+      },
+      "id": "error-structure-authority-key-as-array",
+      "input": {
+        "text": "{\n  \"issuers\": [\n    {\n      \"issuer_id\": \"did:web:factory-operator.ph\",\n      \"issuer_name\": \"New Clark City Fab Operator\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\n            \"y\": \"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    },\n    {\n      \"issuer_id\": \"did:web:other.example\",\n      \"issuer_name\": \"Other Example\",\n      \"keys\": [\n        {\n          \"attestation_level\": \"software\",\n          \"key_id\": \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:RXeq0x2bxMTQByXB_Ks8S54aAjhyMVEcUatEPyiCbEg\",\n          \"public_key\": {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JqxUa-mtRP2l7i8cT7PiyClfmHxs9h0khW_4c2WJfBM\",\n            \"y\": \"0er4lJXVmqPhupInnh3iTm1dNFeYFPb2d2TdiAWnkkg\"\n          },\n          \"revoked\": false,\n          \"valid_from\": \"2026-01-01T00:00:00Z\",\n          \"valid_until\": \"2027-01-01T00:00:00Z\"\n        }\n      ]\n    }\n  ],\n  \"policy_authorities\": [\n    {\n      \"authority_id\": \"khalm-trust-store-vectors\",\n      \"authority_name\": \"khalm-trust-store-vectors (test-only)\",\n      \"keys\": [\n        [\n          \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\n          {\n            \"crv\": \"P-256\",\n            \"kty\": \"EC\",\n            \"x\": \"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\n            \"y\": \"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"\n          },\n          \"software\",\n          \"2026-01-01T00:00:00Z\",\n          \"2027-01-01T00:00:00Z\",\n          false\n        ]\n      ]\n    }\n  ],\n  \"trust_store_version\": \"0.1\"\n}"
+      }
+    }
+  ],
+  "description": "VMR trust store loader vectors, v0.1 (trust-store format v0.1, §2, §3, §5). A conforming loader accepts each `ok` store with the expected canonical identity (sha256 of the JCS form with issuers sorted by issuer_id, policy authorities by authority_id in code-point order, each entry's keys by key_id, and an empty policy_authorities omitted), and rejects each `error` store with the expected kind. Input bytes: `text` as UTF-8, or `hex`; then `append_spaces` ASCII spaces if present. Generated by the vmr-verify crate's vector generator (VMR_WRITE_VECTORS=1 cargo test -p vmr-verify --test vectors -- --ignored) - never hand-edited.",
+  "vector_version": "0.1"
+}

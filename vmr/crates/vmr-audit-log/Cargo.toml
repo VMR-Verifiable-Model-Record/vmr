@@ -1,0 +1,31 @@
+[package]
+name = "vmr-audit-log"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "The VMR audit log: the entry, the RFC 9162 Merkle tree, the signed checkpoint and the inclusion and consistency proofs, with their verifier. Open and general: an entry's kinds come from a named profile, and KHALM's enforcer is one. Normative reference: specs/audit-log-format-v0.1.md."
+
+[lib]
+name = "vmr_audit_log"
+crate-type = ["rlib"]
+
+# The audit log's footprint is part of its claim, as vmr-verify's is: the
+# format crate, the verifier's display_safe, serde and p256 - nothing that can
+# open a socket, read a clock or touch a file, and no vmr-ffi / bindgen.
+# `cargo tree -p vmr-audit-log -e normal,build,dev` must never show either.
+
+[dependencies]
+# The record format: JCS, SHA-256, base64url, ES256, key ids, the Merkle tree,
+# timestamps. Nothing cryptographic is reimplemented (Doctrine Refusal 4).
+vmr-record.workspace = true
+# display_safe, for a refusal that quotes a stranger's document.
+vmr-verify = { path = "../vmr-verify" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+p256.workspace = true
+
+[dev-dependencies]
+# the robustness lanes print a mutant's bytes when an oracle fails
+hex.workspace = true

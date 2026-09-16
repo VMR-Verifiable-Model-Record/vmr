@@ -1,0 +1,35 @@
+# The Community workspace (docs/dev/task-10.13a.md, D13a-2): the free `vmr`
+# and the crates it is built from, and nothing else: tools/check_community.py
+# fails when crates/ holds a directory tools/community.json does not list. The
+# KHALM engine's crates and Phase 8's proprietary enforcer are the private
+# workspace's, which is not part of the Community edition; no Community
+# crate depends on them.
+# Each workspace has its own Cargo.lock and its own target directory.
+[workspace]
+resolver = "2"
+members = [
+    "crates/vmr-audit-log",
+    "crates/vmr-builder",
+    "crates/vmr-record",
+    "crates/vmr-policy",
+    "crates/vmr-verify",
+    "crates/vmr-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+thiserror = "1.0"
+sha2 = "0.10"
+hex = "0.4"
+p256 = { version = "0.13", features = ["ecdsa", "digest"] }
+ecdsa = { version = "0.16", features = ["hazmat", "der"] }
+coset = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ryu-js = "1.0"
+vmr-record = { path = "crates/vmr-record", version = "0.1.0" }

@@ -1,0 +1,27 @@
+KHALM-VMR
+Copyright 2026 KHALM LLC
+
+This product includes software developed as part of the Verifiable Model
+Record (VMR) reference implementation.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this software except in compliance with the License. You may obtain a
+copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+This License covers the code in this repository. It grants no right in the
+trade marks it is distributed under.
+
+"KHALM", "KHALM-VMR", "Verifiable Model Record" and the VMR logo are trade
+marks of KHALM LLC, a Wyoming limited liability company. This License does
+not license them: Apache License, Version 2.0 section 6 grants no trade mark
+licence except for the reasonable and customary use needed to describe the
+origin of the work and to reproduce the content of this NOTICE file. So you
+may say that your software implements the Verifiable Model Record standard,
+or that it is built on KHALM-VMR, and you may keep this NOTICE as it is. You
+may not use these marks as the name of your own product or service, in your
+own logo or domain name, or in any way that suggests KHALM LLC endorses or
+is the origin of your work.
+
+Permission beyond that comes from KHALM LLC in writing.

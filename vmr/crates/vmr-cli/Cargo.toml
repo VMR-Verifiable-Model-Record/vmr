@@ -1,0 +1,57 @@
+[package]
+name = "vmr-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's command-line tool: emit, verify and inspect Verifiable Model Records (VMR). Verification is offline and needs only the record and a trust store."
+
+# The Community `vmr` (docs/dev/phase5.md, C1; task 10.13a, D13a-3): a library
+# and the binary. It makes records of any model's files and verifies them: it
+# links the verifier, the format crate, the policy evaluator and the
+# engine-free record builder, and nothing that can reach the engine - `cargo
+# tree -p vmr-cli --all-features --target all -e normal,build,dev` must never
+# show vmr-ffi, vmr-provenance, bindgen, clang-sys or cc. A build that adds an
+# engine extends this library from outside the Community workspace; nothing
+# here names one.
+[lib]
+name = "vmr_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "vmr"
+path = "src/main.rs"
+
+[dependencies]
+# The verifier and the format it reads - the whole of the verify path.
+vmr-verify = { path = "../vmr-verify" }
+vmr-record.workspace = true
+# `record verify --policy-pack` (P6-13): the pack format and the
+# evaluator, behind vmr-verify's PolicyEvaluator hook. Like vmr-verify it
+# has no engine, no build script, no network and no clock.
+vmr-policy = { path = "../vmr-policy" }
+# `record emit --model` and `model hash`, a record of any model's files
+# (task 10.13a): the engine-free record builder and the walk of spec §7.2. A
+# Community crate: no engine, no FFI, no build script.
+vmr-builder = { path = "../vmr-builder" }
+# The command tree (docs/dev/phase5.md C14): already in the local Cargo cache,
+# resolved offline. No `color` feature: with it clap strips escape sequences
+# from the argument it quotes in a usage error, before vmr can show them
+# escaped (QA P5-03); the screens draw clap's errors themselves.
+clap = { version = "4.6", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "suggestions"] }
+# The terminal screens (docs/dev/cli-polish.md CP-2, CP-4, CP-7): a stream
+# that keeps a screen's colour on a terminal, a Windows console included, or
+# strips it (NO_COLOR, --color never); and TERM's answer, for TERM=dumb. clap's
+# own colour crates, the anstream family: the owner approved these eight crates
+# on 2026-09-15, all MIT OR Apache-2.0 and all in the local cache.
+anstream = "1.0"
+anstyle-query = "1.1"
+# Signing keys as PKCS#8 PEM files (C7): p256's default `pem` feature, no
+# further crate.
+p256.workspace = true
+# `key generate` draws its key from the OS CSPRNG through rand_core's OsRng
+# (getrandom) - the CLI's one source of randomness (C3). Both already locked.
+rand_core = { version = "0.6", features = ["getrandom"] }
+# The CLI's own JSON files (public key file, manifest).
+serde.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,14 @@
+# Law 1 in the policy crate (docs/dev/phase6.md P6-5): an evaluation is a
+# function of the pack, the record and the caller's evaluation time. No
+# clock, no environment, no unordered iteration where results are produced.
+disallowed-methods = [
+    { path = "std::time::SystemTime::now", reason = "the evaluation time is an input (P6-5)" },
+    { path = "std::time::Instant::now", reason = "the evaluation time is an input (P6-5)" },
+    { path = "std::env::var", reason = "an evaluation reads no environment" },
+    { path = "std::env::var_os", reason = "an evaluation reads no environment" },
+    { path = "std::env::vars", reason = "an evaluation reads no environment" },
+]
+disallowed-types = [
+    { path = "std::collections::HashMap", reason = "unordered iteration; use BTreeMap (Law 1)" },
+    { path = "std::collections::HashSet", reason = "unordered iteration; use BTreeSet (Law 1)" },
+]

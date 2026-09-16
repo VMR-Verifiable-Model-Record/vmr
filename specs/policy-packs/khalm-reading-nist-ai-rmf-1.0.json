@@ -1,0 +1,41 @@
+{
+  "version": "0.1",
+  "pack_id": "khalm-reading-nist-ai-rmf-1.0",
+  "pack_version": "1.0.0",
+  "jurisdiction": "us-nist",
+  "description": "The NIST AI Risk Management Framework 1.0 (NIST AI 100-1), in the part a v0.1 Verifiable Model Record can answer: subcategories of the MAP and MEASURE functions that ask for documented, checkable evidence about an AI system and the technology it was built from. The severity of each rule is this pack's weighting, not a claim that the voluntary Framework mandates anything.",
+  "disclaimer": "A reference implementation of the VMR policy-pack format, not legal advice and not an official instrument. The subcategory references are this pack author's reading of the cited text; the National Institute of Standards and Technology has neither authored nor endorsed this pack. The AI RMF is voluntary and covers far more than any document can check.",
+  "authority": {
+    "authority_id": "khalm-reference-packs",
+    "authority_name": "KHALM reference packs"
+  },
+  "rules": [
+    {
+      "type": "execution_integrity",
+      "rule_id": "nist-ai-rmf-security-resilience",
+      "description": "The system's security and resilience can be examined for a pinned artifact in a pinned environment. Checks: what was learned is pinned by hash and size; the training software and the software hash of the environment the learning ran in are declared and not empty, and the software hash parses as a hash; and a deployment or policy-change record keeps the model of its verified immediate predecessor, the same model_hash, so one evaluated without that predecessor is indeterminate. Does not check: security or resilience themselves, which MEASURE 2.7 asks to be evaluated and documented; the rule identifies what such an evaluation is about.",
+      "severity": "mandatory",
+      "reference": "NIST AI RMF 1.0 MEASURE 2.7",
+      "require_learned_state_components": true,
+      "require_environment_pinned": true,
+      "require_state_kept": true
+    },
+    {
+      "type": "audit_integrity",
+      "rule_id": "nist-ai-rmf-transparency-accountability",
+      "description": "The record is traceable and tamper-evident. Checks: the lineage is at least one record long, the training input is committed by a Merkle root (so a record that declares its training input not held or not disclosed fails), and a record with predecessors names the one before it by hash. Does not check: that the committed input is the data actually used; whether the lineage was verified back to its origin, which this rule does not ask for, so a successor evaluated without its predecessors is not failed for it; or the rest of what MEASURE 2.8 asks to be documented.",
+      "severity": "recommended",
+      "reference": "NIST AI RMF 1.0 MEASURE 2.8",
+      "minimum_chain_length": 1,
+      "require_tamper_evident": true
+    },
+    {
+      "type": "attestation_level",
+      "rule_id": "nist-ai-rmf-third-party-provenance",
+      "description": "The provenance of a system obtained from a third party is attested at software level or stronger, so a deployer mapping third-party technology has more than a self-assertion to go on. Checks: the record declares an attestation_level of software or stronger. Does not check: that the issuer attests at that level in fact, where the technology came from, or the rest of what MAP 4.1 asks. The level is the issuer's own claim about itself, and what the trust store grants the signing key is the verifier's trust.attestation check, before any pack is evaluated.",
+      "severity": "recommended",
+      "reference": "NIST AI RMF 1.0 MAP 4.1",
+      "minimum_level": "software"
+    }
+  ]
+}

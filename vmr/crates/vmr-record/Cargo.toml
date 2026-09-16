@@ -1,0 +1,30 @@
+[package]
+name = "vmr-record"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's implementation of the open Verifiable Model Record (VMR) v0.1 format: types, JCS, COSE, key ids, ES256, Merkle. No engine, no FFI, no build script."
+
+[lib]
+name = "vmr_record"
+crate-type = ["rlib"]
+
+# The format crate is what a verifier links (docs/dev/phase4.md, D2): no
+# vmr-ffi, no bindgen, no build script, no unsafe code. Anyone can build and
+# test it without clang, the C headers or the engine.
+[dependencies]
+thiserror.workspace = true
+sha2.workspace = true
+hex.workspace = true
+p256.workspace = true
+ecdsa.workspace = true
+coset.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ryu-js.workspace = true
+
+[dev-dependencies]
+# Test-only oracle for the schema's patterns (docs/dev/phase4.md, D3):
+# already in Cargo.lock (via bindgen), never on a verification path.
+regex = "1.13"

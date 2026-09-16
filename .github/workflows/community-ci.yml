@@ -1,0 +1,122 @@
+# CI for the Community edition of VMR: this tree, with no learning engine,
+# no C/C++ toolchain and no GPU anywhere in it. Two lanes, neither with a
+# GPU: linux on a push to main and on every pull request; windows weekly and
+# by hand, to keep to typical free-tier Actions minutes. A push to a branch
+# with an open pull request would otherwise run everything twice, and the
+# concurrency group is keyed on the ref alone so the second run cancels the
+# first.
+#
+# Mirrors the checks the private development repository runs against an
+# export of exactly this tree: cargo build, clippy -D warnings and cargo
+# test, all --locked, for the vmr/ workspace, plus the fuzz harness's own
+# stable-Rust seed tests (fuzz-targets/), which exercise every parser of
+# untrusted input here without nightly.
+#
+# Every action is pinned by commit SHA, and the checkout leaves no
+# credentials on disk for a later step to pick up.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '11 5 * * 1' # Mondays 05:11 UTC — the windows job's week
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+
+env:
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  linux:
+    name: linux (ubuntu-24.04)
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Rust stable, with clippy
+        run: |
+          rustup toolchain install stable --profile minimal --component clippy --no-self-update
+          rustup default stable
+          rustc --version
+
+      - name: Restore the cargo cache
+        id: cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            vmr/target/
+          key: ci-ubuntu-24.04-${{ hashFiles('vmr/Cargo.lock', '.cargo/config.toml') }}
+          restore-keys: ci-ubuntu-24.04-
+
+      - name: Build
+        run: cargo build --workspace --locked --manifest-path vmr/Cargo.toml
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked --manifest-path vmr/Cargo.toml -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --no-fail-fast --locked --manifest-path vmr/Cargo.toml
+
+      - name: Test the fuzz harness over its seeds (stable, no nightly)
+        run: cargo test --manifest-path fuzz-targets/Cargo.toml
+
+      - name: Save the cargo cache (main only)
+        if: github.ref == 'refs/heads/main' && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            vmr/target/
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  windows:
+    name: windows (windows-2022)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Rust stable, with clippy
+        shell: bash
+        run: |
+          rustup toolchain install stable --profile minimal --component clippy --no-self-update
+          rustup default stable
+          rustc --version
+
+      - name: Build
+        run: cargo build --workspace --locked --manifest-path vmr/Cargo.toml
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked --manifest-path vmr/Cargo.toml -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --no-fail-fast --locked --manifest-path vmr/Cargo.toml
+
+      - name: Test the fuzz harness over its seeds (stable, no nightly)
+        run: cargo test --manifest-path fuzz-targets/Cargo.toml

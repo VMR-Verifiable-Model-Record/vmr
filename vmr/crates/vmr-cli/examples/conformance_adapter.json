@@ -1,0 +1,11 @@
+{
+  "adapter_version": "0.1",
+  "implementation": {
+    "name": "KHALM-VMR libraries (vmr-verify, vmr-record, vmr-policy) through examples/conformance_adapter.rs",
+    "version": "0.1.0"
+  },
+  "command": ["${VMR_CONFORMANCE_ADAPTER}"],
+  "roles": ["verifier", "issuer", "policy-evaluator"],
+  "profiles": ["snn-compact-v1"],
+  "reports_refusal_identifiers": true
+}

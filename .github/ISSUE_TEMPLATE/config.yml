@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: "https://github.com/VMR-Verifiable-Model-Record/vmr/security/advisories/new"
+    about: Report privately. Please do not open a public issue for a security problem.
+  - name: Chat on Discord
+    url: "https://discord.gg/vxvDTbAwnW"
+    about: Quick questions and discussion. Answers are best effort.

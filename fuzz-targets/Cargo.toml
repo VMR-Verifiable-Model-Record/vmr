@@ -1,0 +1,25 @@
+[package]
+name = "vmr-fuzz-targets"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "Apache-2.0"
+description = "Plain bodies for fuzz/fuzz_targets/*.rs, and their own stable unit test over specs/test-vectors/: task 10.13's pre-release fuzzing task (AGENTS.md), split from fuzz/ so `cargo test` here never has to link one of fuzz/'s no_main libFuzzer binaries (Cargo always builds every [[bin]] in a package alongside any test in it, for CARGO_BIN_EXE_*, and a no_main bin has no entry point outside `cargo fuzz build`)."
+
+[lib]
+name = "vmr_fuzz_targets"
+
+[dependencies]
+# The six Community crates this fuzzes, by path: this crate carries its own
+# Cargo.lock, separate from vmr/Cargo.lock (which stays --offline --locked;
+# this one may fetch from crates.io).
+vmr-record = { path = "../vmr/crates/vmr-record" }
+vmr-verify = { path = "../vmr/crates/vmr-verify" }
+vmr-policy = { path = "../vmr/crates/vmr-policy" }
+vmr-cli = { path = "../vmr/crates/vmr-cli" }
+vmr-audit-log = { path = "../vmr/crates/vmr-audit-log" }
+# src/seeds.rs (used by tests/vectors.rs and src/bin/write_corpus.rs):
+# seeds decoded from specs/test-vectors/. Regular dependencies, not
+# dev-dependencies: src/seeds.rs is part of this crate's library.
+serde_json = "1.0"
+hex = "0.4"

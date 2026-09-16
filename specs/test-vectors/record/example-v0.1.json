@@ -1,0 +1,128 @@
+{
+  "description": "Verifiable Model Record v0.1 conformance vector in the profile snn-compact-v1. Generated from real engine state by the authors' engine build: a CUDA DISCRETE_RESERVOIR engine (1 agent, 64x128x16) as seeded by its own deterministic generators, described as agent 0. The learned state is the engine's golden state, sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435; the 16 training frames went through frozen (inference-only) ticks, which do not change learned state. The policy section is illustrative: a neutral example pack (example-policy-pack-v1) declared compliant with four example results; it names no real authority. Signing key: secret scalar = SHA-256(\"khalm v0.1 test-vector signing key\") — test-only.",
+  "expected": {
+    "signed_payload": "{\"deployment_context\":{\"deployed_at\":\"2026-09-10T00:00:00Z\",\"deployed_by\":\"did:web:factory-operator.ph\",\"deployment_id\":\"urn:uuid:3f1d5a02-e8b3-4c7d-9f22-6e0a11c2d477\",\"hardware_id\":\"sha256:a98e5dba0e01b88a3fc6f74132a1307fda4f3a1ed515e0dd135e588da905a352\",\"inference_boundary\":{\"allowed_egress_destinations\":[],\"egress_allowed\":false,\"type\":\"air-gapped\"},\"policy_pack_id\":\"example-policy-pack-v1\",\"software_hash\":\"sha256:74c309cc7198eb4b62ea446ab3cfb610c07d91b6815d475ff55cd1125f2ecc92\",\"tee_measurement\":\"\"},\"issued_at\":\"2026-09-10T00:00:00Z\",\"issuer\":{\"attestation_level\":\"software\",\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"}},\"learning_provenance\":{\"training_ended_at\":\"2026-09-08T00:00:00Z\",\"training_environment\":{\"accelerator_software\":\"CUDA 13.0\",\"hardware_id\":\"sha256:a98e5dba0e01b88a3fc6f74132a1307fda4f3a1ed515e0dd135e588da905a352\",\"software_hash\":\"sha256:74c309cc7198eb4b62ea446ab3cfb610c07d91b6815d475ff55cd1125f2ecc92\",\"tee_measurement\":\"\",\"training_software\":\"0.1.0\"},\"training_epochs\":12,\"training_input_count\":16,\"training_input_digest\":\"sha256:ac0e49c1c10c4c9d3359204958f390e9950f95a018a67ebfd6408b3d56ac5536\",\"training_input_merkle_root\":\"sha256:37d463ad29ec49c8d40ced87d9be1f290f093df4d9d845c0569363f9b008cb0b\",\"training_input_provenance\":{\"collection_period\":{\"end\":\"2026-08-31T00:00:00Z\",\"start\":\"2026-08-01T00:00:00Z\"},\"data_residency\":\"PH\",\"source_description\":\"Vibration sensors on lithography tool LT-07\",\"source_type\":\"sensor_stream\"},\"training_started_at\":\"2026-09-01T00:00:00Z\"},\"lineage\":{\"lineage_chain_length\":1,\"lineage_type\":\"initial\",\"root_record_id\":\"urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00\"},\"model_identity\":{\"architecture\":{\"precision\":\"int8\",\"topology\":\"fully-connected\",\"type\":\"spiking-neural-network\"},\"learned_state_components\":[{\"hash\":\"sha256:4728dd4212624fbdd039dd72bd0a30ab7035c7409e418f9902dbe1d544b5e99d\",\"name\":\"afferent_H\",\"size_bytes\":8192},{\"hash\":\"sha256:f078f2bd15276241be442eab81f64b37bcde2d22ae14a372b989f335030f6148\",\"name\":\"recurrent_H\",\"size_bytes\":16384},{\"hash\":\"sha256:b5b55e72f342e981d44768dba8749f4cdba524f2b0995e75692d7fdfaff77bb0\",\"name\":\"thresholds\",\"size_bytes\":512}],\"learned_state_hash\":\"sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435\",\"model_format\":\"snn-compact-v1\",\"model_hash\":\"sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435\",\"parameter_count\":24704},\"policy_compliance\":{\"evaluated_at\":\"2026-09-10T00:00:00Z\",\"overall_status\":\"compliant\",\"policy_pack_id\":\"example-policy-pack-v1\",\"results\":[{\"evidence_hash\":\"sha256:5108deb71ee1d00d8e14ad48f2ddee3dca264528a5ae802ac5a682ee11ecc0d7\",\"rule_id\":\"example-data-residency\",\"status\":\"pass\"},{\"evidence_hash\":\"sha256:fce153950ced26bb8fb13e9b6c8212fc720fedf231615f9a5c3ce2e2cde90451\",\"rule_id\":\"example-source-screening\",\"status\":\"pass\"},{\"evidence_hash\":\"sha256:13f80b3e0251ce805c391300144bd1cb71d919b40f505a82c2e0bb7e602988af\",\"rule_id\":\"example-export-control\",\"status\":\"pass\"},{\"evidence_hash\":\"sha256:2d493f25558c40ad587a79b276fa7cd7804aba795e2db16f13e979cb3cf3b1eb\",\"rule_id\":\"example-audit-trail\",\"status\":\"pass\"}]},\"record_id\":\"urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00\",\"record_version\":\"0.1\"}",
+    "signed_payload_hash": "sha256:2eca0dd33554f5113d03ef96bc01deb56fafd8484bbf95f04bd308ee6c075967"
+  },
+  "record": {
+    "deployment_context": {
+      "deployed_at": "2026-09-10T00:00:00Z",
+      "deployed_by": "did:web:factory-operator.ph",
+      "deployment_id": "urn:uuid:3f1d5a02-e8b3-4c7d-9f22-6e0a11c2d477",
+      "hardware_id": "sha256:a98e5dba0e01b88a3fc6f74132a1307fda4f3a1ed515e0dd135e588da905a352",
+      "inference_boundary": {
+        "allowed_egress_destinations": [],
+        "egress_allowed": false,
+        "type": "air-gapped"
+      },
+      "policy_pack_id": "example-policy-pack-v1",
+      "software_hash": "sha256:74c309cc7198eb4b62ea446ab3cfb610c07d91b6815d475ff55cd1125f2ecc92",
+      "tee_measurement": ""
+    },
+    "issued_at": "2026-09-10T00:00:00Z",
+    "issuer": {
+      "attestation_level": "software",
+      "issuer_id": "did:web:factory-operator.ph",
+      "issuer_name": "New Clark City Fab Operator",
+      "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg",
+      "public_key": {
+        "crv": "P-256",
+        "kty": "EC",
+        "x": "yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318",
+        "y": "BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY"
+      }
+    },
+    "learning_provenance": {
+      "training_ended_at": "2026-09-08T00:00:00Z",
+      "training_environment": {
+        "accelerator_software": "CUDA 13.0",
+        "hardware_id": "sha256:a98e5dba0e01b88a3fc6f74132a1307fda4f3a1ed515e0dd135e588da905a352",
+        "software_hash": "sha256:74c309cc7198eb4b62ea446ab3cfb610c07d91b6815d475ff55cd1125f2ecc92",
+        "tee_measurement": "",
+        "training_software": "0.1.0"
+      },
+      "training_epochs": 12,
+      "training_input_count": 16,
+      "training_input_digest": "sha256:ac0e49c1c10c4c9d3359204958f390e9950f95a018a67ebfd6408b3d56ac5536",
+      "training_input_merkle_root": "sha256:37d463ad29ec49c8d40ced87d9be1f290f093df4d9d845c0569363f9b008cb0b",
+      "training_input_provenance": {
+        "collection_period": {
+          "end": "2026-08-31T00:00:00Z",
+          "start": "2026-08-01T00:00:00Z"
+        },
+        "data_residency": "PH",
+        "source_description": "Vibration sensors on lithography tool LT-07",
+        "source_type": "sensor_stream"
+      },
+      "training_started_at": "2026-09-01T00:00:00Z"
+    },
+    "lineage": {
+      "lineage_chain_length": 1,
+      "lineage_type": "initial",
+      "root_record_id": "urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00"
+    },
+    "model_identity": {
+      "architecture": {
+        "precision": "int8",
+        "topology": "fully-connected",
+        "type": "spiking-neural-network"
+      },
+      "learned_state_components": [
+        {
+          "hash": "sha256:4728dd4212624fbdd039dd72bd0a30ab7035c7409e418f9902dbe1d544b5e99d",
+          "name": "afferent_H",
+          "size_bytes": 8192
+        },
+        {
+          "hash": "sha256:f078f2bd15276241be442eab81f64b37bcde2d22ae14a372b989f335030f6148",
+          "name": "recurrent_H",
+          "size_bytes": 16384
+        },
+        {
+          "hash": "sha256:b5b55e72f342e981d44768dba8749f4cdba524f2b0995e75692d7fdfaff77bb0",
+          "name": "thresholds",
+          "size_bytes": 512
+        }
+      ],
+      "learned_state_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+      "model_format": "snn-compact-v1",
+      "model_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+      "parameter_count": 24704
+    },
+    "policy_compliance": {
+      "evaluated_at": "2026-09-10T00:00:00Z",
+      "overall_status": "compliant",
+      "policy_pack_id": "example-policy-pack-v1",
+      "results": [
+        {
+          "evidence_hash": "sha256:5108deb71ee1d00d8e14ad48f2ddee3dca264528a5ae802ac5a682ee11ecc0d7",
+          "rule_id": "example-data-residency",
+          "status": "pass"
+        },
+        {
+          "evidence_hash": "sha256:fce153950ced26bb8fb13e9b6c8212fc720fedf231615f9a5c3ce2e2cde90451",
+          "rule_id": "example-source-screening",
+          "status": "pass"
+        },
+        {
+          "evidence_hash": "sha256:13f80b3e0251ce805c391300144bd1cb71d919b40f505a82c2e0bb7e602988af",
+          "rule_id": "example-export-control",
+          "status": "pass"
+        },
+        {
+          "evidence_hash": "sha256:2d493f25558c40ad587a79b276fa7cd7804aba795e2db16f13e979cb3cf3b1eb",
+          "rule_id": "example-audit-trail",
+          "status": "pass"
+        }
+      ]
+    },
+    "record_id": "urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00",
+    "record_version": "0.1",
+    "signature": {
+      "algorithm": "ES256",
+      "signature": "base64url:gOkvtLLHSOlnwZQ2zpfAYl52zpLuJnTzwBX_W-uuAgMX3WXtSbzCuz1fssEVBhzfIfWb8v0NkvGz_aWc_OIvBg",
+      "signed_payload_hash": "sha256:2eca0dd33554f5113d03ef96bc01deb56fafd8484bbf95f04bd308ee6c075967",
+      "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg"
+    }
+  }
+}

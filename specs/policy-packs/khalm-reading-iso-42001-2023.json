@@ -1,0 +1,44 @@
+{
+  "version": "0.1",
+  "pack_id": "khalm-reading-iso-42001-2023",
+  "pack_version": "1.0.0",
+  "jurisdiction": "iso-42001",
+  "description": "ISO/IEC 42001:2023 (AI management systems), in the part a v0.1 Verifiable Model Record can answer: the Annex A controls on event logs and data provenance, technical documentation and suppliers. The management-system clauses 4 to 10 are about an organisation and not about an artifact, so no rule here encodes them. The control numbers and titles were checked against public summaries of Annex A that agree with each other, not against the standard's own text, which this pack's author could not read; they must be checked against it.",
+  "disclaimer": "A reference implementation of the VMR policy-pack format, not legal advice, not an official instrument and not a certification. The control references are this pack author's reading of the cited text; ISO, IEC and ISO/IEC JTC 1/SC 42 have neither authored nor endorsed this pack. Conformity with ISO/IEC 42001 is assessed against an organisation's management system, not against a document.",
+  "authority": {
+    "authority_id": "khalm-reference-packs",
+    "authority_name": "KHALM reference packs"
+  },
+  "rules": [
+    {
+      "type": "audit_integrity",
+      "rule_id": "iso-42001-record-keeping",
+      "description": "Records of the AI system's life cycle are kept, ordered and traced to their origin. Checks: the lineage is at least one record long; the training input is committed by a Merkle root over at least one input, and the root is not that of an empty tree, so a record that declares its training input not held or not disclosed fails; a record with predecessors names the one before it by hash; training does not end before it starts or after the record was issued, and the collection period does not end before it starts; and the lineage was verified back to the initial record, so a successor evaluated without its predecessors is indeterminate. Does not check: the event logs of the system in operation, or that the committed input is the data actually used. The lineage stands for the event log of A.6.2.8 and the Merkle commitment for the data provenance of A.7.5: this pack's reading.",
+      "severity": "mandatory",
+      "reference": "ISO/IEC 42001:2023 Annex A controls A.6.2.8 (AI system recording of event logs) and A.7.5 (data provenance)",
+      "minimum_chain_length": 1,
+      "require_tamper_evident": true,
+      "require_input_committed": true,
+      "require_ordered_record": true,
+      "require_verified_lineage": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "iso-42001-technical-documentation",
+      "description": "The technical documentation identifies what was learned, where, and what was deployed. Checks: the learned state and its components are pinned by hash and size; the training software and the software hash of the training environment are declared and not empty, and the software hash parses as a hash; and a deployment or policy-change record keeps the model of its verified immediate predecessor, the same model_hash, so one evaluated without that predecessor is indeterminate. Does not check: the rest of the documentation A.6.2.7 calls for.",
+      "severity": "mandatory",
+      "reference": "ISO/IEC 42001:2023 Annex A control A.6.2.7 (AI system technical documentation)",
+      "require_learned_state_components": true,
+      "require_environment_pinned": true,
+      "require_state_kept": true
+    },
+    {
+      "type": "attestation_level",
+      "rule_id": "iso-42001-supplier-assurance",
+      "description": "A system obtained from a supplier arrives with an attestation at software level or stronger, so the organisation's supplier controls rest on more than a self-assertion. Checks: the record declares an attestation_level of software or stronger. Does not check: that the issuer attests at that level in fact, that the record came from a supplier at all, or that any supplier control A.10.3 calls for is in place. The level is the issuer's own claim about itself, and what the trust store grants the signing key is the verifier's trust.attestation check, before any pack is evaluated.",
+      "severity": "recommended",
+      "reference": "ISO/IEC 42001:2023 Annex A control A.10.3 (suppliers)",
+      "minimum_level": "software"
+    }
+  ]
+}

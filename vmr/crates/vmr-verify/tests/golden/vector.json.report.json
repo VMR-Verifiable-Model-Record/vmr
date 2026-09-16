@@ -1,0 +1,183 @@
+{
+  "report_version": "0.1",
+  "verdict": "pass",
+  "failure": null,
+  "accepted": true,
+  "evaluation_time": "2026-09-11T00:00:00Z",
+  "input": {
+    "form": "json",
+    "byte_length": 4622,
+    "sha256": "sha256:18523966980ae8dec759153b3e215ec462d590f76a27bb5f4151a022a6ce23d4"
+  },
+  "trust_store": {
+    "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b",
+    "issuer_count": 2,
+    "key_count": 2
+  },
+  "previous": [],
+  "require_complete_lineage": false,
+  "record": {
+    "record_id": "urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00",
+    "issued_at": "2026-09-10T00:00:00Z",
+    "signed_payload_hash": "sha256:2eca0dd33554f5113d03ef96bc01deb56fafd8484bbf95f04bd308ee6c075967",
+    "model_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+    "model_format": "snn-compact-v1",
+    "learned_state_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+    "training_input_digest": "sha256:ac0e49c1c10c4c9d3359204958f390e9950f95a018a67ebfd6408b3d56ac5536",
+    "issuer_id": "did:web:factory-operator.ph",
+    "issuer_name": "New Clark City Fab Operator",
+    "attestation_level": "software",
+    "lineage_type": "initial"
+  },
+  "issuer": {
+    "issuer_id": "did:web:factory-operator.ph",
+    "issuer_name": "New Clark City Fab Operator",
+    "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg",
+    "attestation_level": "software"
+  },
+  "checks": [
+    {
+      "id": "input.size",
+      "outcome": "pass",
+      "detail": "4622 bytes (at most 1048576)"
+    },
+    {
+      "id": "input.form",
+      "outcome": "pass",
+      "detail": "a JSON object"
+    },
+    {
+      "id": "json.syntax",
+      "outcome": "pass",
+      "detail": "UTF-8, RFC 8259 JSON, nothing after the value"
+    },
+    {
+      "id": "json.structure",
+      "outcome": "pass",
+      "detail": "exactly the schema's members and JSON types"
+    },
+    {
+      "id": "format.schema",
+      "outcome": "pass",
+      "detail": "every value rule of the schema holds (outside /signature)"
+    },
+    {
+      "id": "format.consistency",
+      "outcome": "pass",
+      "detail": "three components in order; sizes, parameter_count and model_hash agree"
+    },
+    {
+      "id": "signature.algorithm",
+      "outcome": "pass",
+      "detail": "ES256"
+    },
+    {
+      "id": "signature.encoding",
+      "outcome": "pass",
+      "detail": "base64url: + the canonical base64url of a 64-byte r || s"
+    },
+    {
+      "id": "signature.low_s",
+      "outcome": "pass",
+      "detail": "s <= n/2"
+    },
+    {
+      "id": "signature.payload_hash",
+      "outcome": "pass",
+      "detail": "sha256:2eca0dd33554f5113d03ef96bc01deb56fafd8484bbf95f04bd308ee6c075967 is the hash of the canonical signed payload"
+    },
+    {
+      "id": "key.binding",
+      "outcome": "pass",
+      "detail": "issuer.key_id is the thumbprint of issuer.public_key and the signing key id"
+    },
+    {
+      "id": "trust.key_known",
+      "outcome": "pass",
+      "detail": "the trust store trusts key \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8…\" for issuer \"did:web:factory-operator.ph\""
+    },
+    {
+      "id": "signature.valid",
+      "outcome": "pass",
+      "detail": "ES256 over the Sig_structure verifies under the trust store's key (a COSE envelope is also checked as received)"
+    },
+    {
+      "id": "trust.issuer",
+      "outcome": "pass",
+      "detail": "the key speaks for \"did:web:factory-operator.ph\""
+    },
+    {
+      "id": "trust.key_not_revoked",
+      "outcome": "pass",
+      "detail": "not revoked"
+    },
+    {
+      "id": "trust.key_validity",
+      "outcome": "pass",
+      "detail": "2026-01-01T00:00:00Z <= 2026-09-10T00:00:00Z < 2027-01-01T00:00:00Z"
+    },
+    {
+      "id": "trust.attestation",
+      "outcome": "pass",
+      "detail": "declares software; the trust store grants software"
+    },
+    {
+      "id": "time.not_future",
+      "outcome": "pass",
+      "detail": "issued_at 2026-09-10T00:00:00Z <= evaluation time 2026-09-11T00:00:00Z"
+    },
+    {
+      "id": "time.policy_not_after_issued",
+      "outcome": "pass",
+      "detail": "policy evaluated_at 2026-09-10T00:00:00Z <= issued_at 2026-09-10T00:00:00Z"
+    },
+    {
+      "id": "lineage.consistency",
+      "outcome": "pass",
+      "detail": "initial: no predecessor, chain length 1, its own root"
+    },
+    {
+      "id": "lineage.chain",
+      "outcome": "pass",
+      "detail": "an initial record: the chain is this record"
+    }
+  ],
+  "lineage": {
+    "lineage_type": "initial",
+    "declared_chain_length": 1,
+    "status": "initial",
+    "verified_links": []
+  },
+  "policy": {
+    "declared": {
+      "policy_pack_id": "example-policy-pack-v1",
+      "evaluated_at": "2026-09-10T00:00:00Z",
+      "results": [
+        {
+          "rule_id": "example-data-residency",
+          "status": "pass",
+          "evidence_hash": "sha256:5108deb71ee1d00d8e14ad48f2ddee3dca264528a5ae802ac5a682ee11ecc0d7"
+        },
+        {
+          "rule_id": "example-source-screening",
+          "status": "pass",
+          "evidence_hash": "sha256:fce153950ced26bb8fb13e9b6c8212fc720fedf231615f9a5c3ce2e2cde90451"
+        },
+        {
+          "rule_id": "example-export-control",
+          "status": "pass",
+          "evidence_hash": "sha256:13f80b3e0251ce805c391300144bd1cb71d919b40f505a82c2e0bb7e602988af"
+        },
+        {
+          "rule_id": "example-audit-trail",
+          "status": "pass",
+          "evidence_hash": "sha256:2d493f25558c40ad587a79b276fa7cd7804aba795e2db16f13e979cb3cf3b1eb"
+        }
+      ],
+      "overall_status": "compliant"
+    },
+    "evaluation": {
+      "state": "not_requested"
+    }
+  }
+}

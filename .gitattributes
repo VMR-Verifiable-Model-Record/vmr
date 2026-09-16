@@ -1,0 +1,31 @@
+# Line endings, pinned (the release QA's QR-01).
+#
+# The conformance suite hashes the files below as BYTES: specs/conformance/
+# suite.json carries a SHA-256 of every vector file a case reads, and the
+# runner hashes itself into its report. A clone with Git's Windows default
+# (core.autocrlf=true) that converted them would fail the very test this
+# repository publishes as the definition of conformance, and the golden
+# verification reports, which are compared byte for byte, with it. These
+# lines keep them LF on every checkout, whatever core.autocrlf says.
+#
+# Do not remove them, and do not convert these files. After a fresh clone on
+# any operating system, `git diff` is empty.
+
+specs/test-vectors/** text eol=lf
+specs/conformance/** text eol=lf
+vmr/crates/vmr-verify/tests/golden/** text eol=lf
+
+# The demo's inputs are hashed into every demo record, byte for byte: the
+# training stream is binary, the manifest and the pinned documents LF.
+docs/demo/*.khalmtrn binary
+docs/demo/*.json text eol=lf
+docs/demo/*.md text eol=lf
+
+# The committed CLI test data is reproduced byte for byte: the COSE records
+# are binary, the trust stores and records LF.
+vmr/crates/vmr-cli/tests/data/**/*.vmr binary
+vmr/crates/vmr-cli/tests/data/**/*.json text eol=lf
+
+# The worked examples are re-emitted byte for byte from their model.
+docs/examples/**/*.vmr binary
+docs/examples/**/*.json text eol=lf

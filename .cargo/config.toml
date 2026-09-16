@@ -1,0 +1,15 @@
+# Cargo configuration for the vmr/ workspace. Cargo reads it whenever it runs
+# inside this repository (it looks in the current directory and each parent),
+# so both documented ways pick it up: `cargo ... --manifest-path vmr\Cargo.toml`
+# from the repository root, and plain `cargo ...` in vmr\. A cargo run from a
+# directory outside the repository does not: build from inside it.
+#
+# Windows (MSVC): link the C runtime statically. Rust links it dynamically by
+# default, so vmr.exe needed VCRUNTIME140.dll - part of the Visual C++
+# Redistributable, which a clean Windows machine does not have - and a verifier
+# binary copied to another machine could fail to start before printing a word.
+# With +crt-static vmr.exe needs Windows' own DLLs only
+# (vmr/crates/vmr-cli/tests/cli_runtime.rs reads its import tables). A RUSTFLAGS
+# environment variable replaces this setting: leave it unset.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

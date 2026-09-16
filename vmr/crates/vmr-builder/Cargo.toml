@@ -1,0 +1,26 @@
+[package]
+name = "vmr-builder"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's engine-free record builder: assemble, check and sign a record of any AI model from its files. No engine, no FFI, no build script."
+
+[lib]
+name = "vmr_builder"
+crate-type = ["rlib"]
+
+# A Community crate (docs/dev/task-10.13a.md, D13a-1): the format crate and
+# crates already locked, nothing that can reach the engine. `cargo tree -p
+# vmr-builder --all-features --target all -e normal,build,dev` must never show
+# vmr-ffi, vmr-provenance, bindgen, clang-sys or cc; no build script and no
+# unsafe code. The engine profile's builder (vmr-provenance) depends on this
+# crate, never the reverse.
+[dependencies]
+vmr-record.workspace = true
+thiserror.workspace = true
+p256.workspace = true
+serde_json.workspace = true
+# Streaming SHA-256 for the walk (files.rs): a model's files are read in
+# pieces, never whole. Already locked (vmr-record's hash).
+sha2.workspace = true

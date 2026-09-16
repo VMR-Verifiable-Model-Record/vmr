@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.1",
+  "issuer": {
+    "issuer_id": "did:web:example.org",
+    "issuer_name": "Example signer: not Microsoft, who did not issue this record",
+    "attestation_level": "self"
+  },
+  "model_format": "safetensors",
+  "model": {
+    "architecture": {
+      "type": "transformer",
+      "topology": "decoder-only (Phi3ForCausalLM, 32 layers, hidden size 3072)",
+      "precision": "bfloat16"
+    },
+    "parameter_count": 3836021760
+  },
+  "training": {
+    "environment": {
+      "hardware_id": "",
+      "tee_measurement": "",
+      "software_hash": "",
+      "training_software": ""
+    },
+    "input_provenance": {
+      "source_type": "",
+      "source_description": "not held by the issuer of this example record"
+    },
+    "input_disclosure": "not-held"
+  },
+  "policy_compliance": {
+    "policy_pack_id": "example-policy-pack-v1",
+    "evaluated_at": "2026-09-14T00:00:00Z",
+    "results": [],
+    "overall_status": "indeterminate"
+  },
+  "lineage": {
+    "lineage_type": "initial"
+  }
+}

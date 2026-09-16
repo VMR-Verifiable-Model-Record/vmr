@@ -1,0 +1,28 @@
+[package]
+name = "vmr-verify"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's Verifiable Model Record verifier: is this record signed by a key this trust store trusts for its issuer? Offline, deterministic, no I/O."
+
+[lib]
+name = "vmr_verify"
+crate-type = ["rlib"]
+
+# The verifier's footprint is part of its claim (docs/dev/phase4.md, D2 and
+# G4-5): it depends on the format crate and serde only - nothing that can
+# open a socket, read a clock or touch a file, and no vmr-ffi / bindgen.
+# `cargo tree -p vmr-verify -e normal,build,dev` must never show either.
+
+[dependencies]
+vmr-record.workspace = true
+p256.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+# Test-only: tests/verify_cose.rs builds malformed envelopes; the vector
+# generator (tests/common/generate.rs) writes COSE inputs as hex.
+coset.workspace = true
+hex.workspace = true

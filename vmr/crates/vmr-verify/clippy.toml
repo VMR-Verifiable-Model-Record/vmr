@@ -1,0 +1,21 @@
+# Law 1 made structural (docs/dev/phase4.md §5.8): no clock, no environment,
+# no unordered collection anywhere in this crate - "never the system clock"
+# and "no unordered iteration" are compile-time rules, not conventions. A test
+# that genuinely needs one (an opt-in generator switch) says why with
+# #[allow(clippy::disallowed_methods)].
+#
+# Per crate rather than vmr/clippy.toml: clippy uses the first clippy.toml
+# found upwards from each crate, and a workspace-wide file would also bind
+# vmr-ffi, whose build script reads its configuration from the environment.
+# vmr-record, vmr-provenance and vmr-verify carry the same file.
+disallowed-methods = [
+    { path = "std::time::SystemTime::now", reason = "Law 1: time is an input (the evaluation time or a caller's timestamp), never a clock read" },
+    { path = "std::time::Instant::now", reason = "Law 1: no clock reads" },
+    { path = "std::env::var", reason = "Law 1: a result depends on its inputs, never on the environment" },
+    { path = "std::env::var_os", reason = "Law 1: a result depends on its inputs, never on the environment" },
+    { path = "std::env::vars", reason = "Law 1: a result depends on its inputs, never on the environment" },
+]
+disallowed-types = [
+    { path = "std::collections::HashMap", reason = "Law 1: no unordered iteration; use BTreeMap" },
+    { path = "std::collections::HashSet", reason = "Law 1: no unordered iteration; use BTreeSet" },
+]

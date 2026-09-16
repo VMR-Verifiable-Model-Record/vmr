@@ -1,0 +1,862 @@
+{
+  "cases": [
+    {
+      "description": "ok-attestation-level's pack with an authority signature: a loader does not check a signature (§4).",
+      "expected": {
+        "pack_payload_hash": "sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3",
+        "result": "ok"
+      },
+      "id": "ok-signed",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:e1XLuTRPUHRJWq4rFAZboUnPXRDcrwa_ig-3beyYMcBuoIWzqWFNv3kkLVpFKkdfBuDZf3wkfR4kE1KViW4ewg\",\"signed_payload_hash\":\"sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:gs6uavA3GXnqxOYNw7bUgmfhhG_sRfgJ6989zU5kXpU\"},\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack, pretty-printed: the same payload hash as its JCS form (§4).",
+      "expected": {
+        "pack_payload_hash": "sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3",
+        "result": "ok"
+      },
+      "id": "ok-pretty-printed",
+      "pack": {
+        "text": "{\n  \"authority\": {\n    \"authority_id\": \"khalm-policy-vectors\",\n    \"authority_name\": \"KHALM policy vectors\"\n  },\n  \"description\": \"A pack of a KHALM pack-loader vector.\",\n  \"disclaimer\": \"A test vector, not legal advice.\",\n  \"jurisdiction\": \"test\",\n  \"pack_id\": \"policy-loader-vector\",\n  \"pack_version\": \"1.0.0\",\n  \"rules\": [\n    {\n      \"description\": \"A attestation_level rule of a KHALM policy vector.\",\n      \"minimum_level\": \"software\",\n      \"reference\": \"KHALM policy vectors (a test fixture, not a clause of any standard)\",\n      \"rule_id\": \"vector-attestation-level\",\n      \"severity\": \"mandatory\",\n      \"type\": \"attestation_level\"\n    }\n  ],\n  \"version\": \"0.1\"\n}"
+      }
+    },
+    {
+      "description": "minimum_chain_length 9007199254740991 (2^53 - 1), the largest allowed (§2).",
+      "expected": {
+        "pack_payload_hash": "sha256:f0105ffb325ec7d785d6745c778dd400a34f27cd44b39b4cb6d7d8cd63302233",
+        "result": "ok"
+      },
+      "id": "ok-chain-length-2-53-minus-1",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":9007199254740991,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack followed by spaces to exactly 1 048 576 bytes, the reference loader's bound.",
+      "expected": {
+        "pack_payload_hash": "sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3",
+        "result": "ok"
+      },
+      "id": "ok-size-at-the-bound",
+      "pack": {
+        "append_spaces": 1048012,
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack followed by spaces to 1 048 577 bytes.",
+      "expected": {
+        "refusal": "policy_pack.size",
+        "result": "error"
+      },
+      "id": "error-size",
+      "pack": {
+        "append_spaces": 1048013,
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "Not JSON: an object that is never closed.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-not-json",
+      "pack": {
+        "text": "{"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack followed by a second value.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-data-after-the-value",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"} []"
+      }
+    },
+    {
+      "description": "A member the format does not define.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-unknown-member",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"surprise\":true,\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A rule member the format does not define.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-unknown-member-in-a-rule",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"surprise\":true,\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "No disclaimer.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-missing-member",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "signature: null (an optional member is omitted, never null).",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-null-member",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":null,\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "require_tamper_evident written as the string \"true\".",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-wrong-type",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":\"true\",\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A rule of type thermal_limits, which is not one of the six.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-unknown-rule-type",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"thermal_limits\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "require_tee, an execution_integrity parameter, on an attestation_level rule.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-parameter-of-another-type",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tee\":true,\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written as the string \"5\": the wrong JSON type, not an integer's spelling.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-chain-length-string",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":\"5\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A description holding the escape \\ud800, which denotes no Unicode scalar value.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-lone-surrogate",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"An unpaired surrogate: \\ud800.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A member the format lacks holding 126 nested arrays: 127 levels, within the bound, so the text is read and refused for its member.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-nesting-127-levels",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"surprise\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "version written twice, with one value.",
+      "expected": {
+        "refusal": "policy_pack.duplicate_member",
+        "result": "error"
+      },
+      "id": "error-duplicate-member",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\",\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "rule_id written twice in the rule, with one value.",
+      "expected": {
+        "refusal": "policy_pack.duplicate_member",
+        "result": "error"
+      },
+      "id": "error-duplicate-member-in-a-rule",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "pack_id written twice, once as pack_\\u0069d: one name once its escape is decoded.",
+      "expected": {
+        "refusal": "policy_pack.duplicate_member",
+        "result": "error"
+      },
+      "id": "error-duplicate-member-escaped",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_\\u0069d\":\"policy-loader-vector\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written 1.0.",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-fraction",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1.0,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written 1e0.",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-exponent",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1e0,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written -0.",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-negative-zero",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":-0,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length -1.",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-negative",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":-1,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length 9007199254740992 (2^53).",
+      "expected": {
+        "refusal": "policy_pack.integer_range",
+        "result": "error"
+      },
+      "id": "error-integer-range-2-53",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":9007199254740992,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length 18446744073709551616 (2^64), written as a plain integer.",
+      "expected": {
+        "refusal": "policy_pack.integer_range",
+        "result": "error"
+      },
+      "id": "error-integer-range-2-64",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":18446744073709551616,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "version 0.2.",
+      "expected": {
+        "refusal": "policy_pack.version",
+        "result": "error"
+      },
+      "id": "error-version",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.2\"}"
+      }
+    },
+    {
+      "description": "pack_version 1.0, which is not N.N.N.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-pack-version",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An empty description.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-empty-string",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "severity critical, outside its enum.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-severity",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"critical\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_level quantum, outside its enum.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-minimum-level",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"quantum\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A source_screening rule with an empty restricted_list.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-empty-list",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A source_screening rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"restricted_list\":[],\"rule_id\":\"vector-source-screening\",\"severity\":\"mandatory\",\"type\":\"source_screening\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-signed's signature section with algorithm ES384.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-signature-algorithm",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES384\",\"signature\":\"base64url:e1XLuTRPUHRJWq4rFAZboUnPXRDcrwa_ig-3beyYMcBuoIWzqWFNv3kkLVpFKkdfBuDZf3wkfR4kE1KViW4ewg\",\"signed_payload_hash\":\"sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:gs6uavA3GXnqxOYNw7bUgmfhhG_sRfgJ6989zU5kXpU\"},\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-signed's signature section with a signature too short to be 64 bytes.",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-signature-encoding",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:AAAA\",\"signed_payload_hash\":\"sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:gs6uavA3GXnqxOYNw7bUgmfhhG_sRfgJ6989zU5kXpU\"},\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "allowed_jurisdictions [\"ph\"].",
+      "expected": {
+        "refusal": "policy_pack.jurisdiction",
+        "result": "error"
+      },
+      "id": "error-jurisdiction-lower-case",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"allowed_jurisdictions\":[\"ph\"],\"description\":\"A data_residency rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-data-residency\",\"severity\":\"mandatory\",\"type\":\"data_residency\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "allowed_jurisdictions [\"PH\", \"PHL\"].",
+      "expected": {
+        "refusal": "policy_pack.jurisdiction",
+        "result": "error"
+      },
+      "id": "error-jurisdiction-three-letters",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"allowed_jurisdictions\":[\"PH\",\"PHL\"],\"description\":\"A data_residency rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-data-residency\",\"severity\":\"mandatory\",\"type\":\"data_residency\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "rules [].",
+      "expected": {
+        "refusal": "policy_pack.empty_rules",
+        "result": "error"
+      },
+      "id": "error-empty-rules",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "Two attestation_level rules with one rule_id.",
+      "expected": {
+        "refusal": "policy_pack.duplicate_rule_id",
+        "result": "error"
+      },
+      "id": "error-duplicate-rule-id",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"},{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"hardware\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An export_control rule that requires neither an air gap nor denied egress.",
+      "expected": {
+        "refusal": "policy_pack.no_requirement",
+        "result": "error"
+      },
+      "id": "error-no-requirement-export-control",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A export_control rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-export-control\",\"severity\":\"mandatory\",\"type\":\"export_control\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An audit_integrity rule whose only setting is require_verified_lineage, which never fails.",
+      "expected": {
+        "refusal": "policy_pack.no_requirement",
+        "result": "error"
+      },
+      "id": "error-no-requirement-verified-lineage-alone",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_verified_lineage\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_level self, which every record that declares a level meets.",
+      "expected": {
+        "refusal": "policy_pack.no_requirement",
+        "result": "error"
+      },
+      "id": "error-no-requirement-minimum-level-self",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"self\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A member the format lacks holding 127 nested arrays: 128 levels. Refused for its depth, which §3 decides before any member; such a text also breaks refusal 2, as every text nested that deep must.",
+      "expected": {
+        "refusal": "policy_pack.nesting",
+        "result": "error"
+      },
+      "id": "error-nesting-128-levels",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"surprise\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One data_residency rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:e4e67a2c2c61fc09b926b2e5a89e1daa2a93f31f830e8013aefed387bf6024bc",
+        "result": "ok"
+      },
+      "id": "ok-data-residency",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"allowed_jurisdictions\":[\"PH\",\"SG\"],\"description\":\"A data_residency rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-data-residency\",\"severity\":\"mandatory\",\"type\":\"data_residency\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One source_screening rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:2c9c6f6e3c679d4e841829dfec1fa9ad1353a61c9bb31e10ceca5247381b5eae",
+        "result": "ok"
+      },
+      "id": "ok-source-screening",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A source_screening rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"restricted_list\":[\"web_crawl\"],\"rule_id\":\"vector-source-screening\",\"severity\":\"mandatory\",\"type\":\"source_screening\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One export_control rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:7d01c3deb4b11c12ea7fdc1ef7c45908d2580a5b44d7ff0f52b80b9f0eb621c1",
+        "result": "ok"
+      },
+      "id": "ok-export-control",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A export_control rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_air_gapped\":true,\"rule_id\":\"vector-export-control\",\"severity\":\"mandatory\",\"type\":\"export_control\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One audit_integrity rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:404790c70faf7ff9183dc01a63527205a01d4f508327159ca3c01cf7db278e42",
+        "result": "ok"
+      },
+      "id": "ok-audit-integrity",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One execution_integrity rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:a79af5daccd048ac9f4e9171774774e806882e395af2f90ba0fb31c4347a4acf",
+        "result": "ok"
+      },
+      "id": "ok-execution-integrity",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A execution_integrity rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_environment_pinned\":true,\"rule_id\":\"vector-execution-integrity\",\"severity\":\"mandatory\",\"type\":\"execution_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One attestation_level rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3",
+        "result": "ok"
+      },
+      "id": "ok-attestation-level",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "The bytes EF BB BF, a UTF-8 byte order mark, then error-nesting-128-levels's text; given as hex. §3 counts the depth over the bytes before anything else, so the pack is refused for its depth, not for the byte order mark.",
+      "expected": {
+        "refusal": "policy_pack.nesting",
+        "result": "error"
+      },
+      "id": "error-nesting-128-levels-after-a-byte-order-mark",
+      "pack": {
+        "hex": "efbbbf7b22617574686f72697479223a7b22617574686f726974795f6964223a226b68616c6d2d706f6c6963792d766563746f7273222c22617574686f726974795f6e616d65223a224b48414c4d20706f6c69637920766563746f7273227d2c226465736372697074696f6e223a2241207061636b206f662061204b48414c4d207061636b2d6c6f6164657220766563746f722e222c22646973636c61696d6572223a2241207465737420766563746f722c206e6f74206c6567616c206164766963652e222c226a7572697364696374696f6e223a2274657374222c227061636b5f6964223a22706f6c6963792d6c6f616465722d766563746f72222c227061636b5f76657273696f6e223a22312e302e30222c2272756c6573223a5b7b226465736372697074696f6e223a2241206174746573746174696f6e5f6c6576656c2072756c65206f662061204b48414c4d20706f6c69637920766563746f722e222c226d696e696d756d5f6c6576656c223a22736f667477617265222c227265666572656e6365223a224b48414c4d20706f6c69637920766563746f7273202861207465737420666978747572652c206e6f74206120636c61757365206f6620616e79207374616e6461726429222c2272756c655f6964223a22766563746f722d6174746573746174696f6e2d6c6576656c222c227365766572697479223a226d616e6461746f7279222c2274797065223a226174746573746174696f6e5f6c6576656c227d5d2c227375727072697365223a5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d2c2276657273696f6e223a22302e31227d"
+      }
+    },
+    {
+      "description": "error-nesting-128-levels's text with the e of the jurisdiction test replaced by the byte FF, which is not UTF-8, before the nested arrays open; given as hex. Refused for its depth (§3).",
+      "expected": {
+        "refusal": "policy_pack.nesting",
+        "result": "error"
+      },
+      "id": "error-nesting-128-levels-after-a-byte-that-is-not-utf-8",
+      "pack": {
+        "hex": "7b22617574686f72697479223a7b22617574686f726974795f6964223a226b68616c6d2d706f6c6963792d766563746f7273222c22617574686f726974795f6e616d65223a224b48414c4d20706f6c69637920766563746f7273227d2c226465736372697074696f6e223a2241207061636b206f662061204b48414c4d207061636b2d6c6f6164657220766563746f722e222c22646973636c61696d6572223a2241207465737420766563746f722c206e6f74206c6567616c206164766963652e222c226a7572697364696374696f6e223a2274ff7374222c227061636b5f6964223a22706f6c6963792d6c6f616465722d766563746f72222c227061636b5f76657273696f6e223a22312e302e30222c2272756c6573223a5b7b226465736372697074696f6e223a2241206174746573746174696f6e5f6c6576656c2072756c65206f662061204b48414c4d20706f6c69637920766563746f722e222c226d696e696d756d5f6c6576656c223a22736f667477617265222c227265666572656e6365223a224b48414c4d20706f6c69637920766563746f7273202861207465737420666978747572652c206e6f74206120636c61757365206f6620616e79207374616e6461726429222c2272756c655f6964223a22766563746f722d6174746573746174696f6e2d6c6576656c222c227365766572697479223a226d616e6461746f7279222c2274797065223a226174746573746174696f6e5f6c6576656c227d5d2c227375727072697365223a5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d2c2276657273696f6e223a22302e31227d"
+      }
+    },
+    {
+      "description": "error-nesting-128-levels's text with the jurisdiction written tru, a syntax error, before the nested arrays open. Refused for its depth, which §3 counts over the bytes whatever else they break.",
+      "expected": {
+        "refusal": "policy_pack.nesting",
+        "result": "error"
+      },
+      "id": "error-nesting-128-levels-after-a-syntax-error",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":tru,\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"surprise\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "error-nesting-128-levels's text followed by spaces to 1 048 577 bytes: refused for its size, which §3 decides first.",
+      "expected": {
+        "refusal": "policy_pack.size",
+        "result": "error"
+      },
+      "id": "error-size-and-nesting-128-levels",
+      "pack": {
+        "append_spaces": 1047747,
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"surprise\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack whose description is a quotation mark followed by 200 [. Inside a string no bracket counts toward refusal 12, and the escaped quotation mark does not close the string (§3), so the pack loads.",
+      "expected": {
+        "pack_payload_hash": "sha256:92179450465ce5d40211cbe5967d6a1235b3b44af82bbe8df166039184e15721",
+        "result": "ok"
+      },
+      "id": "ok-brackets-inside-a-string",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"\\\"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written 1e400, which no double holds: refused for how it is written (§3 refusal 4).",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-beyond-a-double",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1e400,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written -1e400.",
+      "expected": {
+        "refusal": "policy_pack.integer_spelling",
+        "result": "error"
+      },
+      "id": "error-integer-spelling-negative-beyond-a-double",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":-1e400,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "minimum_chain_length written as a plain integer of 400 digits, a 1 and 399 zeros, which no double holds: refused as above 2^53 - 1 (§3 refusal 5).",
+      "expected": {
+        "refusal": "policy_pack.integer_range",
+        "result": "error"
+      },
+      "id": "error-integer-range-beyond-a-double",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A audit_integrity rule of a KHALM policy vector.\",\"minimum_chain_length\":1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"require_tamper_evident\":true,\"rule_id\":\"vector-audit-integrity\",\"severity\":\"mandatory\",\"type\":\"audit_integrity\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A rule's reference holding the escape \\udc00, a low surrogate with no high surrogate before it, which denotes no Unicode scalar value: refusal 2, as for error-structure-lone-surrogate's description (§3).",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-lone-low-surrogate-in-a-rule",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"A lone low surrogate: \\udc00.\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "One documentation_declared rule.",
+      "expected": {
+        "pack_payload_hash": "sha256:50af944811ab4592f92d7ca55f4d6d1e5d6085ec678927465edb19d2d3b37345",
+        "result": "ok"
+      },
+      "id": "ok-documentation-declared",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A documentation_declared rule of a KHALM policy vector.\",\"document\":\"data_governance\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-documentation-declared\",\"severity\":\"mandatory\",\"type\":\"documentation_declared\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A documentation_declared rule without document, its one required parameter.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-missing-document",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A documentation_declared rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-documentation-declared\",\"severity\":\"mandatory\",\"type\":\"documentation_declared\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "document risk_management, outside its enum (data_governance, human_oversight).",
+      "expected": {
+        "refusal": "policy_pack.value",
+        "result": "error"
+      },
+      "id": "error-value-document",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A documentation_declared rule of a KHALM policy vector.\",\"document\":\"risk_management\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-documentation-declared\",\"severity\":\"mandatory\",\"type\":\"documentation_declared\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack written as the array of its members' values: [version, pack_id, pack_version, jurisdiction, description, disclaimer, authority, rules].",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-pack-as-array",
+      "pack": {
+        "text": "[\"0.1\",\"policy-loader-vector\",\"1.0.0\",\"test\",\"A pack of a KHALM pack-loader vector.\",\"A test vector, not legal advice.\",{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}]]"
+      }
+    },
+    {
+      "description": "ok-attestation-level's pack with its authority written as [authority_id, authority_name].",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-authority-as-array",
+      "pack": {
+        "text": "{\"authority\":[\"khalm-policy-vectors\",\"KHALM policy vectors\"],\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "ok-signed's pack with its signature section written as [algorithm, signature, signed_payload_hash, signing_key_id].",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-signature-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"minimum_level\":\"software\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":[\"ES256\",\"base64url:e1XLuTRPUHRJWq4rFAZboUnPXRDcrwa_ig-3beyYMcBuoIWzqWFNv3kkLVpFKkdfBuDZf3wkfR4kE1KViW4ewg\",\"sha256:c76f2107097db79b283ebf5e91aaa22ec65bbdcde44df5299582189438eb4ac3\",\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:gs6uavA3GXnqxOYNw7bUgmfhhG_sRfgJ6989zU5kXpU\"],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one data_residency rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-data-residency-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"data_residency\",\"vector-data-residency\",\"A data_residency rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",[\"PH\",\"SG\"]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one source_screening rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-source-screening-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"source_screening\",\"vector-source-screening\",\"A source_screening rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",[\"web_crawl\"]]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one export_control rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-export-control-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"export_control\",\"vector-export-control\",\"A export_control rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",true,false]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one audit_integrity rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-audit-integrity-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"audit_integrity\",\"vector-audit-integrity\",\"A audit_integrity rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",1,true,false,false,false]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one execution_integrity rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-execution-integrity-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"execution_integrity\",\"vector-execution-integrity\",\"A execution_integrity rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",false,true,false,false]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one attestation_level rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-attestation-level-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"attestation_level\",\"vector-attestation-level\",\"A attestation_level rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"software\"]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A pack whose one documentation_declared rule, holding every member of its type, is written as its type followed by its members' values in declaration order.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-documentation-declared-rule-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[[\"documentation_declared\",\"vector-documentation-declared\",\"A documentation_declared rule of a KHALM policy vector.\",\"mandatory\",\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"data_governance\"]],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A data_residency rule without allowed_jurisdictions, its one required parameter.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-missing-allowed-jurisdictions",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A data_residency rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-data-residency\",\"severity\":\"mandatory\",\"type\":\"data_residency\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "A source_screening rule without restricted_list, its one required parameter.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-missing-restricted-list",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A source_screening rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-source-screening\",\"severity\":\"mandatory\",\"type\":\"source_screening\"}],\"version\":\"0.1\"}"
+      }
+    },
+    {
+      "description": "An attestation_level rule without minimum_level, its one required parameter.",
+      "expected": {
+        "refusal": "policy_pack.structure",
+        "result": "error"
+      },
+      "id": "error-structure-missing-minimum-level",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-policy-vectors\",\"authority_name\":\"KHALM policy vectors\"},\"description\":\"A pack of a KHALM pack-loader vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"policy-loader-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"A attestation_level rule of a KHALM policy vector.\",\"reference\":\"KHALM policy vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      }
+    }
+  ],
+  "description": "VMR policy-pack loader vectors v0.1 (policy-pack format v0.1, §3, §4, §9). Each case is a pack, given as text or, where its bytes are not UTF-8 or start with a byte order mark, as their lower-case hex, then append_spaces ASCII spaces if present. A conforming loader loads each ok pack, whose payload hash is expected.pack_payload_hash, and refuses each error pack; a loader that reports refusal identifiers reports expected.refusal, one of the refusals listed here. Generated by the vmr-policy crate's vector generator (VMR_WRITE_VECTORS=1 cargo test -p vmr-policy --test vectors -- --ignored) - never hand-edited.",
+  "refusals": [
+    {
+      "id": "policy_pack.size",
+      "number": 1
+    },
+    {
+      "id": "policy_pack.structure",
+      "number": 2
+    },
+    {
+      "id": "policy_pack.duplicate_member",
+      "number": 3
+    },
+    {
+      "id": "policy_pack.integer_spelling",
+      "number": 4
+    },
+    {
+      "id": "policy_pack.integer_range",
+      "number": 5
+    },
+    {
+      "id": "policy_pack.version",
+      "number": 6
+    },
+    {
+      "id": "policy_pack.value",
+      "number": 7
+    },
+    {
+      "id": "policy_pack.jurisdiction",
+      "number": 8
+    },
+    {
+      "id": "policy_pack.empty_rules",
+      "number": 9
+    },
+    {
+      "id": "policy_pack.duplicate_rule_id",
+      "number": 10
+    },
+    {
+      "id": "policy_pack.no_requirement",
+      "number": 11
+    },
+    {
+      "id": "policy_pack.nesting",
+      "number": 12
+    }
+  ],
+  "vector_version": "0.1"
+}

@@ -1,0 +1,39 @@
+{
+  "version": "0.1",
+  "pack_id": "khalm-reading-c2pa-ai-disclosure-2.2",
+  "pack_version": "1.0.0",
+  "jurisdiction": "c2pa",
+  "description": "The C2PA content-credentials model applied to the model itself: a claim is signed by a credential a relying party can check, the thing claimed about is bound by hash, and the model that produced generated content is identified. Sections are cited by name rather than by number, because C2PA renumbers between revisions. The section titles were read from the table of contents of the 2.2 specification as published at spec.c2pa.org, not from its full text, and the digitalSourceType value trainedAlgorithmicMedia was confirmed in the C2PA 2.2 Implementation Guidance rather than in the specification itself: both must be checked against the specification.",
+  "disclaimer": "A reference implementation of the VMR policy-pack format, not legal advice and not an official instrument. The references are this pack author's reading of the cited specification; the Coalition for Content Provenance and Authenticity has neither authored nor endorsed this pack, and this pack is not a C2PA conformance test.",
+  "authority": {
+    "authority_id": "khalm-reference-packs",
+    "authority_name": "KHALM reference packs"
+  },
+  "rules": [
+    {
+      "type": "attestation_level",
+      "rule_id": "c2pa-claim-signature",
+      "description": "The claim is signed by a credential a relying party can evaluate, not merely by whoever held a key. Checks: the record declares an attestation_level of software or stronger. Does not check: that the issuer attests at that level in fact. The level is the issuer's own claim about itself, and this rule reads only that claim; what the trust store grants the signing key is a different question, which the verifier answers (trust.attestation) before any pack is evaluated. No C2PA credential, certificate chain or conformance program is examined here.",
+      "severity": "mandatory",
+      "reference": "C2PA Technical Specification 2.2, Signing a Claim, and Digital Signatures",
+      "minimum_level": "software"
+    },
+    {
+      "type": "audit_integrity",
+      "rule_id": "c2pa-hard-binding",
+      "description": "What the claim is about is bound to it by hash, the way a C2PA hard binding binds an asset. Checks: the training input is committed by a Merkle root over at least one input, and the root is not that of an empty tree, so a record that declares its training input not held or not disclosed fails; and a record with predecessors names the one before it by hash. Does not check: that the committed input is the content the claim describes; a record carries no c2pa.hash.data assertion of its own.",
+      "severity": "mandatory",
+      "reference": "C2PA Technical Specification 2.2, Hard Bindings (the c2pa.hash.data assertion)",
+      "require_tamper_evident": true,
+      "require_input_committed": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "c2pa-generator-identified",
+      "description": "The model named as the generator of trained-algorithmic media is identified by more than a name. Checks: its learned state and each component carry a parseable hash and a positive size. Does not check: that any bytes hash to a declared value, since an evaluation reads the record and nothing else; or that this model produced any particular content. A record carries no c2pa.actions assertion of its own: the rule identifies the model, it does not tie it to an asset.",
+      "severity": "recommended",
+      "reference": "C2PA Technical Specification 2.2, the c2pa.actions assertion with digitalSourceType trainedAlgorithmicMedia",
+      "require_learned_state_components": true
+    }
+  ]
+}

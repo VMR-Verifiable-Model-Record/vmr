@@ -1,0 +1,17 @@
+{
+  "title": "KHALM-VMR demo: software environment",
+  "statement": "The software the KHALM-VMR demo record names by this file's SHA-256, as learning_provenance.training_environment.software_hash (docs/demo/record-manifest.json). Each value is copied from the repository file its source names. The document names software by version only: it is not a measurement of any build, and it names no compiler, CUDA toolkit or machine. Of the record's other training_environment members, training_software states engine_library's version, hardware_id and tee_measurement are empty (none is claimed), and accelerator_software is illustrative: the demo trains nothing, and engine builds made with different CUDA toolkits emit the same demo record.",
+  "vmr": {
+    "version": "0.1.0",
+    "source": "vmr/Cargo.toml, [workspace.package] version"
+  },
+  "engine_library": {
+    "name": "khalm_tlm",
+    "version": "0.1.0",
+    "source": "CMakeLists.txt, the lines \"project(khalm_tlm\" and \"VERSION 0.1.0\" of its project() call"
+  },
+  "rust": {
+    "minimum_version": "1.85",
+    "source": "vmr/Cargo.toml, [workspace.package] rust-version; the repository pins no Rust toolchain"
+  }
+}

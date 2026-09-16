@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiablemodel.org/schemas/record/v0.1.json",
+  "title": "Verifiable Model Record v0.1",
+  "description": "A signed, portable record of what a model learned, where it learned it, and under which policy. The signature covers the JCS (RFC 8785) canonical form of the record with the `signature` section removed, signed as a COSE_Sign1 Sig_structure (ES256). This schema is normative for structure; the byte-level contract (JCS, signed bytes, raw r||s low-s signature, key ids, Merkle construction, verification) is the record format v0.1.",
+  "type": "object",
+  "required": [
+    "record_version",
+    "record_id",
+    "issued_at",
+    "issuer",
+    "model_identity",
+    "learning_provenance",
+    "policy_compliance",
+    "lineage",
+    "signature"
+  ],
+  "properties": {
+    "record_version": { "type": "string", "const": "0.1" },
+    "record_id": { "type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "issued_at": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+    "issuer": {
+      "type": "object",
+      "required": ["issuer_id", "issuer_name", "public_key", "key_id", "attestation_level"],
+      "properties": {
+        "issuer_id": { "type": "string", "pattern": "^did:[a-z0-9]+:([A-Za-z0-9._:-]|%[0-9A-Fa-f]{2})*([A-Za-z0-9._-]|%[0-9A-Fa-f]{2})$" },
+        "issuer_name": { "type": "string" },
+        "public_key": {
+          "type": "object",
+          "required": ["kty", "crv", "x", "y"],
+          "properties": {
+            "kty": { "type": "string", "const": "EC" },
+            "crv": { "type": "string", "const": "P-256" },
+            "x": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+            "y": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+          },
+          "additionalProperties": false
+        },
+        "key_id": { "type": "string", "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+        "attestation_level": { "type": "string", "enum": ["hardware", "software", "self"] }
+      },
+      "additionalProperties": false
+    },
+    "model_identity": {
+      "type": "object",
+      "required": ["model_hash", "model_format", "architecture", "learned_state_hash", "learned_state_components"],
+      "properties": {
+        "model_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "model_format": { "type": "string" },
+        "parameter_count": { "description": "Optional in the general description (record format v0.1, §7.3), where its absence says that the issuer does not state it; required in the profile snn-compact-v1 (§7.4), checked by format.consistency.", "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "architecture": {
+          "type": "object",
+          "required": ["type", "topology", "precision"],
+          "properties": {
+            "type": { "type": "string" },
+            "topology": { "type": "string" },
+            "precision": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "learned_state_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "learned_state_components": {
+          "description": "One or more components (record format v0.1, §7.3); in the profile snn-compact-v1, exactly afferent_H, recurrent_H and thresholds (§7.4), checked by format.consistency.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "hash", "size_bytes"],
+            "properties": {
+              "name": { "type": "string" },
+              "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "size_bytes": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "derived_from": {
+          "description": "Optional (record format v0.1, §7.5): the models this model was made from, each by its model_hash, ascending by model_hash.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["model_hash", "name", "relation"],
+            "properties": {
+              "model_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "name": { "type": "string" },
+              "relation": { "type": "string", "enum": ["fine-tune", "adapter", "merge", "quantization", "distillation", "other"] }
+            },
+            "additionalProperties": false
+          }
+        },
+        "statement_references": {
+          "description": "Optional (record format v0.1, §7.7): other signed statements about the same model, each by its format and the SHA-256 of its bytes, ascending by digest. A format without '.' is registered (v0.1: oms-v1 and vmr-audit-checkpoint-v1); one with '.' is the issuer's own. A verifier checks their form only, never the statements.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["format", "digest"],
+            "properties": {
+              "format": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)*$" },
+              "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "learning_provenance": {
+      "type": "object",
+      "required": [
+        "training_input_digest",
+        "training_input_merkle_root",
+        "training_input_count",
+        "training_environment",
+        "training_input_provenance"
+      ],
+      "properties": {
+        "training_input_digest": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "training_input_merkle_root": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "training_input_count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "training_epochs": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "training_started_at": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+        "training_ended_at": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+        "training_environment": {
+          "type": "object",
+          "required": ["hardware_id", "tee_measurement", "software_hash", "training_software"],
+          "properties": {
+            "hardware_id": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+            "tee_measurement": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+            "software_hash": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+            "accelerator_software": { "description": "Optional (record format v0.1, §8.5): the accelerator's software and its version as the issuer names it.", "type": "string", "minLength": 1 },
+            "training_software": { "description": "Record format v0.1, §8.5: the training software and its version as the issuer names it, \"\" when not stated.", "type": "string" },
+            "accelerator": { "description": "Optional (record format v0.1, §8.5): the accelerator hardware as the issuer names it.", "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "training_input_provenance": {
+          "type": "object",
+          "required": ["source_type", "source_description"],
+          "properties": {
+            "source_type": { "type": "string" },
+            "source_description": { "type": "string" },
+            "data_residency": { "type": "string", "pattern": "^[A-Z]{2}$" },
+            "collection_period": {
+              "type": "object",
+              "required": ["start", "end"],
+              "properties": {
+                "start": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+                "end": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" }
+              },
+              "additionalProperties": false
+            },
+            "data_residency_countries": {
+              "description": "Optional (record format v0.1, §8.5): two or more codes, ascending, when the data resides in several countries; data_residency is then absent.",
+              "type": "array",
+              "minItems": 2,
+              "items": { "type": "string", "pattern": "^[A-Z]{2}$" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "training_input_format": { "description": "Optional (record format v0.1, §8.2): how the records are defined and ordered, such as named-set-v1.", "type": "string", "minLength": 1 },
+        "training_input_disclosure": { "description": "Optional (record format v0.1, §8.4): the record commits to no training records, which its issuer does not disclose or does not hold.", "type": "string", "enum": ["not-disclosed", "not-held"] }
+      },
+      "additionalProperties": false
+    },
+    "deployment_context": {
+      "description": "Optional (record format v0.1, §2 rule 3, §7.6): stated by the party deploying the model.",
+      "type": "object",
+      "required": ["deployment_id", "deployed_at", "deployed_by", "hardware_id", "tee_measurement", "software_hash", "inference_boundary", "policy_pack_id"],
+      "properties": {
+        "deployment_id": { "type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+        "deployed_at": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+        "deployed_by": { "type": "string", "pattern": "^did:[a-z0-9]+:([A-Za-z0-9._:-]|%[0-9A-Fa-f]{2})*([A-Za-z0-9._-]|%[0-9A-Fa-f]{2})$" },
+        "hardware_id": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "tee_measurement": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "software_hash": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "inference_boundary": {
+          "type": "object",
+          "required": ["type", "egress_allowed", "allowed_egress_destinations"],
+          "properties": {
+            "type": { "type": "string" },
+            "egress_allowed": { "type": "boolean" },
+            "allowed_egress_destinations": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "policy_pack_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "policy_compliance": {
+      "type": "object",
+      "required": ["policy_pack_id", "evaluated_at", "results", "overall_status"],
+      "properties": {
+        "policy_pack_id": { "type": "string" },
+        "evaluated_at": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rule_id", "status", "evidence_hash"],
+            "properties": {
+              "rule_id": { "type": "string" },
+              "status": { "type": "string", "enum": ["pass", "fail"] },
+              "evidence_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "overall_status": { "type": "string", "enum": ["compliant", "non-compliant", "indeterminate"] }
+      },
+      "additionalProperties": false
+    },
+    "lineage": {
+      "type": "object",
+      "required": ["lineage_chain_length", "root_record_id", "lineage_type"],
+      "properties": {
+        "previous_record_id": { "type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+        "previous_record_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "lineage_chain_length": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "root_record_id": { "type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+        "lineage_type": {
+          "type": "string",
+          "enum": ["initial", "training-update", "fine-tune", "quantization", "deployment", "policy-change"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_governance": {
+      "description": "Optional (record format v0.1, §2 rule 3): the SHA-256 of the document the issuer names as its data governance documentation. It shows which document the issuer relied on, not that the document exists, can be obtained or is adequate.",
+      "type": "object",
+      "required": ["documentation_hash"],
+      "properties": {
+        "documentation_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "human_oversight": {
+      "description": "Optional (record format v0.1, §2 rule 3): the SHA-256 of the document the issuer names as its human oversight documentation. It shows which document the issuer relied on, not that the document exists, can be obtained or is adequate.",
+      "type": "object",
+      "required": ["documentation_hash"],
+      "properties": {
+        "documentation_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "signature", "signed_payload_hash", "signing_key_id"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "ES256" },
+        "signature": { "type": "string", "pattern": "^base64url:[A-Za-z0-9_-]{85}[AQgw]$" },
+        "signed_payload_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "signing_key_id": { "type": "string", "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

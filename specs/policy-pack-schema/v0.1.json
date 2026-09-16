@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiablemodel.org/schemas/policy-pack/v0.1.json",
+  "title": "VMR Policy Pack v0.1",
+  "description": "A policy pack is what an authority publishes so that anyone can evaluate a Verifiable Model Record against it and get the same answer. The format is jurisdiction-agnostic: a national regulator, a standards body, an enterprise or an industry consortium authors a pack by writing this JSON. Each of the seven rule types reads a fixed list of record members (policy-pack format v0.1, §6) and answers pass, fail or indeterminate; a missing declaration is indeterminate, never a failure, with one exception: `documentation_declared` fails when the optional documentation member it names is absent, because absence is a record's only signed way to say it pins no such document. Each rule names the clause it encodes in `reference`, and each pack says in `disclaimer` that it is a reference implementation of this format and not legal advice. This schema is normative for structure; `vmr_policy::schema::SCHEMA_RULES` is the same rules as code, and vmr-policy's pack_schema test keeps the two equal in both directions. The rule objects repeat the common members instead of sharing them through `allOf`, because a branch of an `allOf` cannot close an object without rejecting the other branches' members. An integer has one spelling: no `-0`, fraction or exponent, so `1.0` is refused although JSON Schema counts it as an integer. `minimum_chain_length` is at most 2^53 - 1, the largest integer the JCS form a pack is signed over writes exactly.",
+  "type": "object",
+  "required": [
+    "version",
+    "pack_id",
+    "pack_version",
+    "jurisdiction",
+    "description",
+    "disclaimer",
+    "authority",
+    "rules"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "0.1" },
+    "pack_id": { "type": "string", "minLength": 1 },
+    "pack_version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "jurisdiction": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "disclaimer": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "required": ["authority_id", "authority_name"],
+      "properties": {
+        "authority_id": { "type": "string", "minLength": 1 },
+        "authority_name": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/data_residency" },
+          { "$ref": "#/$defs/source_screening" },
+          { "$ref": "#/$defs/export_control" },
+          { "$ref": "#/$defs/audit_integrity" },
+          { "$ref": "#/$defs/execution_integrity" },
+          { "$ref": "#/$defs/attestation_level" },
+          { "$ref": "#/$defs/documentation_declared" }
+        ]
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "signature", "signed_payload_hash", "signing_key_id"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "ES256" },
+        "signature": { "type": "string", "pattern": "^base64url:[A-Za-z0-9_-]{85}[AQgw]$" },
+        "signed_payload_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "signing_key_id": {
+          "type": "string",
+          "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "data_residency": {
+      "type": "object",
+      "required": [
+        "type",
+        "rule_id",
+        "description",
+        "severity",
+        "reference",
+        "allowed_jurisdictions"
+      ],
+      "properties": {
+        "type": { "type": "string", "const": "data_residency" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "allowed_jurisdictions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1, "pattern": "^[A-Z]{2}$" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_screening": {
+      "type": "object",
+      "required": [
+        "type",
+        "rule_id",
+        "description",
+        "severity",
+        "reference",
+        "restricted_list"
+      ],
+      "properties": {
+        "type": { "type": "string", "const": "source_screening" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "restricted_list": {
+          "description": "Source types and country codes, in one list. An entry matches a record's source_type or data_residency only when it is exactly equal, case included: \"cn\" never matches a record's \"CN\".",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "export_control": {
+      "type": "object",
+      "required": ["type", "rule_id", "description", "severity", "reference"],
+      "properties": {
+        "type": { "type": "string", "const": "export_control" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "require_air_gapped": { "type": "boolean" },
+        "require_egress_denied": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "audit_integrity": {
+      "type": "object",
+      "required": ["type", "rule_id", "description", "severity", "reference"],
+      "properties": {
+        "type": { "type": "string", "const": "audit_integrity" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "minimum_chain_length": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "require_tamper_evident": { "type": "boolean" },
+        "require_input_committed": { "type": "boolean" },
+        "require_ordered_record": { "type": "boolean" },
+        "require_verified_lineage": { "type": "boolean" },
+        "withheld": { "type": "string", "enum": ["fail", "indeterminate"] }
+      },
+      "additionalProperties": false
+    },
+    "execution_integrity": {
+      "type": "object",
+      "required": ["type", "rule_id", "description", "severity", "reference"],
+      "properties": {
+        "type": { "type": "string", "const": "execution_integrity" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "require_learned_state_components": { "type": "boolean" },
+        "require_environment_pinned": { "type": "boolean" },
+        "require_tee": { "type": "boolean" },
+        "require_state_kept": { "type": "boolean" },
+        "compare": { "type": "string", "enum": ["model_hash", "learned_state_hash"] }
+      },
+      "additionalProperties": false
+    },
+    "attestation_level": {
+      "type": "object",
+      "required": ["type", "rule_id", "description", "severity", "reference", "minimum_level"],
+      "properties": {
+        "type": { "type": "string", "const": "attestation_level" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "minimum_level": { "type": "string", "enum": ["self", "software", "hardware"] }
+      },
+      "additionalProperties": false
+    },
+    "documentation_declared": {
+      "type": "object",
+      "required": ["type", "rule_id", "description", "severity", "reference", "document"],
+      "properties": {
+        "type": { "type": "string", "const": "documentation_declared" },
+        "rule_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["mandatory", "recommended", "informational"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "document": {
+          "description": "The optional record member that must pin a document by hash (record format v0.1, §2 rule 3). A pass shows which document the issuer relied on, not that it exists or is adequate.",
+          "type": "string",
+          "enum": ["data_governance", "human_oversight"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

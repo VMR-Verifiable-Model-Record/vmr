@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiablemodel.org/schemas/audit-log/v0.1.json",
+  "title": "VMR Audit Log v0.1",
+  "description": "The structure of the documents of the VMR audit-log format v0.1 (specs/audit-log-format-v0.1.md): the audit entry, the checkpoint, and the inclusion and consistency proofs. Validate a document against the definition of its name under $defs. An entry of a profile has its own definition: khalm_enforcer_entry is the khalm-vmr.enforcer profile's (the format's section 5.2), with the detail of each of its kinds. This schema is normative for structure only. What it cannot express is the format document's: a key_id that is the thumbprint of its JWK, calendar-valid timestamps, canonical IP addresses and the refused ones, an audit entry's JCS form, the signature checks, and every check against a log's state. An integer has one spelling: no -0, fraction or exponent.",
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$"
+    },
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "uuid_urn": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{43}$"
+    },
+    "safe_integer": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "u32": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "u64_string": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$" },
+    "refusal_id": { "type": "string", "pattern": "^[a-z_]+[.][a-z_]+$" },
+    "text": { "type": "string", "maxLength": 4096 },
+    "boot_time": {
+      "type": "object",
+      "required": ["seconds", "nanoseconds"],
+      "properties": {
+        "seconds": { "$ref": "#/$defs/safe_integer" },
+        "nanoseconds": { "type": "integer", "minimum": 0, "maximum": 999999999 }
+      },
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "signature", "signed_payload_hash", "signing_key_id"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "ES256" },
+        "signature": { "type": "string", "pattern": "^base64url:[A-Za-z0-9_-]{86}$" },
+        "signed_payload_hash": { "$ref": "#/$defs/hash" },
+        "signing_key_id": { "$ref": "#/$defs/key_id" }
+      },
+      "additionalProperties": false
+    },
+    "destination": {
+      "type": "object",
+      "required": ["protocol", "address", "port"],
+      "properties": {
+        "protocol": { "type": "string", "enum": ["tcp", "udp"] },
+        "address": { "type": "string", "minLength": 2, "maxLength": 39 },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      },
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "required": [
+        "checkpoint_version",
+        "checkpoint_type",
+        "log_id",
+        "tree_size",
+        "root_hash",
+        "issued_at",
+        "signature"
+      ],
+      "properties": {
+        "checkpoint_version": { "type": "string", "const": "0.1" },
+        "checkpoint_type": { "type": "string", "const": "vmr.audit-checkpoint" },
+        "log_id": { "$ref": "#/$defs/key_id" },
+        "tree_size": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "root_hash": { "$ref": "#/$defs/hash" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "signature": { "$ref": "#/$defs/signature" }
+      },
+      "additionalProperties": false
+    },
+    "inclusion_proof": {
+      "type": "object",
+      "required": ["proof_version", "proof_type", "checkpoint", "leaf_index", "entry", "audit_path"],
+      "properties": {
+        "proof_version": { "type": "string", "const": "0.1" },
+        "proof_type": { "type": "string", "const": "vmr.audit-inclusion-proof" },
+        "checkpoint": { "$ref": "#/$defs/checkpoint" },
+        "leaf_index": { "$ref": "#/$defs/safe_integer" },
+        "entry": { "type": "string", "maxLength": 65536 },
+        "audit_path": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/hash" } }
+      },
+      "additionalProperties": false
+    },
+    "consistency_proof": {
+      "type": "object",
+      "required": ["proof_version", "proof_type", "from", "to", "proof"],
+      "properties": {
+        "proof_version": { "type": "string", "const": "0.1" },
+        "proof_type": { "type": "string", "const": "vmr.audit-consistency-proof" },
+        "from": { "$ref": "#/$defs/checkpoint" },
+        "to": { "$ref": "#/$defs/checkpoint" },
+        "proof": { "type": "array", "maxItems": 128, "items": { "$ref": "#/$defs/hash" } }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": ["log_version", "index", "previous_root", "recorded_at", "kind", "detail"],
+      "properties": {
+        "log_version": { "type": "string", "const": "0.1" },
+        "index": { "$ref": "#/$defs/safe_integer" },
+        "previous_root": { "$ref": "#/$defs/hash" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "kind": { "type": "string", "maxLength": 128, "pattern": "^[a-z][a-z0-9_-]*(\\.[a-z][a-z0-9_-]*)+$" },
+        "detail": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "detail_enforcer_started": {
+      "type": "object",
+      "required": [
+        "audit_key_id",
+        "bundle_id",
+        "bundle_payload_hash",
+        "record_id",
+        "model_hash",
+        "mechanism",
+        "object_version",
+        "boot_id"
+      ],
+      "properties": {
+        "audit_key_id": { "$ref": "#/$defs/key_id" },
+        "bundle_id": { "$ref": "#/$defs/uuid_urn" },
+        "bundle_payload_hash": { "$ref": "#/$defs/hash" },
+        "record_id": { "$ref": "#/$defs/uuid_urn" },
+        "model_hash": { "$ref": "#/$defs/hash" },
+        "mechanism": { "type": "string", "pattern": "^[a-z0-9-]{1,64}$" },
+        "object_version": { "$ref": "#/$defs/u32" },
+        "boot_id": { "type": "string", "pattern": "^[0-9a-f-]{1,64}$" }
+      },
+      "additionalProperties": false
+    },
+    "detail_refused": {
+      "type": "object",
+      "required": ["refusal", "detail"],
+      "properties": {
+        "refusal": { "$ref": "#/$defs/refusal_id" },
+        "detail": { "$ref": "#/$defs/text" }
+      },
+      "additionalProperties": false
+    },
+    "detail_empty": { "type": "object", "additionalProperties": false },
+    "detail_bundle_loaded": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_payload_hash", "signing_key_id"],
+      "properties": {
+        "bundle_id": { "$ref": "#/$defs/uuid_urn" },
+        "bundle_payload_hash": { "$ref": "#/$defs/hash" },
+        "signing_key_id": { "$ref": "#/$defs/key_id" }
+      },
+      "additionalProperties": false
+    },
+    "detail_key_operation": {
+      "type": "object",
+      "required": ["operation", "result"],
+      "properties": {
+        "operation": { "type": "string", "enum": ["load_audit_key", "load_policy_key"] },
+        "result": { "type": "string", "enum": ["ok", "failed"] },
+        "key_id": { "$ref": "#/$defs/key_id" },
+        "detail": { "$ref": "#/$defs/text" }
+      },
+      "additionalProperties": false
+    },
+    "detail_egress_denied": {
+      "type": "object",
+      "required": ["hook", "family", "protocol", "boot_time", "cgroup_id", "tgid", "uid"],
+      "properties": {
+        "hook": { "type": "string", "enum": ["socket_connect", "socket_sendmsg"] },
+        "family": { "$ref": "#/$defs/u32" },
+        "protocol": { "$ref": "#/$defs/u32" },
+        "address": { "type": "string", "minLength": 2, "maxLength": 39 },
+        "port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "boot_time": { "$ref": "#/$defs/boot_time" },
+        "cgroup_id": { "$ref": "#/$defs/u64_string" },
+        "tgid": { "$ref": "#/$defs/u32" },
+        "uid": { "$ref": "#/$defs/u32" }
+      },
+      "dependentRequired": { "address": ["port"], "port": ["address"] },
+      "additionalProperties": false
+    },
+    "detail_egress_allowed": {
+      "type": "object",
+      "required": ["hook", "destination", "grant", "boot_time", "cgroup_id", "tgid", "uid"],
+      "properties": {
+        "hook": { "type": "string", "enum": ["socket_connect", "socket_sendmsg"] },
+        "destination": { "$ref": "#/$defs/destination" },
+        "grant": { "$ref": "#/$defs/u32" },
+        "boot_time": { "$ref": "#/$defs/boot_time" },
+        "cgroup_id": { "$ref": "#/$defs/u64_string" },
+        "tgid": { "$ref": "#/$defs/u32" },
+        "uid": { "$ref": "#/$defs/u32" }
+      },
+      "additionalProperties": false
+    },
+    "detail_socket_create_denied": {
+      "type": "object",
+      "required": ["family", "protocol", "boot_time", "cgroup_id", "tgid", "uid"],
+      "properties": {
+        "family": { "$ref": "#/$defs/u32" },
+        "protocol": { "$ref": "#/$defs/u32" },
+        "boot_time": { "$ref": "#/$defs/boot_time" },
+        "cgroup_id": { "$ref": "#/$defs/u64_string" },
+        "tgid": { "$ref": "#/$defs/u32" },
+        "uid": { "$ref": "#/$defs/u32" }
+      },
+      "additionalProperties": false
+    },
+    "detail_socket_listen_denied": {
+      "type": "object",
+      "required": ["family", "boot_time", "cgroup_id", "tgid", "uid"],
+      "properties": {
+        "family": { "$ref": "#/$defs/u32" },
+        "boot_time": { "$ref": "#/$defs/boot_time" },
+        "cgroup_id": { "$ref": "#/$defs/u64_string" },
+        "tgid": { "$ref": "#/$defs/u32" },
+        "uid": { "$ref": "#/$defs/u32" }
+      },
+      "additionalProperties": false
+    },
+    "detail_file_open_denied": {
+      "type": "object",
+      "required": ["device", "inode", "boot_time", "cgroup_id", "tgid", "uid"],
+      "properties": {
+        "device": { "$ref": "#/$defs/u64_string" },
+        "inode": { "$ref": "#/$defs/u64_string" },
+        "boot_time": { "$ref": "#/$defs/boot_time" },
+        "cgroup_id": { "$ref": "#/$defs/u64_string" },
+        "tgid": { "$ref": "#/$defs/u32" },
+        "uid": { "$ref": "#/$defs/u32" }
+      },
+      "additionalProperties": false
+    },
+    "detail_export_granted": {
+      "type": "object",
+      "required": [
+        "token_id",
+        "token_payload_hash",
+        "signing_key_id",
+        "destination",
+        "not_before",
+        "not_after",
+        "deadline",
+        "grant"
+      ],
+      "properties": {
+        "token_id": { "$ref": "#/$defs/uuid_urn" },
+        "token_payload_hash": { "$ref": "#/$defs/hash" },
+        "signing_key_id": { "$ref": "#/$defs/key_id" },
+        "destination": { "$ref": "#/$defs/destination" },
+        "not_before": { "$ref": "#/$defs/timestamp" },
+        "not_after": { "$ref": "#/$defs/timestamp" },
+        "deadline": { "$ref": "#/$defs/boot_time" },
+        "grant": { "$ref": "#/$defs/u32" }
+      },
+      "additionalProperties": false
+    },
+    "detail_export_refused": {
+      "type": "object",
+      "required": ["refusal", "detail"],
+      "properties": {
+        "refusal": { "$ref": "#/$defs/refusal_id" },
+        "detail": { "$ref": "#/$defs/text" },
+        "token_id": { "$ref": "#/$defs/uuid_urn" },
+        "signing_key_id": { "$ref": "#/$defs/key_id" },
+        "destination": { "$ref": "#/$defs/destination" }
+      },
+      "additionalProperties": false
+    },
+    "detail_export_install_failed": {
+      "type": "object",
+      "required": ["token_id", "grant", "detail"],
+      "properties": {
+        "token_id": { "$ref": "#/$defs/uuid_urn" },
+        "grant": { "$ref": "#/$defs/u32" },
+        "detail": { "$ref": "#/$defs/text" }
+      },
+      "additionalProperties": false
+    },
+    "detail_events_dropped": {
+      "type": "object",
+      "required": ["count"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      },
+      "additionalProperties": false
+    },
+    "detail_events_malformed": {
+      "type": "object",
+      "required": ["length", "refusal"],
+      "properties": {
+        "length": { "$ref": "#/$defs/safe_integer" },
+        "refusal": { "$ref": "#/$defs/refusal_id" }
+      },
+      "additionalProperties": false
+    },
+    "detail_log_recovered": {
+      "type": "object",
+      "required": ["offset", "length", "sha256"],
+      "properties": {
+        "offset": { "$ref": "#/$defs/safe_integer" },
+        "length": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "sha256": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "khalm_enforcer_entry": {
+      "type": "object",
+      "required": ["log_version", "index", "previous_root", "recorded_at", "kind", "detail"],
+      "properties": {
+        "log_version": { "type": "string", "const": "0.1" },
+        "index": { "$ref": "#/$defs/safe_integer" },
+        "previous_root": { "$ref": "#/$defs/hash" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "enforcer.started",
+            "enforcer.refused",
+            "enforcer.stopped",
+            "bundle.loaded",
+            "bundle.refused",
+            "key.operation",
+            "egress.denied",
+            "egress.allowed",
+            "socket.create_denied",
+            "socket.listen_denied",
+            "file.open_denied",
+            "export.granted",
+            "export.refused",
+            "export.install_failed",
+            "events.dropped",
+            "events.malformed",
+            "log.recovered"
+          ]
+        },
+        "detail": { "type": "object" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "enforcer.started" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_enforcer_started" } } } },
+        { "if": { "properties": { "kind": { "const": "enforcer.refused" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_refused" } } } },
+        { "if": { "properties": { "kind": { "const": "enforcer.stopped" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_empty" } } } },
+        { "if": { "properties": { "kind": { "const": "bundle.loaded" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_bundle_loaded" } } } },
+        { "if": { "properties": { "kind": { "const": "bundle.refused" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_refused" } } } },
+        { "if": { "properties": { "kind": { "const": "key.operation" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_key_operation" } } } },
+        { "if": { "properties": { "kind": { "const": "egress.denied" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_egress_denied" } } } },
+        { "if": { "properties": { "kind": { "const": "egress.allowed" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_egress_allowed" } } } },
+        { "if": { "properties": { "kind": { "const": "socket.create_denied" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_socket_create_denied" } } } },
+        { "if": { "properties": { "kind": { "const": "socket.listen_denied" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_socket_listen_denied" } } } },
+        { "if": { "properties": { "kind": { "const": "file.open_denied" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_file_open_denied" } } } },
+        { "if": { "properties": { "kind": { "const": "export.granted" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_export_granted" } } } },
+        { "if": { "properties": { "kind": { "const": "export.refused" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_export_refused" } } } },
+        { "if": { "properties": { "kind": { "const": "export.install_failed" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_export_install_failed" } } } },
+        { "if": { "properties": { "kind": { "const": "events.dropped" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_events_dropped" } } } },
+        { "if": { "properties": { "kind": { "const": "events.malformed" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_events_malformed" } } } },
+        { "if": { "properties": { "kind": { "const": "log.recovered" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_log_recovered" } } } }
+      ]
+    }
+  }
+}

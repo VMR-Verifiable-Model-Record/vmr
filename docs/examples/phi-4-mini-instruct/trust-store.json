@@ -1,0 +1,23 @@
+{
+  "trust_store_version": "0.1",
+  "issuers": [
+    {
+      "issuer_id": "did:web:example.org",
+      "issuer_name": "Example signer: not Microsoft, who did not issue this record",
+      "keys": [
+        {
+          "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:3MaCB0o1rF1HjKpxz6gtwJ66qy3CBwqfox5Tds8y7PE",
+          "public_key": {
+            "kty": "EC",
+            "crv": "P-256",
+            "x": "Yh-5IhaWgn18rG8rymqLOKKDwwy5O7Mbcn6TlM9Kw1Q",
+            "y": "cxizxA1ydaU8woyQOU42OJ2XD2QlT-FvIrKUie9LJPs"
+          },
+          "attestation_level": "self",
+          "valid_from": "2026-09-01T00:00:00Z",
+          "revoked": false
+        }
+      ]
+    }
+  ]
+}

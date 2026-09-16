@@ -1,0 +1,18 @@
+# Law 1 made structural, as in vmr-verify, vmr-policy and vmr-cli: no clock
+# read, no environment read and no unordered collection anywhere in this
+# crate. A time is always an input, so the same inputs give byte-identical
+# documents (every one is JCS), which the test vectors depend on.
+#
+# Per crate, not workspace-wide: a workspace file would also bind a crate
+# whose build script reads its configuration from the environment.
+disallowed-methods = [
+    { path = "std::time::SystemTime::now", reason = "Law 1: this crate reads no clock; a time is an input" },
+    { path = "std::time::Instant::now", reason = "Law 1: no clock reads" },
+    { path = "std::env::var", reason = "Law 1: a result depends on its inputs, never on the environment" },
+    { path = "std::env::var_os", reason = "Law 1: a result depends on its inputs, never on the environment" },
+    { path = "std::env::vars", reason = "Law 1: a result depends on its inputs, never on the environment" },
+]
+disallowed-types = [
+    { path = "std::collections::HashMap", reason = "Law 1: no unordered iteration; use BTreeMap" },
+    { path = "std::collections::HashSet", reason = "Law 1: no unordered iteration; use BTreeSet" },
+]

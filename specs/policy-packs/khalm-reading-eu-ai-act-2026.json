@@ -1,0 +1,66 @@
+{
+  "version": "0.1",
+  "pack_id": "khalm-reading-eu-ai-act-2026",
+  "pack_version": "1.0.0",
+  "jurisdiction": "eu",
+  "description": "Regulation (EU) 2024/1689 (the AI Act) as published in the Official Journal, in the part a v0.1 Verifiable Model Record can answer. As published, Art. 113 applies the high-risk obligations from 2 August 2026, and those tied to Art. 6(1) from 2 August 2027. Regulation (EU) 2026/1744 (the Digital Omnibus on AI, in force from 27 July 2026) amends those dates: this pack's author found it on EUR-Lex, giving 2 December 2027 for Annex III systems and 2 August 2028 for Annex I systems. On 14 September 2026 the citations here were checked against the Official Journal texts of Regulation (EU) 2024/1689 and of its amendment Regulation (EU) 2026/1744, and they refer to Regulation (EU) 2024/1689 as amended; the check was a reading comparison, not legal advice. Art. 10 (data and data governance) and Art. 14 (human oversight) are encoded only as recommended rules that check that a record pins its issuer's documentation for each by hash: a pinned document shows which document the issuer relied on, not that the article is met, and no rule here reads what a document says.",
+  "disclaimer": "A reference implementation of the VMR policy-pack format, not legal advice and not an official instrument. The clause references are this pack author's reading of the cited text; the European Union, the European AI Office and the national market surveillance authorities have neither authored nor endorsed this pack. Compliance with the AI Act is broader than any document can check.",
+  "authority": {
+    "authority_id": "khalm-reference-packs",
+    "authority_name": "KHALM reference packs"
+  },
+  "rules": [
+    {
+      "type": "audit_integrity",
+      "rule_id": "eu-ai-act-record-keeping",
+      "description": "The record belongs to a lineage of records that is kept, ordered and traced to its origin. Checks: the lineage is at least one record long; the training input is committed by a Merkle root, and a record that declares its training input not held or not disclosed fails; a record with predecessors names the one before it by hash; training does not end before it starts or after the record was issued, and the collection period does not end before it starts; and the lineage was verified back to the initial record, so a successor evaluated without its predecessors is indeterminate. Does not check: the events of the system in operation. Art. 12 asks for the automatic recording of events over the system's lifetime; reading a lineage of records, which notes each change to the model (12(2)(a): substantial modifications), as part of that record-keeping is this pack's reading, and it is narrower than the logs Art. 12 requires.",
+      "severity": "mandatory",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 12(1) and 12(2)(a)",
+      "minimum_chain_length": 1,
+      "require_tamper_evident": true,
+      "require_ordered_record": true,
+      "require_verified_lineage": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "eu-ai-act-accuracy-robustness",
+      "description": "What was learned is pinned, so the system deployed can be shown to be the system whose accuracy and robustness were assessed. Checks: the learned state and each of its components carry a parseable hash and a positive size; and a deployment or policy-change record keeps the model of its verified immediate predecessor, the same model_hash, so one evaluated without that predecessor is indeterminate. Does not check: accuracy or robustness themselves, which Art. 15(1) requires at an appropriate level. The rule identifies the system; it does not measure it.",
+      "severity": "mandatory",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 15(1)",
+      "require_learned_state_components": true,
+      "require_state_kept": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "eu-ai-act-technical-documentation",
+      "description": "The development environment is identified in the technical documentation. Checks: the training software and the software hash of the environment the learning ran in are declared and not empty, and the software hash parses as a hash; an empty value, which is how a record says there is none, fails. Does not check: that the hash is the hash of the software actually used, or the rest of what Annex IV point 1(c) asks for. Annex IV point 1(c) asks for the versions of relevant software; pinning the software stack by hash as well is this pack's reading.",
+      "severity": "mandatory",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 11(1) and Annex IV(1)(c)",
+      "require_environment_pinned": true
+    },
+    {
+      "type": "attestation_level",
+      "rule_id": "eu-ai-act-cybersecurity-attestation",
+      "description": "The issuer attests at software level or stronger, so the record resists alteration by a party that is not the provider. Art. 15(5) requires resilience against unauthorised third parties who try to alter a system's use, outputs or performance; choosing attestation as the means is this pack's reading, which is why the rule is recommended rather than mandatory. Checks: the record declares an attestation_level of software or stronger. Does not check: the resilience Art. 15(5) asks for, or the technical solutions it asks to be built in. The level is the issuer's own claim about itself, and what the trust store grants the signing key is the verifier's trust.attestation check, before any pack is evaluated.",
+      "severity": "recommended",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 15(5)",
+      "minimum_level": "software"
+    },
+    {
+      "type": "documentation_declared",
+      "rule_id": "eu-ai-act-data-governance",
+      "description": "The record pins, by SHA-256, the document its issuer names as its data governance documentation. Checks: the record carries data_governance, and its documentation_hash is a hash; a record without the member declares that it pins no such document, and fails. Does not check: that the document exists, can be obtained or says anything, or that the data governance and management practices of Art. 10(2), or the qualities Art. 10(3) and 10(4) ask of the data sets, are in place or adequate. A pinned document shows which document the issuer relied on, not that it complies. Annex IV(2)(d) puts datasheets of the training data into the technical documentation; reading the pinned document as that part of it is this pack's reading, which is why the rule is recommended rather than mandatory.",
+      "severity": "recommended",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 10(2) and Annex IV(2)(d)",
+      "document": "data_governance"
+    },
+    {
+      "type": "documentation_declared",
+      "rule_id": "eu-ai-act-human-oversight",
+      "description": "The record pins, by SHA-256, the document its issuer names as its human oversight documentation. Checks: the record carries human_oversight, and its documentation_hash is a hash; a record without the member declares that it pins no such document, and fails. Does not check: that the document exists, can be obtained or says anything, that the oversight measures of Art. 14(3) are built in or identified, or that natural persons can oversee the system as Art. 14(4) requires. A pinned document shows which document the issuer relied on, not that it complies. Annex IV(2)(e) puts the assessment of those measures into the technical documentation; reading the pinned document as that assessment is this pack's reading, which is why the rule is recommended rather than mandatory.",
+      "severity": "recommended",
+      "reference": "Regulation (EU) 2024/1689 (AI Act) Art. 14(3) and Annex IV(2)(e)",
+      "document": "human_oversight"
+    }
+  ]
+}

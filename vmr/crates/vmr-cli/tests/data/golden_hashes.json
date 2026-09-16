@@ -1,0 +1,16 @@
+{
+    "description": "SHA-256 of the Phase 1 golden fixtures. Computed externally (PowerShell Get-FileHash -Algorithm SHA256) — no hashing happens inside the C++ build (Law 7). C++ tests compare raw bytes; this file is the audit record.",
+    "generated_on": "2026-09-10",
+    "tool": "Get-FileHash -Algorithm SHA256",
+    "files": {
+        "golden_reservoir.brain": {
+            "sha256": "2A03822A9792881FFC00C6AA47BEA8B52758E602D92226CDFEE805A58A1679D4"
+        },
+        "golden_reservoir_perturbed.brain": {
+            "sha256": "9894C234F4043CB9339268EDC095F364AC66E81B2641E5C374C91D751D381568"
+        },
+        "golden_state.bin": {
+            "sha256": "CA124043B83197F265FDDD74EA89492026D824E26AF356786C50972FBF594435"
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+  "version": "0.1",
+  "pack_id": "khalm-reading-rats-rfc9334-v0.1",
+  "pack_version": "1.0.0",
+  "jurisdiction": "ietf-rats",
+  "description": "Runtime attestation evidence, as a KHALM reference profile of IETF RFC 9334, the RATS architecture. Each rule cites a section of RFC 9334 by its number and title. The pack is named for the document it encodes: the TRACE project publishes no clause text this pack could cite, so nothing here is presented as a TRACE requirement, and the TRACE profile will be its own pack when there is text to cite.",
+  "disclaimer": "A reference implementation of the VMR policy-pack format, not legal advice and not an official instrument. This pack is NOT published, authored or endorsed by the IETF, the RATS working group, the TRACE project or the Linux Foundation; the references are this pack author's reading of RFC 9334.",
+  "authority": {
+    "authority_id": "khalm-reference-packs",
+    "authority_name": "KHALM reference packs"
+  },
+  "rules": [
+    {
+      "type": "execution_integrity",
+      "rule_id": "rats-attested-environment",
+      "description": "The Evidence names the environment it is about. Checks: the training software and the software hash of the environment the learning ran in are declared and not empty, and the software hash parses as a hash; an empty claim is not Evidence, and fails. Does not check: that the claims are true of the environment, which only an appraisal against Reference Values can show.",
+      "severity": "mandatory",
+      "reference": "IETF RFC 9334 (RATS architecture), section 8.1 (Evidence)",
+      "require_environment_pinned": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "rats-target-environment-measured",
+      "description": "The Target Environment is measured, not merely named, and agrees with the chain it claims. Checks: the learned state and each of its components carry a parseable hash and a positive size; and a deployment or policy-change record keeps the model of its verified immediate predecessor, the same model_hash, so one evaluated without that predecessor is indeterminate. Does not check: that a root of trust took the measurement, which rats-hardware-rooted-measurement asks for.",
+      "severity": "mandatory",
+      "reference": "IETF RFC 9334 (RATS architecture), section 3.1 (Two Types of Environments of an Attester)",
+      "require_learned_state_components": true,
+      "require_state_kept": true
+    },
+    {
+      "type": "execution_integrity",
+      "rule_id": "rats-hardware-rooted-measurement",
+      "description": "A hardware root of trust measured the environment. Checks: a TEE measurement is declared and parses as a hash. RFC 9334 calls the components a Verifier has to trust through Endorsements its roots of trust (section 7.4). A record emitted without a TEE signs an empty tee_measurement, which declares that no TEE measured it, so this rule fails on it; the rule is recommended, so that failure does not move the pack's overall status. Does not check: that a root of trust took the measurement, or that the value is the measurement of any environment. Only an appraisal against Reference Values can show that, and a v0.1 record carries neither Endorsements nor Reference Values.",
+      "severity": "recommended",
+      "reference": "IETF RFC 9334 (RATS architecture), section 7.4 (Verifier: roots of trust)",
+      "require_tee": true
+    },
+    {
+      "type": "audit_integrity",
+      "rule_id": "rats-evidence-integrity",
+      "description": "The Evidence is integrity-protected and linked rather than standing alone. Checks: the lineage is at least one record long, the training input is committed by a Merkle root (so a record that declares its training input not held or not disclosed fails), and a record with predecessors names the one before it by hash. Section 12.2 asks that conveyed Evidence be integrity-protected; this hash chain is this pack's reading of that for a record. Does not check: freshness in RFC 9334's sense (section 10: that Evidence is recent), because a v0.1 record carries no nonce or epoch; that the committed input is the data the Evidence is about; or whether the lineage was verified back to its origin, which this rule does not ask for.",
+      "severity": "recommended",
+      "reference": "IETF RFC 9334 (RATS architecture), section 12.2 (Conceptual Message Protection)",
+      "minimum_chain_length": 1,
+      "require_tamper_evident": true
+    },
+    {
+      "type": "attestation_level",
+      "rule_id": "rats-attester-identity",
+      "description": "The Attester is identified by a key a Verifier can evaluate. Checks: the record declares an attestation_level of software or stronger. Does not check: that an Attester in RFC 9334's sense produced the Evidence, or that the declared level is true of it. The level is the issuer's own claim about itself, and what the trust store grants the signing key is the verifier's trust.attestation check, before any pack is evaluated; a v0.1 record carries no Endorsement a Verifier could appraise the key against.",
+      "severity": "recommended",
+      "reference": "IETF RFC 9334 (RATS architecture), sections 7 (Trust Model) and 7.4 (Verifier)",
+      "minimum_level": "software"
+    }
+  ]
+}

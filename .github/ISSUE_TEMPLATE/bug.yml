@@ -1,0 +1,51 @@
+name: Bug report
+description: Something in vmr, the format library, the verifier or a policy pack does not work as documented.
+title: "bug: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. We aim to give every issue a first response within 48 hours.
+        **Security problems:** do not open an issue. Use private vulnerability reporting (the repository's Security tab).
+        **Never paste** a private key, a trust store you rely on, or files you may not share.
+  - type: input
+    id: version
+    attributes:
+      label: vmr version
+      description: The output of `vmr --version`.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - vmr command-line tool
+        - record format or verification
+        - policy pack or evaluation
+        - trust store
+        - documentation
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What you ran
+      description: The exact commands, with the smallest inputs that show the problem.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened
+      description: Include the exit code and the output (`--json` output helps).
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system and terminal
+      placeholder: e.g. Windows 11, Windows Terminal; Ubuntu 24.04, GNOME Terminal

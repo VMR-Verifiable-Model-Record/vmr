@@ -1,0 +1,40 @@
+name: Feature request
+description: Propose a change to vmr, the Verifiable Model Record format, or a policy pack.
+title: "feature: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. We aim to give every issue a first response within 48 hours. Accepted ideas go on the public roadmap; that is not a delivery date.
+        The format is meant for any AI model, from any vendor, whose weights the issuer holds. Proposals that fit only one model family, vendor or tool are best framed as a named profile.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - vmr command-line tool
+        - record format (a new member or rule)
+        - policy-pack format or a reference pack
+        - documentation
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to do, and what stops you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Your proposal
+      description: What should change. For the format, say which models or vendors it serves.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

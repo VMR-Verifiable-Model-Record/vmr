@@ -1,0 +1,168 @@
+{
+  "record_version": "0.1",
+  "record_id": "urn:uuid:cac3079c-9125-8e7b-87a0-e653572ce54f",
+  "issued_at": "2026-09-14T00:00:00Z",
+  "issuer": {
+    "issuer_id": "did:web:example.org",
+    "issuer_name": "Example signer: not Microsoft, who did not issue this record",
+    "public_key": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "Yh-5IhaWgn18rG8rymqLOKKDwwy5O7Mbcn6TlM9Kw1Q",
+      "y": "cxizxA1ydaU8woyQOU42OJ2XD2QlT-FvIrKUie9LJPs"
+    },
+    "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:3MaCB0o1rF1HjKpxz6gtwJ66qy3CBwqfox5Tds8y7PE",
+    "attestation_level": "self"
+  },
+  "model_identity": {
+    "model_hash": "sha256:7ba86a32ae3ce3600f874f9431a87c5581d70914e82ff41419aeda62ea5e09a5",
+    "model_format": "safetensors",
+    "parameter_count": 3836021760,
+    "architecture": {
+      "type": "transformer",
+      "topology": "decoder-only (Phi3ForCausalLM, 32 layers, hidden size 3072)",
+      "precision": "bfloat16"
+    },
+    "learned_state_hash": "sha256:7ba86a32ae3ce3600f874f9431a87c5581d70914e82ff41419aeda62ea5e09a5",
+    "learned_state_components": [
+      {
+        "name": ".gitattributes",
+        "hash": "sha256:34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+        "size_bytes": 1570
+      },
+      {
+        "name": "CODE_OF_CONDUCT.md",
+        "hash": "sha256:539b1bfc810aa62738af95866bfe584d568b0dca71aebed0bd81db0bdaebade3",
+        "size_bytes": 453
+      },
+      {
+        "name": "LICENSE",
+        "hash": "sha256:fa8235e5b48faca34e3ca98cf4f694ef08bd216d28b58071a1f85b1d50cb814d",
+        "size_bytes": 1084
+      },
+      {
+        "name": "NOTICE.md",
+        "hash": "sha256:a3386cc7125ec75ed34d4f0a340c47782982095e251d322e01d8ecab22d87ba4",
+        "size_bytes": 1809
+      },
+      {
+        "name": "README.md",
+        "hash": "sha256:c4f34916182a3ee87d95d00c92847cfa687ab21dc338a577275f0c34cf0e1dfd",
+        "size_bytes": 29246
+      },
+      {
+        "name": "SECURITY.md",
+        "hash": "sha256:7b6976eec43edfa68b79a459dd089c56b7a395916dbf1a01bd11e6d86e12128f",
+        "size_bytes": 2656
+      },
+      {
+        "name": "added_tokens.json",
+        "hash": "sha256:d4f2aceb0f20b71dd1f4bcc7e052e4412946bf281840b8f83d39f259571af486",
+        "size_bytes": 249
+      },
+      {
+        "name": "config.json",
+        "hash": "sha256:ac65d86061d3d0d704ee2511fd0eb8713ef19eb6eedba17c3080a4165d5b933b",
+        "size_bytes": 2504
+      },
+      {
+        "name": "configuration_phi3.py",
+        "hash": "sha256:ec2044b77d0b8111640ac134daa3af1f40dc552a739f8959626e7e58ea3352df",
+        "size_bytes": 10875
+      },
+      {
+        "name": "data_summary_card.md",
+        "hash": "sha256:470514f8d8408e1254c9487401dc4d7d2edb4e08f0453f7bbfb5e01dbb976456",
+        "size_bytes": 4320
+      },
+      {
+        "name": "generation_config.json",
+        "hash": "sha256:3e3f48753753f92d2b958679151861d4fd7bf26e4dfc41fd47056116c4914dcd",
+        "size_bytes": 168
+      },
+      {
+        "name": "merges.txt",
+        "hash": "sha256:856ce61180bb689282eed6b3a6838bb1f438399be23aefe9d20eb379791fb4ad",
+        "size_bytes": 2418348
+      },
+      {
+        "name": "model-00001-of-00002.safetensors",
+        "hash": "sha256:bc703090b63eda16f639fa4de7ac54635c23105ab1da2f6ec4d3403151d38ee6",
+        "size_bytes": 4903637712
+      },
+      {
+        "name": "model-00002-of-00002.safetensors",
+        "hash": "sha256:7ff79b9d2d31076bac2663393451f6530f4fc8ca49b09002116c92c373dba983",
+        "size_bytes": 2768428504
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "hash": "sha256:613a98d5e5716ca96fa75931abedc9c5a5d95f488ce4d62df71e639fe3ac6c59",
+        "size_bytes": 16273
+      },
+      {
+        "name": "modeling_phi3.py",
+        "hash": "sha256:d5fd551a7fe759b1d25e5b16b5012aa98b9b8bd400d26c7ee69c0090a245d6cd",
+        "size_bytes": 54268
+      },
+      {
+        "name": "sample_finetune.py",
+        "hash": "sha256:ec9ead444318c31095e5be48ec4b17ec031134836dd7906a73186265c323348a",
+        "size_bytes": 6167
+      },
+      {
+        "name": "special_tokens_map.json",
+        "hash": "sha256:aff38493227d813e29fcf8406e8e90062f1f031aa47d589325e9c31d89ac7cc3",
+        "size_bytes": 587
+      },
+      {
+        "name": "tokenizer.json",
+        "hash": "sha256:382cc235b56c725945e149cc25f191da667c836655efd0857b004320e90e91ea",
+        "size_bytes": 15524095
+      },
+      {
+        "name": "tokenizer_config.json",
+        "hash": "sha256:9c9b6bc0c94d95f69f826c41069a3e8b387ac3ced89601d201886e99240ac9db",
+        "size_bytes": 2932
+      },
+      {
+        "name": "vocab.json",
+        "hash": "sha256:6cb65a857824fa6615bb1782d95d882617a8bbce1da0317118586b36f39e98bd",
+        "size_bytes": 3910310
+      }
+    ]
+  },
+  "learning_provenance": {
+    "training_input_digest": "",
+    "training_input_merkle_root": "",
+    "training_input_count": 0,
+    "training_environment": {
+      "hardware_id": "",
+      "tee_measurement": "",
+      "software_hash": "",
+      "training_software": ""
+    },
+    "training_input_provenance": {
+      "source_type": "",
+      "source_description": "not held by the issuer of this example record"
+    },
+    "training_input_disclosure": "not-held"
+  },
+  "policy_compliance": {
+    "policy_pack_id": "example-policy-pack-v1",
+    "evaluated_at": "2026-09-14T00:00:00Z",
+    "results": [],
+    "overall_status": "indeterminate"
+  },
+  "lineage": {
+    "lineage_chain_length": 1,
+    "root_record_id": "urn:uuid:cac3079c-9125-8e7b-87a0-e653572ce54f",
+    "lineage_type": "initial"
+  },
+  "signature": {
+    "algorithm": "ES256",
+    "signature": "base64url:sMRrxsbuMVpdW5XGhzvUvrFU93nTRDmtiFe6P_3ft41J0pMr678RdPOlC2rSbgyCFj4ltSGwYdjmAabTuaNInw",
+    "signed_payload_hash": "sha256:72e7ecac97dc26772993a475db2a570fa8075813ec181a8eb5198a1c66c444cf",
+    "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:3MaCB0o1rF1HjKpxz6gtwJ66qy3CBwqfox5Tds8y7PE"
+  }
+}

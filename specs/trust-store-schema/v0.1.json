@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiablemodel.org/schemas/trust-store/v0.1.json",
+  "title": "VMR Trust Store v0.1",
+  "description": "A verifier operator's local root of trust: the public keys it trusts to sign Verifiable Model Records, per issuer DID, and optionally the keys it trusts to sign policy packs, per policy authority. Provisioned out of band; never fetched at verification time. This schema is normative for structure; the rules it cannot express (key_id = RFC 7638 thumbprint URN of public_key, issuer_id, authority_id and key_id uniqueness across the whole store, calendar-valid timestamps, valid_until > valid_from, text nested at most 127 levels), the canonical hash and all semantics are the trust-store format v0.1.",
+  "type": "object",
+  "required": ["trust_store_version", "issuers"],
+  "properties": {
+    "trust_store_version": { "type": "string", "const": "0.1" },
+    "issuers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["issuer_id", "issuer_name", "keys"],
+        "properties": {
+          "issuer_id": { "type": "string", "pattern": "^did:[a-z0-9]+:([A-Za-z0-9._:-]|%[0-9A-Fa-f]{2})*([A-Za-z0-9._-]|%[0-9A-Fa-f]{2})$" },
+          "issuer_name": { "type": "string" },
+          "keys": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["key_id", "public_key", "attestation_level", "valid_from", "revoked"],
+              "properties": {
+                "key_id": { "type": "string", "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+                "public_key": {
+                  "type": "object",
+                  "required": ["kty", "crv", "x", "y"],
+                  "properties": {
+                    "kty": { "type": "string", "const": "EC" },
+                    "crv": { "type": "string", "const": "P-256" },
+                    "x": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+                    "y": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+                  },
+                  "additionalProperties": false
+                },
+                "attestation_level": { "type": "string", "enum": ["hardware", "software", "self"] },
+                "valid_from": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+                "valid_until": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+                "revoked": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "policy_authorities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["authority_id", "authority_name", "keys"],
+        "properties": {
+          "authority_id": { "type": "string", "minLength": 1 },
+          "authority_name": { "type": "string" },
+          "keys": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["key_id", "public_key", "attestation_level", "valid_from", "revoked"],
+              "properties": {
+                "key_id": { "type": "string", "pattern": "^urn:ietf:params:oauth:jwk-thumbprint:sha-256:[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+                "public_key": {
+                  "type": "object",
+                  "required": ["kty", "crv", "x", "y"],
+                  "properties": {
+                    "kty": { "type": "string", "const": "EC" },
+                    "crv": { "type": "string", "const": "P-256" },
+                    "x": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+                    "y": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+                  },
+                  "additionalProperties": false
+                },
+                "attestation_level": { "type": "string", "enum": ["hardware", "software", "self"] },
+                "valid_from": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+                "valid_until": { "type": "string", "format": "date-time", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$" },
+                "revoked": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,202 @@
+{
+  "vector_version": "0.1",
+  "description": "VMR conformance issuer cases v0.1 (CC0-1.0), built by specs/conformance/build_suite.py from test-vectors/record/example-general-v0.1.json only. The signing key is the vectors' test-only key: its secret scalar is SHA-256(\"khalm v0.1 test-vector signing key\"). Never use it for anything real.",
+  "cases": [
+    {
+      "id": "issue-general-open-weights-not-held",
+      "description": "The general conformance vector's model (four synthetic files, not a real model) described by a party that holds the files and not the training records. Given the declared members, the files, the names of the components and the key, an issuer makes the vector's record: the components' hashes and sizes, learned_state_hash and model_hash (named-set digests, spec §7.2, §7.3), the training commitment of a not-held disclosure (§8.4), the issuer's public key and key id (§5), and a low-s ES256 signature (§4). Its signature may differ from the vector's; every other byte of the signed payload may not.",
+      "input": {
+        "declared": {
+          "deployment_context": {
+            "deployed_at": "2026-09-10T00:00:00Z",
+            "deployed_by": "did:web:factory-operator.ph",
+            "deployment_id": "urn:uuid:5d2e8f41-0c7a-4b3e-9a62-8e1f0d4c7b29",
+            "hardware_id": "",
+            "inference_boundary": {
+              "allowed_egress_destinations": [],
+              "egress_allowed": false,
+              "type": "air-gapped"
+            },
+            "policy_pack_id": "example-policy-pack-v1",
+            "software_hash": "",
+            "tee_measurement": ""
+          },
+          "issued_at": "2026-09-10T00:00:00Z",
+          "issuer": {
+            "attestation_level": "software",
+            "issuer_id": "did:web:factory-operator.ph",
+            "issuer_name": "New Clark City Fab Operator"
+          },
+          "learning_provenance": {
+            "training_environment": {
+              "hardware_id": "",
+              "software_hash": "",
+              "tee_measurement": "",
+              "training_software": ""
+            },
+            "training_input_disclosure": "not-held",
+            "training_input_provenance": {
+              "source_description": "",
+              "source_type": ""
+            }
+          },
+          "lineage": {
+            "lineage_chain_length": 1,
+            "lineage_type": "initial",
+            "root_record_id": "urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10"
+          },
+          "model_identity": {
+            "architecture": {
+              "precision": "bfloat16",
+              "topology": "decoder-only",
+              "type": "transformer"
+            },
+            "model_format": "safetensors",
+            "parameter_count": 64
+          },
+          "policy_compliance": {
+            "evaluated_at": "2026-09-10T00:00:00Z",
+            "overall_status": "indeterminate",
+            "policy_pack_id": "example-policy-pack-v1",
+            "results": []
+          },
+          "record_id": "urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10",
+          "record_version": "0.1"
+        },
+        "model_files": [
+          {
+            "name": "config.json",
+            "bytes_hex": "7b2261726368697465637475726573223a5b224578616d706c654465636f6465724f6e6c79225d2c2268696464656e5f73697a65223a382c226e756d5f68696464656e5f6c6179657273223a327d0a"
+          },
+          {
+            "name": "model-00001-of-00002.safetensors",
+            "bytes_hex": "73796e7468657469632073686172642031206f6620323a206e6f742061207265616c206d6f64656c0a"
+          },
+          {
+            "name": "model-00002-of-00002.safetensors",
+            "bytes_hex": "73796e7468657469632073686172642032206f6620323a206e6f742061207265616c206d6f64656c0a"
+          },
+          {
+            "name": "tokenizer.json",
+            "bytes_hex": "7b2276657273696f6e223a22312e30222c226d6f64656c223a7b2274797065223a226578616d706c65227d7d0a"
+          }
+        ],
+        "learned_state_components": [
+          "config.json",
+          "model-00001-of-00002.safetensors",
+          "model-00002-of-00002.safetensors",
+          "tokenizer.json"
+        ],
+        "training_records": null,
+        "signing_key": {
+          "crv": "P-256",
+          "kty": "EC",
+          "x": "yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318",
+          "y": "BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY",
+          "d": "73Eg63VxMAtlOS5DoLpOmOpLjXi0hieG13Sea_a22FM"
+        }
+      },
+      "expected": {
+        "record": {
+          "deployment_context": {
+            "deployed_at": "2026-09-10T00:00:00Z",
+            "deployed_by": "did:web:factory-operator.ph",
+            "deployment_id": "urn:uuid:5d2e8f41-0c7a-4b3e-9a62-8e1f0d4c7b29",
+            "hardware_id": "",
+            "inference_boundary": {
+              "allowed_egress_destinations": [],
+              "egress_allowed": false,
+              "type": "air-gapped"
+            },
+            "policy_pack_id": "example-policy-pack-v1",
+            "software_hash": "",
+            "tee_measurement": ""
+          },
+          "issued_at": "2026-09-10T00:00:00Z",
+          "issuer": {
+            "attestation_level": "software",
+            "issuer_id": "did:web:factory-operator.ph",
+            "issuer_name": "New Clark City Fab Operator",
+            "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg",
+            "public_key": {
+              "crv": "P-256",
+              "kty": "EC",
+              "x": "yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318",
+              "y": "BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY"
+            }
+          },
+          "learning_provenance": {
+            "training_environment": {
+              "hardware_id": "",
+              "software_hash": "",
+              "tee_measurement": "",
+              "training_software": ""
+            },
+            "training_input_count": 0,
+            "training_input_digest": "",
+            "training_input_disclosure": "not-held",
+            "training_input_merkle_root": "",
+            "training_input_provenance": {
+              "source_description": "",
+              "source_type": ""
+            }
+          },
+          "lineage": {
+            "lineage_chain_length": 1,
+            "lineage_type": "initial",
+            "root_record_id": "urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10"
+          },
+          "model_identity": {
+            "architecture": {
+              "precision": "bfloat16",
+              "topology": "decoder-only",
+              "type": "transformer"
+            },
+            "learned_state_components": [
+              {
+                "hash": "sha256:ae0038f8ee5693f8a13a5c392ebdfc5fe97fb172115a0536a7b3f75188b22166",
+                "name": "config.json",
+                "size_bytes": 79
+              },
+              {
+                "hash": "sha256:5cc9495ea742a8721a6630374f4c5fd0d303622773adad873b15fbd5bbdb5454",
+                "name": "model-00001-of-00002.safetensors",
+                "size_bytes": 41
+              },
+              {
+                "hash": "sha256:7d0b9367632ea4d6abb0c43b4e451b0a4c465b9231321dfdbf0310c052c18f98",
+                "name": "model-00002-of-00002.safetensors",
+                "size_bytes": 41
+              },
+              {
+                "hash": "sha256:6166328b02f35d1ecf93c3c00834ffd4957a9ad5676620a29726ad4d0b30e99a",
+                "name": "tokenizer.json",
+                "size_bytes": 45
+              }
+            ],
+            "learned_state_hash": "sha256:06923b0375f50a7a550788b010f2a93b9852572cc2928238462822b00c0f33a7",
+            "model_format": "safetensors",
+            "model_hash": "sha256:06923b0375f50a7a550788b010f2a93b9852572cc2928238462822b00c0f33a7",
+            "parameter_count": 64
+          },
+          "policy_compliance": {
+            "evaluated_at": "2026-09-10T00:00:00Z",
+            "overall_status": "indeterminate",
+            "policy_pack_id": "example-policy-pack-v1",
+            "results": []
+          },
+          "record_id": "urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10",
+          "record_version": "0.1",
+          "signature": {
+            "algorithm": "ES256",
+            "signature": "base64url:PY_NmOWQqM0h-wFjHm1GAIEspdfWs_TAtl3uoAHZXmNDG46NJAk7Ba8yzDcaFHeiYVGOOyBOuE27aRCpGb0pOw",
+            "signed_payload_hash": "sha256:2d1081356f7f9c7c571707be849c20db67313e0008f1f467385eb18999507466",
+            "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg"
+          }
+        },
+        "signed_payload": "{\"deployment_context\":{\"deployed_at\":\"2026-09-10T00:00:00Z\",\"deployed_by\":\"did:web:factory-operator.ph\",\"deployment_id\":\"urn:uuid:5d2e8f41-0c7a-4b3e-9a62-8e1f0d4c7b29\",\"hardware_id\":\"\",\"inference_boundary\":{\"allowed_egress_destinations\":[],\"egress_allowed\":false,\"type\":\"air-gapped\"},\"policy_pack_id\":\"example-policy-pack-v1\",\"software_hash\":\"\",\"tee_measurement\":\"\"},\"issued_at\":\"2026-09-10T00:00:00Z\",\"issuer\":{\"attestation_level\":\"software\",\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"}},\"learning_provenance\":{\"training_environment\":{\"hardware_id\":\"\",\"software_hash\":\"\",\"tee_measurement\":\"\",\"training_software\":\"\"},\"training_input_count\":0,\"training_input_digest\":\"\",\"training_input_disclosure\":\"not-held\",\"training_input_merkle_root\":\"\",\"training_input_provenance\":{\"source_description\":\"\",\"source_type\":\"\"}},\"lineage\":{\"lineage_chain_length\":1,\"lineage_type\":\"initial\",\"root_record_id\":\"urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10\"},\"model_identity\":{\"architecture\":{\"precision\":\"bfloat16\",\"topology\":\"decoder-only\",\"type\":\"transformer\"},\"learned_state_components\":[{\"hash\":\"sha256:ae0038f8ee5693f8a13a5c392ebdfc5fe97fb172115a0536a7b3f75188b22166\",\"name\":\"config.json\",\"size_bytes\":79},{\"hash\":\"sha256:5cc9495ea742a8721a6630374f4c5fd0d303622773adad873b15fbd5bbdb5454\",\"name\":\"model-00001-of-00002.safetensors\",\"size_bytes\":41},{\"hash\":\"sha256:7d0b9367632ea4d6abb0c43b4e451b0a4c465b9231321dfdbf0310c052c18f98\",\"name\":\"model-00002-of-00002.safetensors\",\"size_bytes\":41},{\"hash\":\"sha256:6166328b02f35d1ecf93c3c00834ffd4957a9ad5676620a29726ad4d0b30e99a\",\"name\":\"tokenizer.json\",\"size_bytes\":45}],\"learned_state_hash\":\"sha256:06923b0375f50a7a550788b010f2a93b9852572cc2928238462822b00c0f33a7\",\"model_format\":\"safetensors\",\"model_hash\":\"sha256:06923b0375f50a7a550788b010f2a93b9852572cc2928238462822b00c0f33a7\",\"parameter_count\":64},\"policy_compliance\":{\"evaluated_at\":\"2026-09-10T00:00:00Z\",\"overall_status\":\"indeterminate\",\"policy_pack_id\":\"example-policy-pack-v1\",\"results\":[]},\"record_id\":\"urn:uuid:9e0c3c1a-6b2d-4f7e-8a51-3c2b1d0e9f10\",\"record_version\":\"0.1\"}",
+        "signed_payload_hash": "sha256:2d1081356f7f9c7c571707be849c20db67313e0008f1f467385eb18999507466"
+      }
+    }
+  ]
+}

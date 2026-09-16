@@ -1,0 +1,24 @@
+{
+  "issuers": [
+    {
+      "issuer_id": "did:web:factory-operator.ph",
+      "issuer_name": "New Clark City Fab Operator",
+      "keys": [
+        {
+          "attestation_level": "software",
+          "key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg",
+          "public_key": {
+            "crv": "P-256",
+            "kty": "EC",
+            "x": "yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318",
+            "y": "BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY"
+          },
+          "revoked": false,
+          "valid_from": "2026-01-01T00:00:00Z",
+          "valid_until": "2026-09-10T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "trust_store_version": "0.1"
+}

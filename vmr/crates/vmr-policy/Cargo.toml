@@ -1,0 +1,32 @@
+[package]
+name = "vmr-policy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's implementation of the open VMR policy-pack format v0.1: load a jurisdiction-agnostic pack, evaluate it against a record payload, convert the result to the record's policy_compliance. No engine, no network, no clock."
+
+[lib]
+name = "vmr_policy"
+crate-type = ["rlib"]
+
+# The evaluator's footprint is part of its claim (docs/dev/phase6.md, P6-7
+# and P6-10): the format crate, serde and p256 - nothing that can open a
+# socket, read a clock or touch a file, and no vmr-ffi / bindgen.
+# `cargo tree -p vmr-policy -e normal,build,dev` must never show vmr-ffi,
+# bindgen, tokio, reqwest, hyper or ureq.
+#
+# sha2 and hex are deliberately NOT taken (a departure from P6-10 noted in
+# the Phase 6 handoff): vmr_record::hash is exactly the sha256 / hex-string
+# pair this crate needs, and P6-7 forbids a second implementation of it.
+[dependencies]
+vmr-record.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+p256.workspace = true
+
+[dev-dependencies]
+# Test-only oracle for the schema's patterns, as in vmr-record (D3):
+# already in Cargo.lock (via bindgen), never on an evaluation path.
+regex = "1.13"

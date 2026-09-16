@@ -1,0 +1,99 @@
+[package]
+name = "vmr-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "Apache-2.0"
+description = "Coverage-guided fuzzing (cargo-fuzz) of every Community parser of untrusted input: task 10.13's pre-release fuzzing task (AGENTS.md). Exported with the Community edition and not published, and outside every workspace (this crate has no ancestor Cargo.toml with a [workspace] table, so it needs none of its own). Every target's body is ../fuzz-targets' plain function of the same name, which a stable unit test there also runs over specs/test-vectors/ seeds: this crate holds only the #![no_main] libFuzzer wrapper, built and run with `cargo +nightly fuzz run <target>` (tools/fuzz.ps1)."
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+# The libFuzzer runtime binding: builds on stable, but a #![no_main] binary
+# here has no entry point outside `cargo +nightly fuzz build/run`, which
+# supplies the codegen flags libfuzzer-sys's build script needs to link
+# libFuzzer's own runtime main(). Never build this package with plain
+# `cargo build`/`cargo test`: use fuzz-targets/ for that.
+libfuzzer-sys = "0.4"
+vmr-fuzz-targets = { path = "../fuzz-targets" }
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "record_json"
+path = "fuzz_targets/record_json.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "record_cose"
+path = "fuzz_targets/record_cose.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "trust_store"
+path = "fuzz_targets/trust_store.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "policy_pack"
+path = "fuzz_targets/policy_pack.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "public_key"
+path = "fuzz_targets/public_key.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "manifest"
+path = "fuzz_targets/manifest.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "audit_entry"
+path = "fuzz_targets/audit_entry.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "audit_log"
+path = "fuzz_targets/audit_log.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "audit_checkpoint"
+path = "fuzz_targets/audit_checkpoint.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "audit_inclusion_proof"
+path = "fuzz_targets/audit_inclusion_proof.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "audit_consistency_proof"
+path = "fuzz_targets/audit_consistency_proof.rs"
+test = false
+doc = false
+bench = false

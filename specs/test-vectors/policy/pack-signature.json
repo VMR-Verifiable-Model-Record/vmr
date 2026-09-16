@@ -1,0 +1,796 @@
+{
+  "cases": [
+    {
+      "authority_store": null,
+      "description": "An unsigned pack, and a trust store with no policy authority: evaluated, unsigned.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "state": "unsigned"
+        }
+      },
+      "id": "unsigned",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "An unsigned pack, and a trust store that trusts key P for the pack's authority: still unsigned.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "state": "unsigned"
+        }
+      },
+      "id": "unsigned-with-an-authority",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "An unsigned pack when a signature is required: refused.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.unsigned_refused"
+      },
+      "id": "unsigned-signature-required",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": true,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack signed by key P, and a trust store with no policy authority: evaluated, not checked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "not_checked"
+        }
+      },
+      "id": "not-checked-no-authorities",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack signed by key Q, and a trust store whose authority holds key P only: not checked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo",
+          "state": "not_checked"
+        }
+      },
+      "id": "not-checked-key-not-held",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:hfN15Ctndd3O8kcaBBsnFer5fmuKuIsSVilwxkwUD_Zxc_q2S_1G-Tf0IMb_Nb1WOZg_t_nNixIaRHSmvBUwjQ\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack signed by key A, which the trust store trusts for the record's issuer: an issuer's key never vouches for a pack, so not checked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg",
+          "state": "not_checked"
+        }
+      },
+      "id": "not-checked-issuer-key",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:etacX5uTcu7t34Agnx7s5aMHnD5BVAJrWw0Jos8AhblEPz97y0RgFIFNXlHSeQ6k6OrLntmvBkQ7NRxf0LDFJg\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "not-checked-key-not-held when a signature is required: refused.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.not_checked_refused"
+      },
+      "id": "not-checked-signature-required",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:hfN15Ctndd3O8kcaBBsnFer5fmuKuIsSVilwxkwUD_Zxc_q2S_1G-Tf0IMb_Nb1WOZg_t_nNixIaRHSmvBUwjQ\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": true,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack signed by key P, which the trust store trusts for the pack's authority, at a time inside the key's window.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "valid",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid when a signature is required: accepted.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "valid-signature-required",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": true,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "A pack signed by key P, a trust store with no policy authority, and an authority store that trusts key P: valid.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "valid-authority-store",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "The trust store trusts key P, and the authority store given trusts no authority: the authorities come only from the authority store, so not checked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "not_checked"
+        }
+      },
+      "id": "authority-store-no-fallback",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "An authority store that lists the record's issuer beside key P's authority: refused.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "authority_store.issuers"
+      },
+      "id": "authority-store-lists-issuers",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack signed by key P and changed after it was signed: its section states the payload hash of the text before the change.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:b45b9e8e1f446b3dfe661d32c04069a8beea52b357682ad528c0d58f98569372",
+        "refusal": "pack_signature.payload_hash"
+      },
+      "id": "payload-hash-mismatch",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector, changed after it was signed.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "payload-hash-mismatch's pack, and a trust store with no policy authority: the payload hash needs no key, so still refused.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:b45b9e8e1f446b3dfe661d32c04069a8beea52b357682ad528c0d58f98569372",
+        "refusal": "pack_signature.payload_hash"
+      },
+      "id": "payload-hash-mismatch-no-authorities",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector, changed after it was signed.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack whose section names key P, signed by key Q.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.invalid"
+      },
+      "id": "invalid-another-key",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:hfN15Ctndd3O8kcaBBsnFer5fmuKuIsSVilwxkwUD_Zxc_q2S_1G-Tf0IMb_Nb1WOZg_t_nNixIaRHSmvBUwjQ\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid's pack with its signature replaced by the high-s twin, which satisfies the ECDSA equation.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.invalid"
+      },
+      "id": "invalid-high-s",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aeqmRYS6I9NIwHCQkFCBLy_mO4srki5EL_JR_bTgHbk1ZQ\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack naming another-authority.example, signed by key P, which the store trusts for khalm-pack-signature-vectors.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2",
+        "refusal": "pack_signature.other_authority"
+      },
+      "id": "other-authority",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"another-authority.example\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:U8svSqt0p3ytL1P_SyzsMzsViqqI9Jz9QiPNBYA7W_xMPnZGph52JyqsX73Vt3JlUv-emC1h3Lw3qmviGSKSFg\",\"signed_payload_hash\":\"sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid's pack, and key P revoked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.revoked"
+      },
+      "id": "revoked",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":true,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "Key P may sign from 2026-09-11T00:00:00Z, the evaluation time: inside its window.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "window-valid-from-is-t",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-09-11T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "Key P may sign from 2026-09-11T00:00:01Z, one second after the evaluation time.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.outside_validity"
+      },
+      "id": "window-valid-from-after-t",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-09-11T00:00:01Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "Key P may sign until 2026-09-11T00:00:01Z, one second after the evaluation time: inside its window.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "window-valid-until-after-t",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2026-09-11T00:00:01Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "Key P may sign until 2026-09-11T00:00:00Z, the evaluation time, which the window excludes.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.outside_validity"
+      },
+      "id": "window-valid-until-is-t",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2026-09-11T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "Key P has no valid_until, and the evaluation time is 2031-01-01T00:00:00Z.",
+      "evaluation_time": "2031-01-01T00:00:00Z",
+      "expected": {
+        "exit_code": 0,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "pack_signature": {
+          "authority_id": "khalm-pack-signature-vectors",
+          "authority_name": "KHALM pack-signature vectors, per this operator",
+          "signing_key_id": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o",
+          "state": "valid"
+        }
+      },
+      "id": "window-no-end",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "An authority store that lists issuers, and payload-hash-mismatch's pack: the stores are read before the pack.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:b45b9e8e1f446b3dfe661d32c04069a8beea52b357682ad528c0d58f98569372",
+        "refusal": "authority_store.issuers"
+      },
+      "id": "order-authority-store-before-payload-hash",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector, changed after it was signed.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "payload-hash-mismatch's pack, no policy authority, and a signature required: the payload hash is decided before the key is looked up.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:b45b9e8e1f446b3dfe661d32c04069a8beea52b357682ad528c0d58f98569372",
+        "refusal": "pack_signature.payload_hash"
+      },
+      "id": "order-payload-hash-before-lookup",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector, changed after it was signed.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": true,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack naming another-authority.example whose section names key P, signed by key Q: the signature is decided before the binding.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2",
+        "refusal": "pack_signature.invalid"
+      },
+      "id": "order-signature-before-authority",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"another-authority.example\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:skMlpqTG3F9vu37BparFNrvRaBjGXIquzSCOQA2ibEVIFzYzfxI26rtdJMvc8HqGpzHKqF4VTED49F0eFaNzUw\",\"signed_payload_hash\":\"sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "other-authority's pack, and key P revoked: the binding is decided before revocation.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2",
+        "refusal": "pack_signature.other_authority"
+      },
+      "id": "order-authority-before-revocation",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"another-authority.example\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:U8svSqt0p3ytL1P_SyzsMzsViqqI9Jz9QiPNBYA7W_xMPnZGph52JyqsX73Vt3JlUv-emC1h3Lw3qmviGSKSFg\",\"signed_payload_hash\":\"sha256:fa77715432eaba592181d71ce9dcf1158239d64c820c33a2204bb7bc0e9619c2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":true,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid's pack, key P revoked, and the evaluation time before its window: revocation is decided before the window.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "pack_signature.revoked"
+      },
+      "id": "order-revocation-before-window",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":true,\"valid_from\":\"2026-09-12T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "A pack signed by key A, and an authority store whose authority holds key A, which the trust store trusts for the record's issuer: refused, although the signature would be valid.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "authority_store.issuer_key"
+      },
+      "id": "authority-store-holds-an-issuer-key",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:etacX5uTcu7t34Agnx7s5aMHnD5BVAJrWw0Jos8AhblEPz97y0RgFIFNXlHSeQ6k6OrLntmvBkQ7NRxf0LDFJg\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"},{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "A pack signed by key P, and an authority store whose authority holds key P and key A: the store is refused for key A, whichever key signed the pack.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "authority_store.issuer_key"
+      },
+      "id": "authority-store-holds-an-issuer-key-beside-the-signing-key",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:another-issuer.example\",\"issuer_name\":\"Another issuer\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:eXqHDnl3Wl5ImmropPL_NJWvqPNq5vHvcUXZuPWeAzo\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"L4XqSUFroIP4xTigAmQZGx-RwFAfL54qU-zW_f8mryw\",\"y\":\"nnjrkNDFhaGrqRyY8abRx1kcf4mR_h8nVEipWJd10kY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "A file given as an authority store that lists an issuer holding key Q, and whose authority holds key A, which the trust store trusts for the record's issuer: its issuers are decided first.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "authority_store.issuers"
+      },
+      "id": "order-authority-store-issuers-before-issuer-key",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:etacX5uTcu7t34Agnx7s5aMHnD5BVAJrWw0Jos8AhblEPz97y0RgFIFNXlHSeQ6k6OrLntmvBkQ7NRxf0LDFJg\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "An authority store whose authority holds key A, and payload-hash-mismatch's pack: the stores are checked before the pack.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:b45b9e8e1f446b3dfe661d32c04069a8beea52b357682ad528c0d58f98569372",
+        "refusal": "authority_store.issuer_key"
+      },
+      "id": "order-issuer-key-before-payload-hash",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector, changed after it was signed.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid with the trust store's policy authority written as [authority_id, authority_name, keys]: the trust store is refused (trust-store format §3, kind 4).",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "trust_store.structure"
+      },
+      "id": "structure-trust-store-authority-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[[\"khalm-pack-signature-vectors\",\"KHALM pack-signature vectors, per this operator\",[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]]],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid with key P, in the trust store's policy authority, written as the array of its six values: the trust store is refused (kind 4).",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "trust_store.structure"
+      },
+      "id": "structure-trust-store-authority-key-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[[\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"software\",\"2026-01-01T00:00:00Z\",\"2027-01-01T00:00:00Z\",false]]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "[\"0.1\",[],[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}]]"
+      },
+      "description": "valid-authority-store with the authority store written as [trust_store_version, issuers, policy_authorities]: the authority store is refused (kind 4).",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "trust_store.structure"
+      },
+      "id": "structure-authority-store-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[[\"khalm-pack-signature-vectors\",\"KHALM pack-signature vectors, per this operator\",[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]]],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "valid-authority-store with the authority store's policy authority written as [authority_id, authority_name, keys]: the authority store is refused (kind 4).",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "trust_store.structure"
+      },
+      "id": "structure-authority-store-authority-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "{\"issuers\":[],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[[\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"software\",\"2026-01-01T00:00:00Z\",\"2027-01-01T00:00:00Z\",false]]}],\"trust_store_version\":\"0.1\"}"
+      },
+      "description": "valid-authority-store with key P, in the authority store, written as the array of its six values: the authority store is refused (kind 4).",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": "sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2",
+        "refusal": "trust_store.structure"
+      },
+      "id": "structure-authority-store-authority-key-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"signed_payload_hash\":\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "valid's pack with its signature section written as [algorithm, signature, signed_payload_hash, signing_key_id], which the payload excludes: the pack is refused (policy-pack format §3, refusal 2) before its signature is checked.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": null,
+        "refusal": "policy_pack.structure"
+      },
+      "id": "structure-pack-signature-as-array",
+      "pack": {
+        "text": "{\"authority\":{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors\"},\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":[\"ES256\",\"base64url:7D48w93gNMcdJAxfSYSeo-qKokL7M9_da4G-v2a-aepZuntE3Cy3QI9vb69-0NAZgVvPG3jTbpKhvBXi3qnv7A\",\"sha256:a2e905360c4a6b9a77fa2470ef2481508e2b7d91372b9fe939ea49efe7ca78a2\",\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"],\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": null,
+      "description": "A pack whose authority is written as [authority_id, authority_name], signed by key P over that text: the pack is refused (refusal 2), although its signature verifies.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": null,
+        "refusal": "policy_pack.structure"
+      },
+      "id": "structure-pack-authority-as-array",
+      "pack": {
+        "text": "{\"authority\":[\"khalm-pack-signature-vectors\",\"KHALM pack-signature vectors\"],\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:bbbuZeEjP0s6BNcgVShZZrSDoWLAjPWU7iWS62j5x-gwG9ccs_gT3Ae-Z5QYvLaxVcxXjZbYQUs5H9mzPaMuuw\",\"signed_payload_hash\":\"sha256:069d98f569beea10b98202aba13a08a97ecf3ebfe175173b82f1d4bd4710d925\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"policy_authorities\":[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    },
+    {
+      "authority_store": {
+        "text": "[\"0.1\",[],[{\"authority_id\":\"khalm-pack-signature-vectors\",\"authority_name\":\"KHALM pack-signature vectors, per this operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"JdzbKyE9q5O7cOq13b0-jSjkUi4j_9fI721MsQqdWUk\",\"y\":\"jELPi9tDeCBP7TQJ9XPLcW9wYe9102o5X1F2DQ59YWo\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}]]"
+      },
+      "description": "structure-authority-store-as-array's authority store and structure-pack-authority-as-array's pack: the stores are read before the pack.",
+      "evaluation_time": "2026-09-11T00:00:00Z",
+      "expected": {
+        "exit_code": 1,
+        "pack_payload_hash": null,
+        "refusal": "trust_store.structure"
+      },
+      "id": "order-authority-store-structure-before-pack-structure",
+      "pack": {
+        "text": "{\"authority\":[\"khalm-pack-signature-vectors\",\"KHALM pack-signature vectors\"],\"description\":\"The pack of a KHALM pack-signature vector.\",\"disclaimer\":\"A test vector, not legal advice.\",\"jurisdiction\":\"test\",\"pack_id\":\"pack-signature-vector\",\"pack_version\":\"1.0.0\",\"rules\":[{\"description\":\"The issuer attests with a software-held key or better.\",\"minimum_level\":\"software\",\"reference\":\"KHALM pack-signature vectors (a test fixture, not a clause of any standard)\",\"rule_id\":\"vector-attestation-level\",\"severity\":\"mandatory\",\"type\":\"attestation_level\"}],\"signature\":{\"algorithm\":\"ES256\",\"signature\":\"base64url:bbbuZeEjP0s6BNcgVShZZrSDoWLAjPWU7iWS62j5x-gwG9ccs_gT3Ae-Z5QYvLaxVcxXjZbYQUs5H9mzPaMuuw\",\"signed_payload_hash\":\"sha256:069d98f569beea10b98202aba13a08a97ecf3ebfe175173b82f1d4bd4710d925\",\"signing_key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:UG-D1vrrMaAEtZzTOf-ra62vwQXxUwDmxtfP9cU-J2o\"},\"version\":\"0.1\"}"
+      },
+      "require_signed_pack": false,
+      "trust_store": {
+        "text": "{\"issuers\":[{\"issuer_id\":\"did:web:factory-operator.ph\",\"issuer_name\":\"New Clark City Fab Operator\",\"keys\":[{\"attestation_level\":\"software\",\"key_id\":\"urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg\",\"public_key\":{\"crv\":\"P-256\",\"kty\":\"EC\",\"x\":\"yRw99YmqYhAQER8UMKILOv-OFDLjl9n5E-SckLlV318\",\"y\":\"BCdTbjkziAfvOeGj-1v8vO2OqdV0_zX1ZWJLA43GxOY\"},\"revoked\":false,\"valid_from\":\"2026-01-01T00:00:00Z\",\"valid_until\":\"2027-01-01T00:00:00Z\"}]}],\"trust_store_version\":\"0.1\"}"
+      }
+    }
+  ],
+  "description": "VMR pack-signature vectors v0.1 (trust-store format v0.1, §4.2; policy-pack format v0.1, §4, §9). Each case gives a pack text, a trust store, an authority store or null, an evaluation time and whether a signature is required. A conforming checker gives expected.pack_signature, or refuses with expected.refusal. expected.pack_payload_hash is the payload hash (policy-pack format v0.1, §4) of a pack that loads, or null when that format's §3 refuses the pack's text, which has none. expected.exit_code is what `vmr record verify --policy-pack` exits with for the conformance record with these inputs: the record member of ../record/example-v0.1.json, written to a file of its own (that file as a whole wraps the record, and is not one). Generated by the vmr-cli crate's vector generator (VMR_WRITE_VECTORS=1 cargo test -p vmr-cli --test pack_signature_vectors -- --ignored) - never hand-edited. Every key is test-only (README.md).",
+  "vector_version": "0.1"
+}

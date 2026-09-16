@@ -1,0 +1,176 @@
+{
+  "report_version": "0.1",
+  "verdict": "fail",
+  "failure": {
+    "check": "trust.key_known",
+    "detail": "signing key \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:jxHt41ug3kJNGuOm46m…\" is not in the trust store"
+  },
+  "accepted": false,
+  "evaluation_time": "2026-09-11T00:00:00Z",
+  "input": {
+    "form": "json",
+    "byte_length": 4622,
+    "sha256": "sha256:6e475a1625ed3b94acfbabf97ecdb75911695887d5a1437cda3a9a9cf0b1ad02"
+  },
+  "trust_store": {
+    "sha256": "sha256:2d9c05137f8c02e56041dfab27cc29ab1f39f9bbbaf8ffdfcb8a9edf5537933b",
+    "issuer_count": 2,
+    "key_count": 2
+  },
+  "previous": [],
+  "require_complete_lineage": false,
+  "record": {
+    "record_id": "urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00",
+    "issued_at": "2026-09-10T00:00:00Z",
+    "signed_payload_hash": "sha256:206520de49987ece3fe506d0b0baeecdae0c4a843587221966136e47c38c74cd",
+    "model_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+    "model_format": "snn-compact-v1",
+    "learned_state_hash": "sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435",
+    "training_input_digest": "sha256:ac0e49c1c10c4c9d3359204958f390e9950f95a018a67ebfd6408b3d56ac5536",
+    "issuer_id": "did:web:factory-operator.ph",
+    "issuer_name": "New Clark City Fab Operator",
+    "attestation_level": "software",
+    "lineage_type": "initial"
+  },
+  "issuer": null,
+  "checks": [
+    {
+      "id": "input.size",
+      "outcome": "pass",
+      "detail": "4622 bytes (at most 1048576)"
+    },
+    {
+      "id": "input.form",
+      "outcome": "pass",
+      "detail": "a JSON object"
+    },
+    {
+      "id": "json.syntax",
+      "outcome": "pass",
+      "detail": "UTF-8, RFC 8259 JSON, nothing after the value"
+    },
+    {
+      "id": "json.structure",
+      "outcome": "pass",
+      "detail": "exactly the schema's members and JSON types"
+    },
+    {
+      "id": "format.schema",
+      "outcome": "pass",
+      "detail": "every value rule of the schema holds (outside /signature)"
+    },
+    {
+      "id": "format.consistency",
+      "outcome": "pass",
+      "detail": "three components in order; sizes, parameter_count and model_hash agree"
+    },
+    {
+      "id": "signature.algorithm",
+      "outcome": "pass",
+      "detail": "ES256"
+    },
+    {
+      "id": "signature.encoding",
+      "outcome": "pass",
+      "detail": "base64url: + the canonical base64url of a 64-byte r || s"
+    },
+    {
+      "id": "signature.low_s",
+      "outcome": "pass",
+      "detail": "s <= n/2"
+    },
+    {
+      "id": "signature.payload_hash",
+      "outcome": "pass",
+      "detail": "sha256:206520de49987ece3fe506d0b0baeecdae0c4a843587221966136e47c38c74cd is the hash of the canonical signed payload"
+    },
+    {
+      "id": "key.binding",
+      "outcome": "pass",
+      "detail": "issuer.key_id is the thumbprint of issuer.public_key and the signing key id"
+    },
+    {
+      "id": "trust.key_known",
+      "outcome": "fail",
+      "detail": "signing key \"urn:ietf:params:oauth:jwk-thumbprint:sha-256:jxHt41ug3kJNGuOm46m…\" is not in the trust store"
+    },
+    {
+      "id": "signature.valid",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "trust.issuer",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "trust.key_not_revoked",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "trust.key_validity",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "trust.attestation",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "time.not_future",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "time.policy_not_after_issued",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "lineage.consistency",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    },
+    {
+      "id": "lineage.chain",
+      "outcome": "skipped",
+      "detail": "not run: an earlier check failed"
+    }
+  ],
+  "lineage": null,
+  "policy": {
+    "declared": {
+      "policy_pack_id": "example-policy-pack-v1",
+      "evaluated_at": "2026-09-10T00:00:00Z",
+      "results": [
+        {
+          "rule_id": "example-data-residency",
+          "status": "pass",
+          "evidence_hash": "sha256:5108deb71ee1d00d8e14ad48f2ddee3dca264528a5ae802ac5a682ee11ecc0d7"
+        },
+        {
+          "rule_id": "example-source-screening",
+          "status": "pass",
+          "evidence_hash": "sha256:fce153950ced26bb8fb13e9b6c8212fc720fedf231615f9a5c3ce2e2cde90451"
+        },
+        {
+          "rule_id": "example-export-control",
+          "status": "pass",
+          "evidence_hash": "sha256:13f80b3e0251ce805c391300144bd1cb71d919b40f505a82c2e0bb7e602988af"
+        },
+        {
+          "rule_id": "example-audit-trail",
+          "status": "pass",
+          "evidence_hash": "sha256:2d493f25558c40ad587a79b276fa7cd7804aba795e2db16f13e979cb3cf3b1eb"
+        }
+      ],
+      "overall_status": "compliant"
+    },
+    "evaluation": {
+      "state": "not_requested"
+    }
+  }
+}

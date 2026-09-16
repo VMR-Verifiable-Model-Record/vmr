@@ -1,0 +1,27 @@
+name: Question
+description: Ask how to make, verify or evaluate a Verifiable Model Record.
+title: "question: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We aim to give every issue a first response within 48 hours. Quick questions are also welcome on Discord, where answers are best effort.
+        **Never paste** a private key or files you may not share.
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried
+      description: Commands, documentation sections, or output, if any.
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: vmr version
+      description: The output of `vmr --version`, if you use the tool.
