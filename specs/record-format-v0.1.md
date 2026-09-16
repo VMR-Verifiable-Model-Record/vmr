@@ -1,11 +1,20 @@
 # Verifiable Model Record (VMR) — Format v0.1
 
-**Status:** normative, pre-publication (no record has been issued).
-**Structure:** [`record-schema/v0.1.json`](record-schema/v0.1.json) (JSON Schema 2020-12).
-**Bytes:** this document. **Conformance vector:** [`test-vectors/record/example-v0.1.json`](test-vectors/record/example-v0.1.json).
-**Verification vectors:** [`test-vectors/verify/`](test-vectors/verify/) (§6). **Trust store:** [`trust-store-format-v0.1.md`](trust-store-format-v0.1.md).
-**Reference implementation:** KHALM-VMR's crates `vmr-record` (the format, §2–§5, §7–§8),
-`vmr-builder` (a record of a model's files) and `vmr-verify` (the verifier, §6).
+**Status:** normative. v0.1 published 2026-09-16 at tag `v0.1.0` of the public
+repository; its bytes do not change from here. An editorial correction that
+changes no normative rule is published as v0.1.1; anything that changes a
+rule, as v0.2. This text is that first editorial correction, v0.1.1: no
+normative rule changed.
+**Structure:** [`record-schema/v0.1.json`](record-schema/v0.1.json) (JSON
+Schema 2020-12).
+**Bytes:** this document.
+**Conformance vector:**
+[`test-vectors/record/example-v0.1.json`](test-vectors/record/example-v0.1.json).
+**Verification vectors:** [`test-vectors/verify/`](test-vectors/verify/) (§6).
+**Trust store:** [`trust-store-format-v0.1.md`](trust-store-format-v0.1.md).
+**Reference implementation:** KHALM-VMR's crates `vmr-record` (the format,
+§2–§5, §7–§8), `vmr-builder` (a record of a model's files) and `vmr-verify`
+(the verifier, §6).
 
 The key words MUST, MUST NOT, SHOULD and MAY are to be interpreted as in
 RFC 2119 / RFC 8174. A *verifier* is any party checking a record; an
@@ -926,7 +935,8 @@ wording of its reasons is its own.
 
 ## 10. Revision history
 
-v0.1 is unpublished; `passport_version` stays `"0.1"` through this revision.
+v0.1 published 2026-09-16 at tag `v0.1.0`; `record_version` stayed `"0.1"`
+through this revision history.
 
 - **2026-09-10** — initial format (Phase 3).
 - **2026-09-11 — pre-publication revision** after the independent Phase 3 QA

@@ -1,8 +1,11 @@
 # VMR Audit Log Format v0.1
 
 **Status:** normative for this repository's implementation
-(`vmr/crates/vmr-audit-log`), published with the Verifiable Model Record
-format. Identified by
+(`vmr/crates/vmr-audit-log`). v0.1 published 2026-09-16 at tag `v0.1.0` of the
+public repository, with the Verifiable Model Record format; its bytes do not
+change from here. An editorial correction that changes no normative rule is
+published as v0.1.1; anything that changes a rule, as v0.2. This text is that
+first editorial correction, v0.1.1: no normative rule changed. Identified by
 `https://verifiablemodel.org/schemas/audit-log/v0.1.json`, the `$id` of
 `specs/audit-log-schema/v0.1.json`. Apache-2.0, as the record format is; the
 test vectors are CC0-1.0.

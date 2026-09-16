@@ -1,8 +1,11 @@
 # VMR Policy Pack — Format v0.1
 
-**Status:** normative. v0.1 is unpublished and is revised in place until it
-is published. This document states how a policy pack is loaded, what its
-authority signs, and how it is evaluated against a Verifiable Model Record
+**Status:** normative. v0.1 published 2026-09-16 at tag `v0.1.0` of the public
+repository; its bytes do not change from here. An editorial correction that
+changes no normative rule is published as v0.1.1; anything that changes a
+rule, as v0.2. This text is that first editorial correction, v0.1.1: no
+normative rule changed. This document states how a policy pack is loaded, what
+its authority signs, and how it is evaluated against a Verifiable Model Record
 (`record-format-v0.1.md`). The reference implementation is KHALM-VMR's crate
 `vmr-policy`; where it and this document disagree, that is a defect to report,
 not a choice for the reader.
@@ -862,7 +865,8 @@ Two more files hold the loading and signature cases:
 
 ## 10. Revision history
 
-v0.1 is unpublished; `version` stays `"0.1"` through this revision.
+v0.1 published 2026-09-16 at tag `v0.1.0`; `version` stayed `"0.1"` through
+this revision history.
 
 - **2026-09-13 — first written** (KHALM-TLM Phase 7, task 7.0). This document
   records the loading, signing and evaluation Phase 6 implemented. No

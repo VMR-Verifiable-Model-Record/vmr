@@ -4,7 +4,12 @@ This is the public roadmap of the Verifiable Model Record (VMR) standard and
 `vmr`, KHALM's free reference implementation. It lists what exists and what is
 planned, with no dates. Propose changes with a feature request.
 
-## In the first release
+**Version 0.1 is published, and its bytes are frozen.** What is published at
+`v0.1.0` does not change: an editorial correction that changes no rule is
+released as v0.1.1, and anything that changes a rule as v0.2. Pin the vectors
+and the schemas by hash and they will keep matching.
+
+## In version 0.1
 
 - **The record format, v0.1:** a signed record of which model it is, where it
   came from and what its issuer states about it, for any AI model, from any
@@ -14,9 +19,12 @@ planned, with no dates. Propose changes with a feature request.
 - **Verification without the issuer:** no network, no account, no contact with
   the issuer; the verifier trusts only the keys in your trust store.
 - **Policy packs:** a format for rules a record is graded against, an
-  evaluator, and five reference packs: the EU AI Act, NIST AI RMF, ISO/IEC
-  42001, C2PA AI Disclosure and IETF RATS (RFC 9334). A pack's result is not a
-  legal finding.
+  evaluator, and five reference packs, each KHALM's own reading of the text it
+  cites and named for it &mdash; `khalm-reading-eu-ai-act-2026`,
+  `khalm-reading-nist-ai-rmf-1.0`, `khalm-reading-iso-42001-2023`,
+  `khalm-reading-c2pa-ai-disclosure-2.2` and
+  `khalm-reading-rats-rfc9334-v0.1`. A pack's result is not a legal finding,
+  and any authority may publish its own pack instead.
 - **References to other signed statements:** a record can name an OpenSSF Model
   Signing signature by its digest. A verifier checks the reference's form, not
   the signature.

@@ -1,10 +1,15 @@
 # VMR Trust Store — Format v0.1
 
-**Status:** normative, pre-publication.
-**Structure:** [`trust-store-schema/v0.1.json`](trust-store-schema/v0.1.json) (JSON Schema 2020-12).
-**Rules the schema cannot express, and all semantics:** this document.
-**Vectors:** [`test-vectors/trust-store/`](test-vectors/trust-store/) (loader) and
-[`test-vectors/verify/`](test-vectors/verify/) (verification).
+**Status:** normative. v0.1 published 2026-09-16 at tag `v0.1.0` of the public
+repository; its bytes do not change from here. An editorial correction that
+changes no normative rule is published as v0.1.1; anything that changes a
+rule, as v0.2. This text is that first editorial correction, v0.1.1: no
+normative rule changed.
+**Structure:** [`trust-store-schema/v0.1.json`](trust-store-schema/v0.1.json)
+(JSON Schema 2020-12). **Rules the schema cannot express, and all semantics:**
+this document.
+**Vectors:** [`test-vectors/trust-store/`](test-vectors/trust-store/) (loader)
+and [`test-vectors/verify/`](test-vectors/verify/) (verification).
 **Reference implementation:** KHALM-VMR's crate `vmr-verify` (`TrustStore`).
 
 The key words MUST, MUST NOT, SHOULD and MAY are to be interpreted as in
@@ -329,8 +334,8 @@ nothing).
 
 ## 7. Revision history
 
-v0.1 is unpublished; `trust_store_version` stays `"0.1"` through this
-revision.
+v0.1 published 2026-09-16 at tag `v0.1.0`; `trust_store_version` stayed
+`"0.1"` through this revision history.
 
 - **2026-09-11** — initial format (Phase 4, decision D7).
 - **2026-09-11 — Phase 4 QA revision** after the independent Phase 4 QA
