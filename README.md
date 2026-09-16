@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="vmr.svg" width="120" alt="VMR" />
+</p>
+
 # Verifiable Model Record (VMR)
 
 An open standard for a signed record of what an AI model is and who stands
