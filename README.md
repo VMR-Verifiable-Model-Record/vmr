@@ -21,6 +21,45 @@ VMR replaces that trust with a signed record. The record proves what the model i
 
 The standard, the schema, the test vectors, and the reference verifier are free and open source. The record is not a claim of legal compliance. It is evidence that can be shown to a regulator, an auditor, or a customer.
 
+## Install
+
+Every [release](https://github.com/VMR-Verifiable-Model-Record/vmr/releases)
+carries a prebuilt `vmr` for Windows x86_64, Linux x86_64 and macOS (Apple
+silicon and Intel), each archive holding the binary, `LICENSE` and `NOTICE`.
+
+1. **Download** your system's archive and `SHA256SUMS` from the latest
+   release.
+2. **Check the archive before you run it.** Name your system in the first
+   command and compare the two hashes in the second:
+
+   ```
+   grep x86_64-unknown-linux-musl SHA256SUMS | sha256sum -c        # Linux
+   grep aarch64-apple-darwin SHA256SUMS | shasum -a 256 -c         # Apple silicon
+   grep x86_64-apple-darwin SHA256SUMS | shasum -a 256 -c          # Intel Mac
+   ```
+
+   ```
+   Select-String x86_64-pc-windows-msvc SHA256SUMS                 # Windows PowerShell
+   (Get-FileHash vmr-*-x86_64-pc-windows-msvc.zip).Hash.ToLower()
+   ```
+
+   With the GitHub CLI, `gh attestation verify <archive> --repo
+   VMR-Verifiable-Model-Record/vmr` checks something the checksum cannot:
+   that this repository's release workflow built the file from the release's
+   tag.
+3. **Unpack it and run** `vmr --version`.
+
+What each binary needs: on Linux, nothing — it is statically linked, so no
+particular glibc; on Windows, no Visual C++ runtime; on a Mac, macOS 11 or
+later. Neither Apple nor Microsoft has signed them. macOS quarantines a copy
+downloaded with a browser and will not open it; once the checksum matches,
+clear the flag with `xattr -d com.apple.quarantine vmr`. Windows may warn
+before running it.
+
+To try it on the examples below, you need this repository's files too: clone
+it, or download it with Code → Download ZIP, and run the commands from its
+folder. Or build `vmr` yourself (**Build it**, below).
+
 ## See it: a record for an open-weight model
 
 `docs/examples/phi-4-mini-instruct/` holds a signed record of

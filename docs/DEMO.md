@@ -291,7 +291,7 @@ model.vmr
 vmr.exe
 trust-store.json
 PS verifier> .\vmr --version
-vmr 0.1.0 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)
+vmr 0.1.3 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)
 PS verifier> .\vmr record verify --record model.vmr --trust-store trust-store.json
 ✓ Record valid — signed by a key the trust store trusts for this issuer
   Issuer:        did:web:factory-operator.ph (New Clark City Fab Operator, per trust store)

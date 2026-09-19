@@ -617,7 +617,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vmr-audit-log"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "p256",
  "serde",
@@ -629,7 +629,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-builder"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "p256",
  "serde_json",
@@ -640,7 +640,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-cli"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "anstream",
  "anstyle-query",
@@ -670,7 +670,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-policy"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "p256",
  "serde",
@@ -681,7 +681,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-record"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "coset",
  "ecdsa",
@@ -696,7 +696,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-verify"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "p256",
  "serde",

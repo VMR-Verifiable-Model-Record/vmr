@@ -1,0 +1,196 @@
+# Prebuilt binaries of the Community `vmr`. On a version tag, build it for
+# Windows x86_64, Linux x86_64 and macOS (Apple silicon and Intel), prove each
+# binary runs by verifying the records committed under docs/examples/, then
+# attach the archives to a DRAFT GitHub Release, with a SHA256SUMS file and a
+# build provenance attestation. A maintainer reads the draft and publishes it.
+#
+# Run it by hand (workflow_dispatch) for a dry run: the same builds and
+# checks, the archives kept as workflow artifacts for a week, and SHA256SUMS
+# printed, with no attestation and no release.
+#
+# What each binary needs from the machine it runs on:
+# - Linux: nothing. It is built for x86_64-unknown-linux-musl, statically
+#   linked, so it runs on any x86_64 Linux whatever its glibc; the job checks
+#   that the file is static.
+# - Windows: no Visual C++ runtime. .cargo/config.toml links the C runtime
+#   statically, and vmr-cli's cli_runtime test reads the release binary's
+#   import tables before it is packaged. A RUSTFLAGS variable would silently
+#   replace that setting, so the job refuses to run with one set.
+# - macOS: 11 or later (MACOSX_DEPLOYMENT_TARGET below). The binaries are not
+#   signed or notarized by Apple; the README says how to open them.
+#
+# Every archive holds the binary, LICENSE and NOTICE (Apache License 2.0,
+# section 4). Every action is pinned by commit SHA, the checkout leaves no
+# credentials on disk, and only the last job can write: the build jobs run the
+# dependencies' build scripts with a read-only token.
+
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  build:
+    name: build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { os: windows-2022,   target: x86_64-pc-windows-msvc,    exe: vmr.exe, archive: zip }
+          - { os: ubuntu-24.04,   target: x86_64-unknown-linux-musl, exe: vmr,     archive: tar.gz }
+          - { os: macos-15,       target: aarch64-apple-darwin,      exe: vmr,     archive: tar.gz }
+          - { os: macos-15-intel, target: x86_64-apple-darwin,       exe: vmr,     archive: tar.gz }
+    defaults:
+      run:
+        shell: bash
+    env:
+      TARGET: ${{ matrix.target }}
+      EXE: vmr/target/${{ matrix.target }}/release/${{ matrix.exe }}
+      ARCHIVE: ${{ matrix.archive }}
+      MACOSX_DEPLOYMENT_TARGET: '11.0'
+      REF_NAME: ${{ github.ref_name }}
+      REF_TYPE: ${{ github.ref_type }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: No RUSTFLAGS, so .cargo/config.toml applies
+        run: |
+          if [ -n "${RUSTFLAGS:-}${CARGO_ENCODED_RUSTFLAGS:-}" ]; then
+            echo "::error::RUSTFLAGS is set; it would replace .cargo/config.toml's static C runtime"
+            exit 1
+          fi
+
+      - name: Rust stable, for ${{ matrix.target }}
+        run: |
+          rustup toolchain install stable --profile minimal --target "$TARGET" --no-self-update
+          rustup default stable
+          rustc --version
+
+      - name: Build
+        run: cargo build --release --locked --manifest-path vmr/Cargo.toml -p vmr-cli --target "$TARGET"
+
+      - name: The binary names the version the tag does
+        run: |
+          "$EXE" --version
+          version=$("$EXE" --version | awk 'NR == 1 { print $2 }')
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          if [ "$REF_TYPE" = tag ] && [ "$REF_NAME" != "v$version" ]; then
+            echo "::error::the tag is $REF_NAME but the binary says $version"
+            exit 1
+          fi
+
+      - name: Windows needs no Visual C++ runtime (reads the release binary's imports)
+        if: runner.os == 'Windows'
+        run: cargo test --release --locked --manifest-path vmr/Cargo.toml -p vmr-cli --target "$TARGET" --test cli_runtime
+
+      - name: Linux is statically linked
+        if: runner.os == 'Linux'
+        run: |
+          file "$EXE"
+          file "$EXE" | grep -q 'static' || { echo "::error::not a static binary"; exit 1; }
+
+      - name: It verifies the committed example records
+        run: |
+          set -x
+          "$EXE" record verify --color never \
+            --record docs/examples/vmr-demo-assistant/record.vmr \
+            --trust-store docs/examples/vmr-demo-assistant/trust-store.json \
+            --policy-pack specs/policy-packs/khalm-reading-eu-ai-act-2026.json
+          "$EXE" record verify --color never \
+            --record docs/examples/phi-4-mini-instruct/record.vmr \
+            --trust-store docs/examples/phi-4-mini-instruct/trust-store.json
+
+      - name: Package
+        run: |
+          name="vmr-$VERSION-$TARGET"
+          mkdir "$name"
+          cp "$EXE" LICENSE NOTICE "$name/"
+          if [ "$ARCHIVE" = zip ]; then
+            7z a -tzip "$name.zip" "$name" > /dev/null
+          else
+            tar -czf "$name.tar.gz" "$name"
+          fi
+          ls -l "$name.$ARCHIVE"
+
+      - name: Keep the archive for the release job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vmr-${{ matrix.target }}
+          path: vmr-*-${{ matrix.target }}.${{ matrix.archive }}
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: checksums, provenance and the draft release
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write     # create the draft release and attach the files
+      id-token: write     # sign the provenance through Sigstore
+      attestations: write # store the attestation with this repository
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Collect the four archives
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: vmr-*
+          path: dist
+          merge-multiple: true
+
+      - name: SHA256SUMS
+        working-directory: dist
+        run: |
+          sha256sum vmr-* > SHA256SUMS
+          cat SHA256SUMS
+          test "$(wc -l < SHA256SUMS)" -eq 4
+
+      - name: Build provenance for every file
+        if: github.ref_type == 'tag'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: 'dist/*'
+
+      - name: Draft release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          {
+            echo 'Prebuilt `vmr`, the free Community build (Apache-2.0), for Windows x86_64,'
+            echo 'Linux x86_64 and macOS (Apple silicon and Intel).'
+            echo
+            echo '**Check what you downloaded before you run it**, either way:'
+            echo '- against SHA256SUMS, as the README shows for each system (Linux:'
+            echo '  `grep x86_64-unknown-linux-musl SHA256SUMS | sha256sum -c`);'
+            echo "- \`gh attestation verify <file> --repo $REPO\`, which checks that this"
+            echo "  repository's release workflow built the file from this tag."
+            echo
+            echo 'The Linux binary is statically linked and needs no particular glibc. The'
+            echo 'Windows binary needs no Visual C++ runtime. The macOS binaries need'
+            echo 'macOS 11 or later and are not notarized by Apple: the README says how to'
+            echo 'open them.'
+          } > notes.md
+          gh release create "$TAG" dist/* --repo "$REPO" --draft --verify-tag \
+            --title "$TAG" --notes-file notes.md

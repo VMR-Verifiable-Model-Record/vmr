@@ -13,14 +13,14 @@ use vmr_cli::names::TOOL;
 fn version_names_the_binary_and_its_build_flavor() {
     let run = vmr(&["--version"]);
     run.expect_code(0);
-    assert!(run.stdout.starts_with("vmr 0.1.0"), "{}", run.transcript());
+    assert!(run.stdout.starts_with("vmr 0.1.3"), "{}", run.transcript());
     // D11f-5: the version names the software and this build's reference
-    // status, and the record format it implements, so that 0.1.0 is not read
+    // status, and the record format it implements, so that 0.1.3 is not read
     // as the standard's own version (the engine build's version says what it
     // adds beyond that, and its own tests check it).
     assert_eq!(
         run.stdout.trim_end(),
-        "vmr 0.1.0 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)",
+        "vmr 0.1.3 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)",
         "{}",
         run.transcript()
     );
