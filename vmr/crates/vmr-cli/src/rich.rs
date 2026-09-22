@@ -705,7 +705,9 @@ mod tests {
     fn the_screens_draw_only_characters_every_console_font_has() {
         let mut outside = Vec::new();
         for (file, source) in [("rich.rs", include_str!("rich.rs")), ("screens.rs", include_str!("screens.rs"))] {
-            let code = source.split("\n#[cfg(test)]\nmod tests {").next().unwrap_or(source);
+            // A checkout with CRLF line endings must not hide the test module's marker.
+            let source = source.replace("\r\n", "\n");
+            let code = source.split("\n#[cfg(test)]\nmod tests {").next().unwrap_or(source.as_str());
             for (n, line) in code.lines().enumerate() {
                 let line = line.split("//").next().unwrap_or(line);
                 let mut chars: Vec<char> = line.chars().filter(|c| !c.is_ascii()).collect();

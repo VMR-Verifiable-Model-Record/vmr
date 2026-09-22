@@ -11,6 +11,14 @@
 # Do not remove them, and do not convert these files. After a fresh clone on
 # any operating system, `git diff` is empty.
 
+# Every text file checks out with LF line endings on every operating system,
+# whatever core.autocrlf says. Git for Windows converts to CRLF by default, and
+# so do GitHub's Windows runners: two tests that read a source file or a
+# specification as text failed on such a checkout, and the weekly Windows CI
+# with them (2026-09-21). The narrower rules below come after this one and
+# still apply; they record which files are hashed byte for byte.
+* text=auto eol=lf
+
 specs/test-vectors/** text eol=lf
 specs/conformance/** text eol=lf
 vmr/crates/vmr-verify/tests/golden/** text eol=lf

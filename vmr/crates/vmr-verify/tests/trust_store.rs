@@ -142,7 +142,8 @@ fn the_spec_examples_load() {
     // key is the policy vectors' pack authority key.
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../../specs/trust-store-format-v0.1.md");
-    let md = std::fs::read_to_string(path).unwrap();
+    // A checkout with CRLF line endings must not hide the code fences.
+    let md = std::fs::read_to_string(path).unwrap().replace("\r\n", "\n");
     let blocks: Vec<&str> = md.split("```json\n").skip(1).map(|rest| &rest[..rest.find("```").unwrap()]).collect();
     assert_eq!(blocks.len(), 2, "two JSON examples");
     let issuers = TrustStore::from_json(blocks[0].as_bytes()).unwrap();
