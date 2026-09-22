@@ -1,10 +1,13 @@
 # CI for the Community edition of VMR: this tree, with no learning engine,
 # no C/C++ toolchain and no GPU anywhere in it. Two lanes, neither with a
-# GPU: linux on a push to main and on every pull request; windows weekly and
-# by hand, to keep to typical free-tier Actions minutes. A push to a branch
-# with an open pull request would otherwise run everything twice, and the
-# concurrency group is keyed on the ref alone so the second run cancels the
-# first.
+# GPU, both on a push to main, on every pull request and by hand. Standard
+# GitHub-hosted runners cost a public repository nothing, so windows is not
+# rationed: until 2026-09-21 it ran weekly only, and its first run failed two
+# tests on a CRLF checkout five days after publication. Windows also runs
+# weekly, to catch a change in stable Rust or in the runner image between
+# pushes. A push to a branch with an open pull request would otherwise run
+# everything twice, and the concurrency group is keyed on the ref alone so the
+# second run cancels the first.
 #
 # Mirrors the checks the private development repository runs against an
 # export of exactly this tree: cargo build, clippy -D warnings and cargo
@@ -22,7 +25,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: '11 5 * * 1' # Mondays 05:11 UTC — the windows job's week
+    - cron: '11 5 * * 1' # Mondays 05:11 UTC: windows, between pushes
   workflow_dispatch:
 
 permissions:
@@ -93,7 +96,6 @@ jobs:
 
   windows:
     name: windows (windows-2022)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
