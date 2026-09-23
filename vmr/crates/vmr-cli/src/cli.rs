@@ -120,6 +120,120 @@ pub enum Command {
     /// Provision a trust store: the keys a verifier trusts, and for whom.
     #[command(subcommand)]
     TrustStore(TrustStoreCommand),
+    /// Sign a policy pack as its authority, and read what a pack says.
+    #[command(subcommand)]
+    Pack(PackCommand),
+}
+
+/// `vmr pack ...`
+#[derive(Debug, Subcommand)]
+pub enum PackCommand {
+    /// Sign a policy pack with an authority's key, and write the signed pack.
+    #[command(long_about = PACK_SIGN_LONG)]
+    Sign(PackSignArgs),
+    /// Show what a policy pack is, its rules, and the state of its signature.
+    #[command(long_about = PACK_CHECK_LONG)]
+    Check(PackCheckArgs),
+}
+
+const PACK_SIGN_LONG: &str = concat!(
+    "Sign a policy pack with an authority's key, and write the signed pack.\n\n\
+     Any authority may publish and sign a pack - a regulator, a standards body, an enterprise, an industry \
+     consortium - and this command is how one does it. It signs the pack's payload (the document as it stands, \
+     with any signature section removed, in its RFC 8785 canonical form) with --key, and writes that same \
+     document with a signature section added: ES256, the signature itself, the payload hash, and the RFC 7638 \
+     thumbprint URN of the key. Nothing else in the file changes, and the pack is validated before anything is \
+     signed.\n\n\
+     The signature is deterministic (RFC 6979): the same pack and key give the same bytes on every machine and \
+     every run. A pack that already carries a signature is refused unless --replace says to sign it again; the \
+     new signature then covers the same payload as the old, since a signature section is never part of what is \
+     signed. This command decides no trust: whose key may speak for which authority is the decision of whoever \
+     checks the pack, held in the policy_authorities of their trust store. Give the verifiers who should trust \
+     your packs the public key (`",
+    crate::tool_name!(),
+    " key export`), as you would for records."
+);
+
+/// `vmr pack sign`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_DONE)]
+pub struct PackSignArgs {
+    /// The policy pack to sign (JSON, in the policy-pack format).
+    #[arg(long, value_name = "FILE")]
+    pub pack: PathBuf,
+
+    // The authority's signing key.
+    #[arg(long, value_name = "KEY", help = concat!("The authority's signing key: a PKCS#8 PEM private key (`", crate::tool_name!(), " key generate`)"))]
+    pub key: PathBuf,
+
+    /// Where to write the signed pack (a new file).
+    #[arg(long, value_name = "FILE")]
+    pub output: PathBuf,
+
+    /// Sign a pack that already carries a signature; the old section is dropped.
+    #[arg(long)]
+    pub replace: bool,
+
+    /// Replace the --output file if it exists.
+    #[arg(long)]
+    pub force: bool,
+}
+
+const PACK_CHECK_LONG: &str = concat!(
+    "Show what a policy pack is, its rules, and the state of its signature.\n\n\
+     Reads a pack on its own - no record, no verification - and prints its id and version, the authority it \
+     names, its payload hash, and every rule with its type and whether it is mandatory or advisory. A pack the \
+     policy-pack format refuses is an input error (exit code 1), as it is for `",
+    crate::tool_name!(),
+    " record verify --policy-pack`, and so is a pack whose signature section states a payload hash that is not \
+     the pack's own: such a pack was changed after it was signed.\n\n\
+     Without a store the signature is reported but not checked: the output says the pack is unsigned, or names \
+     the key it states as its signer. With --authority-store, or with --trust-store when the policy authorities \
+     live in the store you verify records with, the signature is checked exactly as `record verify` checks it \
+     (the trust-store format, §4.2): the key is looked up among the policy authorities of that store, the \
+     signature must verify under it, and the key must be trusted for the authority the pack names, unrevoked, \
+     and inside its window at --at (else now).\n\n\
+     A pack that is unsigned, or signed by a key no trusted policy authority holds, is reported and exits 0; \
+     --require-signed refuses it instead (exit code 1), which is how a script gates a deployment on a signature \
+     it trusts. What a pack says about itself is a claim; only a store you provisioned makes it an authority's."
+);
+
+/// `vmr pack check`
+#[derive(Debug, Args)]
+#[command(
+    after_help = EXIT_CODES_DONE,
+    group = clap::ArgGroup::new("pack_authorities").args(["authority_store", "trust_store"])
+)]
+pub struct PackCheckArgs {
+    /// The policy pack to read (JSON, in the policy-pack format).
+    #[arg(long, value_name = "FILE")]
+    pub pack: PathBuf,
+
+    /// Check the signature against the policy authorities of this store: a
+    /// trust store listing only policy_authorities, with "issuers": [] (the
+    /// trust-store format, §4.2). Without a store, nothing is checked.
+    #[arg(long, value_name = "FILE")]
+    pub authority_store: Option<PathBuf>,
+
+    /// Check the signature against the policy_authorities of the trust store
+    /// you verify records with, when they live there rather than in an
+    /// authority store of their own (as `record verify` reads them).
+    #[arg(long, value_name = "FILE")]
+    pub trust_store: Option<PathBuf>,
+
+    /// Judge the signing key's window at this UTC time (YYYY-MM-DDTHH:MM:SSZ)
+    /// instead of now. The output says which was used.
+    #[arg(long, value_name = "T", value_parser = parse_timestamp, requires = "pack_authorities")]
+    pub at: Option<Timestamp>,
+
+    /// Refuse (exit code 1) a pack that is unsigned, or signed by a key no
+    /// trusted policy authority holds, instead of reporting it and exiting 0.
+    #[arg(long, requires = "pack_authorities")]
+    pub require_signed: bool,
+
+    /// Print what the pack is as JSON instead of the summary.
+    #[arg(long)]
+    pub json: bool,
 }
 
 /// `vmr model ...`
@@ -168,6 +282,9 @@ pub enum TrustStoreCommand {
     /// Trust a public key for an issuer: add it to a trust store (created if missing).
     #[command(long_about = TRUST_STORE_ADD_LONG)]
     Add(TrustStoreAddArgs),
+    /// Trust a public key for a policy authority: add it to a trust store (created if missing).
+    #[command(long_about = TRUST_STORE_ADD_AUTHORITY_LONG)]
+    AddAuthority(TrustStoreAddAuthorityArgs),
 }
 
 const TRUST_STORE_ADD_LONG: &str = concat!(
@@ -181,6 +298,68 @@ const TRUST_STORE_ADD_LONG: &str = concat!(
      record: a key is never trusted because a record carries it. The store is validated before it is written, and \
      written atomically."
 );
+
+const TRUST_STORE_ADD_AUTHORITY_LONG: &str = concat!(
+    "Trust a public key for a policy authority: add it to a trust store (created if missing).\n\n\
+     The counterpart of `",
+    crate::tool_name!(),
+    " trust-store add` for the other key a verifier trusts: the one an authority signs its policy packs with (`",
+    crate::tool_name!(),
+    " pack sign`). Any authority may publish and sign a pack - a regulator, a standards body, an enterprise, an \
+     industry consortium, a customer's own compliance team - and this command is the verifier's decision to \
+     trust one of them: the key (a public key file from `",
+    crate::tool_name!(),
+    " key export`, received from the authority - compare its key id with them by a second channel), the \
+     authority_id a pack must name for this key to speak for it, the name to show for that authority, and the \
+     window in which its pack signatures are relied on. It never reads a pack: a key is never trusted because a \
+     pack carries it.\n\n\
+     The file may be the trust store records are verified against, or an authority store of its own (\"issuers\": \
+     [], the trust-store format, §4.2); it is created if it does not exist. A key the store already holds is \
+     refused, and so is a name that contradicts the one it holds for that authority: no entry is weakened in \
+     place, and the file is left as it was. A pack declares no attestation level, so the key entry's own level \
+     is never read when a pack signature is checked; the format's key object carries it, and it is written as \
+     self unless --attestation-level says otherwise. The store is validated before it is written, and written \
+     atomically."
+);
+
+/// `vmr trust-store add-authority`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_DONE)]
+pub struct TrustStoreAddAuthorityArgs {
+    /// The trust store, or authority store, to add to; created if it does not
+    /// exist.
+    #[arg(long, visible_alias = "authority-store", value_name = "FILE")]
+    pub trust_store: PathBuf,
+
+    // The authority's public key file.
+    #[arg(long, value_name = "FILE", help = concat!("The authority's public key file (from `", crate::tool_name!(), " key export`)"))]
+    pub public_key: PathBuf,
+
+    /// The authority this key may sign policy packs for, as a pack's
+    /// authority.authority_id states it, e.g. eu-notified-body-1234.
+    #[arg(long, value_name = "ID")]
+    pub authority_id: String,
+
+    /// The name a checked pack signature shows for this authority (the pack's
+    /// own name is only a claim).
+    #[arg(long, value_name = "NAME")]
+    pub authority_name: String,
+
+    /// The first second at which this key's pack signatures are relied on
+    /// (UTC, YYYY-MM-DDTHH:MM:SSZ).
+    #[arg(long, value_name = "T", value_parser = parse_timestamp)]
+    pub valid_from: Timestamp,
+
+    /// Its signatures are relied on only before this second (UTC); without it,
+    /// no end.
+    #[arg(long, value_name = "T", value_parser = parse_timestamp)]
+    pub valid_until: Option<Timestamp>,
+
+    /// The level the key entry carries. A pack declares none, so it is never
+    /// read when a pack signature is checked.
+    #[arg(long, value_name = "LEVEL", value_enum, default_value = "self")]
+    pub attestation_level: AttestationArg,
+}
 
 /// The attestation levels, as the trust-store format names them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]

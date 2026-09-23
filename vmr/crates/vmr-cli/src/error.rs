@@ -73,6 +73,28 @@ impl CliError {
         CliError { code: EXIT_ENGINE, message: message.into(), hint: None }
     }
 
+    /// A fault in this tool itself (exit 1, the code every failure that is
+    /// neither the engine's nor a verification's result carries): a guard
+    /// that holds whenever `vmr` is correct did not hold. Nothing here is the
+    /// user's input, and the message says so rather than blaming what they
+    /// gave: a wrong diagnosis sends an author looking for a mistake in their
+    /// own file.
+    pub fn internal(message: impl Into<String>) -> Self {
+        CliError {
+            code: EXIT_INPUT,
+            message: format!(
+                "{}: this is a fault in {} itself, not in what you gave it",
+                message.into(),
+                crate::tool_name!()
+            ),
+            hint: Some(format!(
+                "nothing was written; please report it with the command you ran and the version `{} --version` \
+                 prints",
+                crate::tool_name!()
+            )),
+        }
+    }
+
     /// The same error with a hint line.
     pub fn with_hint(mut self, hint: impl Into<String>) -> Self {
         self.hint = Some(hint.into());
@@ -93,5 +115,13 @@ mod tests {
     #[test]
     fn an_engine_error_exits_2() {
         assert_eq!(CliError::engine("x").code, 2);
+    }
+
+    #[test]
+    fn a_fault_of_this_tool_exits_1_and_never_blames_the_input() {
+        let e = CliError::internal("the signature just made does not verify");
+        assert_eq!(e.code, 1);
+        assert!(e.message.ends_with("this is a fault in vmr itself, not in what you gave it"), "{}", e.message);
+        assert!(e.hint.unwrap().starts_with("nothing was written; please report it"));
     }
 }

@@ -811,6 +811,280 @@ pub fn trusted(t: &TrustDecision<'_>) -> Vec<Line> {
     out
 }
 
+/// What `trust-store add-authority` decided and wrote.
+pub struct AuthorityDecision<'a> {
+    /// The key trusted (a checked thumbprint URN).
+    pub key_id: &'a str,
+    /// The authority a pack must name for this key to speak for it.
+    pub authority_id: &'a str,
+    /// The operator's name for that authority.
+    pub authority_name: &'a str,
+    /// When its pack signatures are relied on.
+    pub window: &'a str,
+    /// The store's path, as shown.
+    pub store: &'a str,
+    /// Whether the store was created.
+    pub created: bool,
+    /// Policy authorities in the store now.
+    pub authorities: u64,
+    /// Their keys in the store now.
+    pub keys: u64,
+    /// The store's canonical hash.
+    pub sha256: String,
+}
+
+/// A key trusted for a policy authority.
+pub fn authority_trusted(t: &AuthorityDecision<'_>) -> Vec<Line> {
+    let s = shown_value;
+    let mut out = header("trust-store add-authority");
+    out.extend(banner(&[vec![
+        p(" "),
+        st(" TRUSTED ", Style::BadgeNeutral),
+        p(format!("   {} for {}", key(t.key_id), s(t.authority_id))),
+    ]]));
+    out.extend(table(&[Block::Rows(vec![
+        row(
+            "For authority",
+            vec![
+                vec![p(s(t.authority_id))],
+                vec![p(s(t.authority_name)), st(" · the name you gave", Style::Dim)],
+            ],
+        ),
+        row("May sign", vec![vec![p(format!("policy packs {}", t.window))]]),
+        row(
+            "Trust store",
+            vec![
+                vec![p(format!(
+                    "{} · {} · {} · {}",
+                    t.store,
+                    if t.created { "created" } else { "updated" },
+                    plural(t.authorities, "policy authority", "policy authorities"),
+                    plural(t.keys, "key", "keys")
+                ))],
+                vec![st(t.sha256.clone(), Style::Dim)],
+            ],
+        ),
+    ])]));
+    out
+}
+
+// ---------------------------------------------------------------------------
+//  pack sign, pack check
+// ---------------------------------------------------------------------------
+
+/// What `pack sign` signed and wrote. Every string is already escaped.
+pub struct PackSigned<'a> {
+    /// The pack's identifier.
+    pub pack_id: &'a str,
+    /// The pack's own version.
+    pub pack_version: &'a str,
+    /// The authority the pack names.
+    pub authority_id: &'a str,
+    /// The authority's name, as the pack states it: a claim.
+    pub authority_name: &'a str,
+    /// The key that signed (a checked thumbprint URN).
+    pub signing_key_id: &'a str,
+    /// The payload hash the section states.
+    pub payload_hash: &'a str,
+    /// The signed pack's path, as shown.
+    pub output: &'a str,
+    /// The signing key id of the signature `--replace` dropped, when it
+    /// dropped one: an author is told whose signature is no longer on the
+    /// pack they signed (L2).
+    pub replaced: Option<&'a str>,
+}
+
+/// A pack signed by its authority.
+pub fn pack_signed(s: &PackSigned<'_>) -> Vec<Line> {
+    let mut out = header("pack sign");
+    out.extend(banner(&[vec![
+        p(" "),
+        st(" SIGNED ", Style::BadgeNeutral),
+        p(format!("   {} {} · by {}", s.pack_id, s.pack_version, key(s.signing_key_id))),
+    ]]));
+    out.extend(table(&[Block::Rows(vec![
+        row(
+            "Authority",
+            vec![
+                vec![p(s.authority_id)],
+                vec![p(s.authority_name), st(" · the pack's own claim", Style::Dim)],
+            ],
+        ),
+        row("Payload hash", vec![vec![st(s.payload_hash, Style::Dim)]]),
+        row(
+            "Signed pack",
+            {
+                let mut lines = vec![
+                    vec![p(s.output)],
+                    vec![st(
+                        if s.replaced.is_some() {
+                            "the pack as given, its signature section replaced"
+                        } else {
+                            "the pack as given, with its signature section added"
+                        },
+                        Style::Dim,
+                    )],
+                ];
+                if let Some(old) = s.replaced {
+                    lines.push(vec![st(format!("it replaced the signature of {}", key(old)), Style::Dim)]);
+                }
+                lines
+            },
+        ),
+    ])]));
+    out.push(Vec::new());
+    out.extend(paragraph(
+        &[
+            p("  "),
+            st("Next", Style::Hint),
+            p(format!(
+                "  send your verifiers the public key ({TOOL} key export), which they trust for this authority \
+                 in their trust store"
+            )),
+        ],
+        8,
+    ));
+    out
+}
+
+/// One rule of a pack, as `pack check` lists it. Already escaped.
+pub struct PackRule {
+    /// The rule's identifier.
+    pub rule_id: String,
+    /// The rule's kind.
+    pub rule_type: &'static str,
+    /// `mandatory`, `recommended` or `informational`.
+    pub severity: &'static str,
+    /// What the rule asks.
+    pub description: String,
+}
+
+/// What `pack check` read. Every string is already escaped.
+pub struct PackChecked<'a> {
+    /// The pack's identifier.
+    pub pack_id: &'a str,
+    /// The pack's own version.
+    pub pack_version: &'a str,
+    /// The authority the pack names.
+    pub authority_id: &'a str,
+    /// The authority's name, as the pack states it: a claim.
+    pub authority_name: &'a str,
+    /// The regime the pack encodes.
+    pub jurisdiction: &'a str,
+    /// What the pack says it is.
+    pub description: &'a str,
+    /// What the pack says it is NOT, in the authority's own words: the one
+    /// command whose job is reading a pack never shows an authority's claims
+    /// while hiding the authority's own limitation of them (M4).
+    pub disclaimer: &'a str,
+    /// The pack's payload hash.
+    pub payload_hash: &'a str,
+    /// The pack file, as shown.
+    pub file: &'a str,
+    /// What is known about the signature.
+    pub signature: &'a PackSignatureState,
+    /// What to call the store that decided it: `authority store`, or the
+    /// `trust store` records are verified against when the authorities live
+    /// there.
+    pub store: &'a str,
+    /// When the signature was judged, and by what, when a store decided it:
+    /// `None` means nothing checked it.
+    pub checked: Option<String>,
+    /// The rules, in the pack's order.
+    pub rules: Vec<PackRule>,
+}
+
+/// A pack read on its own: what it is, its rules, and its signature state.
+pub fn pack_checked(c: &PackChecked<'_>) -> Vec<Line> {
+    let mut out = header("pack check");
+    // The badge says what was decided, never more: a signature nothing
+    // checked is a claim, and gets the caution badge that every claim gets.
+    let (badge, style) = match (&c.checked, c.signature) {
+        (Some(_), PackSignatureState::Valid { .. }) => (" SIGNATURE VALID ", Style::BadgeOk),
+        _ => (" PACK ", Style::BadgeCaution),
+    };
+    out.extend(banner(&[vec![
+        p(" "),
+        st(badge, style),
+        p(format!("   {} {} · {}", c.pack_id, c.pack_version, c.file)),
+    ]]));
+    let mandatory = c.rules.iter().filter(|r| r.severity == "mandatory").count() as u64;
+    out.extend(table(&[Block::Rows(vec![
+        row(
+            "Authority",
+            vec![
+                vec![p(c.authority_id)],
+                vec![p(c.authority_name), st(" · the pack's own claim", Style::Dim)],
+            ],
+        ),
+        row("Jurisdiction", one(c.jurisdiction)),
+        row("Describes", one(c.description)),
+        row("Disclaims", one(c.disclaimer)),
+        row("Payload hash", vec![vec![st(c.payload_hash, Style::Dim)]]),
+        row("Signature", pack_signature_lines(c.signature, c.checked.as_deref(), c.store)),
+        row(
+            "Rules",
+            vec![vec![p(format!(
+                "{}, {mandatory} mandatory",
+                plural(c.rules.len() as u64, "rule", "rules")
+            ))]],
+        ),
+    ])]));
+    out.push(Vec::new());
+    for rule in c.rules.iter().take(RULES_SHOWN) {
+        let mark = if rule.severity == "mandatory" { Style::Bold } else { Style::Dim };
+        out.extend(paragraph(
+            &[
+                p("  "),
+                st(rule.rule_id.clone(), mark),
+                st(format!(" · {} · {}", rule.rule_type, rule.severity), Style::Dim),
+            ],
+            4,
+        ));
+        out.extend(paragraph(&[p("    "), st(rule.description.clone(), Style::Dim)], 4));
+    }
+    if c.rules.len() > RULES_SHOWN {
+        out.extend(paragraph(
+            &[st(format!("    …and {} more; --json lists them all", c.rules.len() - RULES_SHOWN), Style::Dim)],
+            4,
+        ));
+    }
+    out
+}
+
+/// What `pack check` found about the signature, drawn like `record verify`'s
+/// but saying, when no store was given, that nothing checked it. Only a
+/// decision an operator's store made gets the green of a pass.
+fn pack_signature_lines(state: &PackSignatureState, checked: Option<&str>, store: &str) -> Vec<Line> {
+    let s = shown_value;
+    match state {
+        PackSignatureState::Unsigned => vec![
+            vec![st("none", Style::Note), p(" · the pack carries no authority signature")],
+            vec![st("pin it by its payload hash", Style::Dim)],
+        ],
+        PackSignatureState::NotChecked { signing_key_id } => {
+            let why = match checked {
+                None => "pass --authority-store, or --trust-store, to check it against the authorities you trust"
+                    .to_string(),
+                Some(_) => format!("no policy authority in the {store} holds that key"),
+            };
+            vec![
+                vec![st("NOT checked", Style::Caution), p(format!(" · the pack names {} as its signer", key(signing_key_id)))],
+                vec![st(why, Style::Dim)],
+            ]
+        }
+        PackSignatureState::Valid { signing_key_id, authority_id, authority_name } => vec![
+            [passed("valid"), vec![p(format!(" · signed by {}", key(signing_key_id)))]].concat(),
+            vec![p(format!(
+                "a key the {store} trusts for policy authority {} ({})",
+                s(authority_id),
+                s(authority_name)
+            ))],
+            vec![st(checked.unwrap_or_default(), Style::Dim)],
+        ],
+    }
+}
+
 // ---------------------------------------------------------------------------
 //  Errors
 // ---------------------------------------------------------------------------

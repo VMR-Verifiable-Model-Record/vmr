@@ -55,6 +55,7 @@ pub mod model_cmd;
 mod mutate;
 pub mod names;
 pub mod output;
+pub mod pack_cmd;
 pub mod policy_pack;
 pub mod progress;
 pub mod render;
@@ -66,7 +67,7 @@ pub mod view;
 pub mod width_tables;
 
 use clap::FromArgMatches;
-use cli::{Cli, Command, KeyCommand, ModelCommand, RecordCommand, TrustStoreCommand};
+use cli::{Cli, Command, KeyCommand, ModelCommand, PackCommand, RecordCommand, TrustStoreCommand};
 use error::CliError;
 use output::Output;
 use std::process::ExitCode;
@@ -108,6 +109,7 @@ fn writes_data(command: &Command) -> bool {
         Command::Record(RecordCommand::Verify(args)) => args.json,
         Command::Model(ModelCommand::Hash(args)) => args.json,
         Command::Key(KeyCommand::Export(args)) => args.output.is_none(),
+        Command::Pack(PackCommand::Check(args)) => args.json,
         _ => false,
     }
 }
@@ -138,6 +140,9 @@ pub fn run(cli: &Cli) -> Result<Output, CliError> {
         Command::Key(KeyCommand::Generate(args)) => keys::generate(args),
         Command::Key(KeyCommand::Export(args)) => keys::export(args),
         Command::TrustStore(TrustStoreCommand::Add(args)) => trust_store_cmd::add(args),
+        Command::TrustStore(TrustStoreCommand::AddAuthority(args)) => trust_store_cmd::add_authority(args),
+        Command::Pack(PackCommand::Sign(args)) => pack_cmd::sign(args),
+        Command::Pack(PackCommand::Check(args)) => pack_cmd::check(args),
     }
 }
 

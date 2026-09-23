@@ -46,7 +46,7 @@ time, `kernel32.dll`, all part of Windows. An engine library built before this c
 against the DLL runtime and no longer links (`LNK1120` after `LNK4098`):
 rebuild it with CMake, then `cargo clean -p vmr-ffi`.
 
-`vmr --version` tells the builds apart: `vmr 0.1.3 (KHALM-VMR, a reference
+`vmr --version` tells the builds apart: `vmr 0.1.4 (KHALM-VMR, a reference
 implementation of the Verifiable Model Record standard; record format v0.1)`
 for the default build, `vmr 0.1.0 (KHALM-VMR, implements the Verifiable
 Model Record standard; record format v0.1; engine build: record emit also
@@ -182,7 +182,10 @@ escaped (`\u{001b}`), so a record cannot repaint the terminal. And every
 such value is cut to 200 characters before it is escaped, marked with its
 whole length (`<its first 200 characters>…[250000 characters in all]`), so
 a record cannot flood the terminal either; ids, hashes and timestamps are far
-shorter and always shown whole. `--json` carries every value complete. Error
+shorter and always shown whole. A policy pack's `disclaimer` is the one
+exception: it is the line that limits what the pack's authority claims, so
+`pack check` shows it whole, cut only at 2000 characters, which no disclaimer
+written to be read reaches. `--json` carries every value complete. Error
 messages get the same treatment: an unusable trust store is reported with
 what it got wrong, its own text (a member name, a value) escaped and cut
 short.
@@ -683,8 +686,10 @@ the store trustworthy.
   `trust_store.duplicate_key`), an issuer name that contradicts the store, and
   an unusable existing store — leaving the file untouched.
 - Keeps a store's `policy_authorities` as they are. It adds issuers' keys
-  only. A policy authority's entry is written by hand (trust-store format §2
-  and §4.2), and its keys take the two members `vmr key export` writes.
+  only: the same decision for a key that signs **policy packs** is
+  `vmr trust-store add-authority` (§3.10). One key never does both — a key
+  the store trusts for an issuer may not be added for an authority, or the
+  other way round (`trust_store.duplicate_key`).
 - Validates the whole new store with the verifier's loader before writing, and
   writes it atomically (a temporary file, then a rename), in canonical order.
 - Does not judge the name: `--issuer-name` is the operator's own words,
@@ -791,6 +796,192 @@ cases were made in is shortened to `<dir>`, and everything else is as printed
 The last four are not produced on these disks (they hold no 8.3 names, no two
 names equal with case ignored, and no file that changes or is that large); their
 text is the code's, with `<path>`, `<name>` and `<n>` standing for the values.
+
+### 3.8 `vmr pack sign`
+
+```
+vmr pack sign --pack <FILE> --key <KEY> --output <FILE> [--replace] [--force]
+```
+
+An authority signs its own policy pack. Any authority may publish and sign a
+pack — a regulator, a standards body, an enterprise, an industry consortium —
+and this is how one does it with `vmr`. The signature is the policy-pack
+format's own (§4): ES256 over the pack's payload, which is the document as it
+stands with any `signature` member removed, in its RFC 8785 canonical form.
+
+- Writes the pack with a `signature` section added: `algorithm` (`ES256`),
+  `signature` (`base64url:` and the 64-byte `r ‖ s`, low-s),
+  `signed_payload_hash` and `signing_key_id` (the key's RFC 7638 thumbprint
+  URN). Every other member keeps its value; `signature` is the only one added,
+  and none is removed or changed.
+- **The file is rewritten in sorted member order**, indented two spaces, and
+  not in the order you wrote it. Only the layout moves: the pack's content, and
+  its payload hash, are the same. If your pack's member order matters to you
+  (a review diff, a generator), sort it once and keep it sorted, and the file
+  then comes back as you gave it.
+- The payload hash does not change. A pack and the same pack signed share it,
+  because a `signature` member is never part of what is signed. So a pack you
+  pinned by its payload hash before signing keeps that hash after.
+- Deterministic (RFC 6979): the same pack and the same key give the same bytes
+  on every machine and every run.
+- Validates the pack before signing anything (the policy-pack format §3), and
+  loads what it wrote and verifies that signature before the file is written.
+  A pack `vmr` refuses is an input error (exit 1) and nothing is written.
+- Refuses a pack that already carries a signature (`pack_sign.already_signed`)
+  unless `--replace` says to sign it again; `--replace` drops the old section
+  and signs the same payload, so the payload hash still does not move. The
+  output then names the signature it dropped (`Replaced:`), because that
+  signature may be another party's.
+- Says the authority as the **pack** states it, marked as the pack's own
+  claim. Signing a pack establishes nothing about who wrote it; only the
+  store of whoever checks it does that (§3.9).
+- Refuses an `--output` that exists unless `--force`, and an `--output` that is
+  a device name or either input file (§4.8).
+- Decides no trust. Whose key may speak for which authority is the decision of
+  whoever checks the pack, held in the `policy_authorities` of their trust
+  store (trust-store format §4.2). Send them the public key
+  (`vmr key export`), and have them compare its key id with you over a second
+  channel, exactly as for an issuer's key.
+
+```
+Signed policy pack: khalm-reading-eu-ai-act-2026 1.0.0
+  Authority:    khalm-reference-packs (KHALM reference packs) — the pack's own claim
+  Signing key:  urn:ietf:params:oauth:jwk-thumbprint:sha-256:...
+  Payload hash: sha256:c5f638f6b1a5d9831fe236de2203c2451ddc93bd13c2d1115046dd9a00f94680
+  Signed pack:  'signed-pack.json' (the pack as given, with its signature section added)
+```
+
+With `--replace`, the last two lines name what was dropped:
+
+```
+  Signed pack:  'signed-pack.json' (the pack as given, its signature section replaced)
+  Replaced:     the signature of urn:ietf:params:oauth:jwk-thumbprint:sha-256:...
+```
+
+Signing is part of the free Community edition, as emitting and verifying a
+record are. Making a signature is not a paid feature: a standard whose
+signatures only one vendor's tool can make is not an open standard.
+
+### 3.9 `vmr pack check`
+
+```
+vmr pack check --pack <FILE> [--authority-store <FILE> | --trust-store <FILE>]
+               [--at <T>] [--require-signed] [--json]
+```
+
+Reads a policy pack on its own — no record, no verification — and says what it
+is: its `pack_id` and `pack_version`, the authority it names, its jurisdiction,
+its payload hash, and every rule with its type, its severity and what it asks.
+A pack author runs it to see what they just signed, without inventing a record
+to evaluate.
+
+- **Without a store nothing is checked.** An unsigned pack reads
+  `unsigned`; a signed one names the key it *states* as its signer and says the
+  signature was not checked. A pack's claim about itself is a claim.
+- **With `--authority-store`, or with `--trust-store`,** the signature is
+  decided exactly as `record verify --policy-pack` decides it (trust-store
+  format §4.2, §3.1.1 above): the key is looked up by `signing_key_id` among
+  that store's `policy_authorities`; the signature must verify under it; and
+  the key must be trusted for the authority the pack names, unrevoked, and
+  inside its window at `--at` (else the current time). Only then is the state
+  `valid`. A key no trusted authority holds is `not checked`, not a failure.
+  The two options are the two `record verify` reads, and they are mutually
+  exclusive: `--authority-store` is a store of authorities alone (`"issuers":
+  []`), `--trust-store` the store you verify records with, whose
+  `policy_authorities` are read and whose issuers are not. Provision either
+  with `vmr trust-store add-authority` (§3.10).
+- **`--require-signed` is the gate.** Without it this command exits 0 for an
+  unsigned pack and for one signed by a key no trusted authority holds — it
+  *reports*, it does not accept — so `vmr pack check … && deploy` would deploy
+  on a pack nobody vouched for. With it those two states are refused instead
+  (exit 1, `pack_signature.unsigned_refused` and
+  `pack_signature.not_checked_refused`), as `record verify
+  --require-signed-pack` refuses them. It needs a store, and it changes no
+  other outcome.
+- A signature that does not verify, or a key that may not speak for the pack's
+  authority, is exit 1 with the format's own identifier
+  (`pack_signature.invalid`, `pack_signature.other_authority`,
+  `pack_signature.revoked`, `pack_signature.outside_validity`).
+- A pack whose section states a `signed_payload_hash` that is not the pack's
+  own is exit 1 (`pack_signature.payload_hash`), with or without a store: it
+  was changed after it was signed, or carries another pack's section.
+- A file that is not a pack is an input error (exit 1), named by the
+  policy-pack format's own refusal (`policy_pack.…`), as it is for
+  `record verify --policy-pack`.
+- `--json` prints the same as a JSON object: `version`, `pack_id`,
+  `pack_version`, `jurisdiction`, `description`, `disclaimer`, `authority`,
+  `payload_hash`, `signature` (the state, as the verifier's report writes it),
+  `checked`, `consulted` and `rules`. `checked` names the store that **checked
+  the signature** and the time it judged at, and is `null` whenever nothing was
+  checked — no store given, the pack unsigned, or no authority in the store
+  holding the key it names — so `checked != null` means the signature was
+  checked. A store that was read and decided nothing is named by `consulted`
+  instead, with the time it would have judged at.
+- The pack's `disclaimer` is shown, next to its `description`: what the
+  authority says its pack is **not**. A long value is shortened in the summary,
+  as a description is, and `--json` carries both whole.
+
+```
+Policy pack: khalm-reading-eu-ai-act-2026 1.0.0
+  File:         'khalm-reading-eu-ai-act-2026.json'
+  Authority:    khalm-reference-packs (KHALM reference packs) — the pack's own claim
+  Jurisdiction: eu
+  Description:  Regulation (EU) 2024/1689 (the AI Act) ...
+  Disclaimer:   A reference implementation of the VMR policy-pack format, not legal advice and not an official instrument. ...
+  Payload hash: sha256:c5f638f6b1a5d9831fe236de2203c2451ddc93bd13c2d1115046dd9a00f94680
+  Signature:    unsigned — this pack carries no authority signature (pin it by its payload hash)
+  Rules:        6 rules, 3 mandatory
+    eu-ai-act-record-keeping (audit_integrity, mandatory)
+      The record belongs to a lineage of records that is kept, ordered and traced to its origin. ...
+```
+
+### 3.10 `vmr trust-store add-authority`
+
+```
+vmr trust-store add-authority --trust-store <FILE> --public-key <FILE>
+                              --authority-id <ID> --authority-name <NAME>
+                              --valid-from <T> [--valid-until <T>]
+                              [--attestation-level self|software|hardware]
+```
+
+The verifier operator's other trust decision: whose signature on a **policy
+pack** counts. `trust-store add` (§3.6) trusts a key for an issuer, whose
+records it may sign; this trusts a key for a policy authority, whose packs it
+may sign (`vmr pack sign`, §3.8). Without it every verifier who wanted to
+trust a new authority had to write the store's JSON by hand — the side that
+signs had a command, the side that decides whom to believe did not.
+
+- Reads only a public key file (§4.2) — never a pack: a key is never trusted
+  because a pack carries it. Compare its key id with the authority over a
+  second channel, as for an issuer's key.
+- `--authority-id` is what a pack's `authority.authority_id` must say for this
+  key to speak for it (exact string equality; not a DID). `--authority-name` is
+  the name a checked signature shows — yours, not the pack's claim.
+- `--trust-store` (also spelled `--authority-store`) may be the store you
+  verify records with, or an authority store of its own; it is created if it
+  does not exist, and a store created here has `"issuers": []`, which is what
+  `pack check --authority-store` and `record verify --authority-store` take.
+- Writes `policy_authorities` only, never `issuers`, and keeps the rest of the
+  store as it is. Refuses a key the store already holds — under an authority
+  here, under an issuer as `trust_store.duplicate_key` — and an authority name
+  that contradicts the store, leaving the file untouched. No entry is weakened
+  in place: revoking a key or editing a window is done in the file itself
+  (§3.6), and there is no `--force`.
+- `--valid-from` and `--valid-until` bound when the key's pack signatures are
+  **relied on**, not when they were made: a pack carries no signed time.
+- `--attestation-level` defaults to `self` and is never read when a pack's
+  signature is checked — a pack declares no level. The trust-store format's key
+  object carries it because issuers' and authorities' keys share a shape.
+- Validates the whole new store with the verifier's loader before writing, and
+  writes it atomically, in canonical order. The private key is never read and
+  no key material is ever printed.
+
+```
+Trusted key urn:ietf:params:oauth:jwk-thumbprint:sha-256:...
+  for authority: eu-notified-body-1234 (Notified Body 1234, per this operator)
+  may sign:      policy packs from 2026-01-01T00:00:00Z (no end)
+  Trust store:   'authorities.json' created: 1 policy authority, 1 key, sha256:...
+```
 
 ## 4. Files
 
@@ -949,7 +1140,7 @@ An existing regular file is refused unless `--force`.
 | Code | Meaning |
 |---|---|
 | 0 | done; for `record verify`: the record verified |
-| 1 | usage, input or I/O error: bad arguments, unreadable or malformed input files, an unusable trust store, authority store or policy pack, a pack signature that does not verify or that `--require-signed-pack` does not accept, a bad `--at`, an existing output file — the command could not do its job |
+| 1 | usage, input or I/O error: bad arguments, unreadable or malformed input files, an unusable trust store, authority store or policy pack, a pack signature that does not verify or that `--require-signed-pack` (`record verify`) or `--require-signed` (`pack check`) does not accept, a pack `pack sign` will not sign again without `--replace`, a key or an authority a trust store already holds, a bad `--at`, an existing output file — the command could not do its job. A fault in `vmr` itself exits 1 too, and says so in as many words rather than blaming the input |
 | 2 | engine error: the engine refused the brain, profile or backend (the engine build only; the default build never returns it) |
 | 3 | verification failed: the record is malformed, truncated, tampered, forged or not trusted by this store |
 | 4 | verified, but the policy evaluation did not accept it: `record verify --policy-pack` found the record non-compliant, or could not decide it (an indeterminate result is not acceptance — §3.1.1). Only this flag can return it; without it a verified record is exit 0 |
@@ -974,10 +1165,11 @@ that command returns, and the top-level help says that `vmr` is a reference
 implementation of the Verifiable Model Record standard. When standard output is
 a terminal whose `TERM` names one that supports colour, `record emit`,
 `record verify`, `record inspect`, `model hash`, `key generate`,
-`key export --output` and `trust-store add` draw the same result as a screen
-instead: a badge in a box (`SIGNED`, `√ VALID`, `× NOT VALID`, `UNVERIFIED`,
-`MODEL HASH`, `KEY CREATED`, `EXPORTED`, `TRUSTED`) and bordered tables of the
-same values. `vmr` run with no arguments, `vmr --help`, `vmr -h` and
+`key export --output`, `trust-store add`, `pack sign` and `pack check` draw the
+same result as a screen instead: a badge in a box (`SIGNED`, `√ VALID`,
+`× NOT VALID`, `UNVERIFIED`, `MODEL HASH`, `KEY CREATED`, `EXPORTED`, `TRUSTED`,
+`SIGNED` for a signed pack, and `SIGNATURE VALID` or `PACK` for a pack read)
+and bordered tables of the same values. `vmr` run with no arguments, `vmr --help`, `vmr -h` and
 `vmr --version` show the standard's VMR logo with the tool's version, the commands and
 examples; a command's own `--help` stays plain text.
 `TERM=dumb` gets the plain text; so does an unset `TERM` on Linux and macOS,

@@ -41,6 +41,11 @@ use vmr_verify::VerificationReport;
 /// a name or a description longer than this is cut.
 pub const VALUE_MAX_CHARS: usize = 200;
 
+/// What a pack's disclaimer is cut at ([`shown_disclaimer`]): enough that no
+/// disclaimer written to be read ever reaches it, and still a bound on a file
+/// this tool did not write.
+pub const DISCLAIMER_MAX_CHARS: usize = 2_000;
+
 /// The most state components, or base models, `inspect` lists (a record in
 /// the engine profile has three components; a general one lists its files).
 pub(crate) const COMPONENTS_SHOWN: usize = 8;
@@ -56,7 +61,23 @@ const RULES_SHOWN: usize = 8;
 /// was cut, marked with the value's whole length: `…[250000 characters in
 /// all]`.
 pub fn shown_value(v: &str) -> String {
-    match v.char_indices().nth(VALUE_MAX_CHARS) {
+    shown_upto(v, VALUE_MAX_CHARS)
+}
+
+/// A pack's disclaimer as a human rendering shows it. It is the line that
+/// limits what the pack's authority claims - that it is not legal advice,
+/// that the body it cites has not endorsed it - so cutting it at
+/// [`VALUE_MAX_CHARS`] while printing every claim in full would be the wrong
+/// way round (the owner, 2026-09-23). It is still bounded: the pack is
+/// another party's file, and its schema sets no length, so a hostile pack
+/// could otherwise flood the terminal. Every real disclaimer is far shorter
+/// than this; the five reference packs are under 400 characters.
+pub fn shown_disclaimer(v: &str) -> String {
+    shown_upto(v, DISCLAIMER_MAX_CHARS)
+}
+
+fn shown_upto(v: &str, max: usize) -> String {
+    match v.char_indices().nth(max) {
         None => display_safe(v),
         Some((at, _)) => format!(
             "{}…[{} characters in all]",
@@ -721,6 +742,26 @@ pub(crate) mod tests {
             }
         }
         assert!(claims > 100, "the harness reaches the claims rendering ({claims} times)");
+    }
+
+    #[test]
+    fn a_disclaimer_is_shown_whole_and_still_bounded() {
+        // The line that limits a pack authority's claims is not cut at a
+        // value's 200 characters: the five reference packs are under 400 and
+        // must read whole. A pack is another party's file, though, and its
+        // schema sets no length, so the bound stays - a hostile one is cut
+        // and says how long it was, as any other value would be.
+        let real = "A reference implementation of the VMR policy-pack format, not legal advice and not an \
+                    official instrument. The clause references are this pack author's reading of the cited \
+                    text; the European Union, the European AI Office and the national market surveillance \
+                    authorities have neither authored nor endorsed this pack.";
+        assert!(real.chars().count() > VALUE_MAX_CHARS, "the case is a disclaimer a value would cut");
+        assert_eq!(shown_disclaimer(real), real, "shown whole");
+        let hostile = "x".repeat(DISCLAIMER_MAX_CHARS + 1);
+        assert_eq!(
+            shown_disclaimer(&hostile),
+            format!("{}…[{} characters in all]", "x".repeat(DISCLAIMER_MAX_CHARS), DISCLAIMER_MAX_CHARS + 1)
+        );
     }
 
     #[test]

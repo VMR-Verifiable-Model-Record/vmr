@@ -88,7 +88,11 @@ pub fn run(args: &VerifyArgs) -> Result<Output, CliError> {
                 Some(authority_store) => Authorities::AuthorityStore(authority_store),
                 None => Authorities::TrustStore(&store),
             };
-            Some(policy_pack::load(path)?.check_signature(authorities, at, args.require_signed_pack)?)
+            Some(policy_pack::load(path)?.check_signature(
+                authorities,
+                at,
+                args.require_signed_pack.then_some("--require-signed-pack"),
+            )?)
         }
         None => None,
     };

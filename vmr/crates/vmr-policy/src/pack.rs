@@ -24,7 +24,7 @@
 //  `tests/pack_schema.rs` keeps the two equal in both directions.
 // ============================================================================
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Deserialize an optional member that, when present, must have its type:
 /// absent → `None` (with `#[serde(default)]`), `null` → an error. Optional
@@ -693,7 +693,12 @@ pub struct DocumentationDeclaredRule {
 /// both. What is signed differs: a pack has no COSE envelope, so the signed
 /// bytes are the JCS form of the document with `/signature` removed
 /// (`crate::signing`).
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+// Serialize too, and only here: `signing::sign_pack` returns this section for
+// an author to put back into the document it signed, and the member names and
+// order are the format's (algorithm, signature, signed_payload_hash,
+// signing_key_id). The pack itself is never re-serialised: what an authority
+// signs is the document as received (P6-8).
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct PackSignature {
     /// `ES256`.

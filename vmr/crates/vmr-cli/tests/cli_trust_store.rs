@@ -17,6 +17,10 @@ use vmr_verify::TrustStore;
 
 const ISSUER: &str = "did:web:factory-operator.ph";
 const NAME: &str = "New Clark City Fab Operator";
+/// The authority a pack names, and the name the OPERATOR gives it: a
+/// verifier shows its own name for an authority, never the pack's claim.
+const AUTHORITY: &str = "khalm-reference-packs";
+const AUTHORITY_NAME: &str = "KHALM reference packs, per this operator";
 
 /// Generate a key and export its public key file with the CLI; return
 /// (private key path, public key file path, key id).
@@ -35,6 +39,18 @@ fn add<'a>(store: &'a str, public: &'a str, issuer: &'a str, name: &'a str) -> V
         "trust-store", "add", "--trust-store", store, "--public-key", public, "--issuer-id", issuer,
         "--issuer-name", name, "--attestation-level", "software", "--valid-from", "2026-01-01T00:00:00Z",
     ]
+}
+
+fn add_authority<'a>(store: &'a str, public: &'a str, id: &'a str, name: &'a str) -> Vec<&'a str> {
+    vec![
+        "trust-store", "add-authority", "--trust-store", store, "--public-key", public, "--authority-id", id,
+        "--authority-name", name, "--valid-from", "2026-01-01T00:00:00Z",
+    ]
+}
+
+/// The committed EU AI Act reference pack, as a path.
+fn reference_pack() -> String {
+    repo().join("specs/policy-packs/khalm-reading-eu-ai-act-2026.json").to_string_lossy().into_owned()
 }
 
 fn load(path: &str) -> TrustStore {
@@ -352,4 +368,145 @@ fn an_unusable_existing_store_is_refused_and_left_alone() {
     assert!(raw.is_empty(), "raw {raw:?} on stderr:\n{}", run.transcript());
     assert!(run.stderr.contains("\\u{001b}[2J\\u{202e}\\u{200b}"), "{}", run.transcript());
     assert_eq!(std::fs::read_to_string(&store).unwrap(), hostile, "untouched");
+}
+
+// ---------------------------------------------------------------------------
+//  `trust-store add-authority`: the other side of `pack sign`
+// ---------------------------------------------------------------------------
+
+#[test]
+fn add_authority_help_lists_every_decision() {
+    let run = vmr(&["trust-store", "add-authority", "--help"]);
+    run.expect_code(0);
+    for text in [
+        "--trust-store", "--authority-store", "--public-key", "--authority-id", "--authority-name",
+        "--valid-from", "--valid-until", "--attestation-level", "never reads a pack", "pack sign",
+    ] {
+        assert!(run.stdout.contains(text), "{text} missing:\n{}", run.transcript());
+    }
+}
+
+#[test]
+fn an_authority_added_here_checks_the_pack_its_key_signed() {
+    // The round trip the command exists for, with no hand-written JSON
+    // anywhere: an authority signs a pack with a key of its own, a verifier
+    // decides to trust that key for that authority, and `pack check` reports
+    // the signature valid - naming the authority as the STORE names it.
+    // Until this command the second step had no command at all, and every
+    // verifier who wanted to trust a new authority wrote the store's JSON by
+    // hand; the side that signs had a tool, the side that decides did not.
+    let s = Scratch::new("ts-authority-roundtrip");
+    let (key, public, id) = exported_key(&s, "authority");
+    let signed = s.arg("signed-pack.json");
+    vmr(&["pack", "sign", "--pack", &reference_pack(), "--key", &key, "--output", &signed]).expect_code(0);
+    let store = s.arg("authorities.json");
+    let run = vmr(&add_authority(&store, &public, AUTHORITY, AUTHORITY_NAME));
+    run.expect_code(0);
+    assert!(run.stdout.contains(&id), "{}", run.transcript());
+    assert!(run.stdout.contains("created"), "{}", run.transcript());
+    assert!(run.stdout.contains("1 policy authority, 1 key"), "{}", run.transcript());
+
+    let loaded = load(&store);
+    assert_eq!((loaded.issuer_count(), loaded.authority_count(), loaded.authority_key_count()), (0, 1, 1));
+    assert!(loaded.lookup(&id).is_none(), "an authority's key signs no record");
+    let k = loaded.lookup_authority(&id).expect("the key is trusted for the authority");
+    assert_eq!((k.authority_id, k.authority_name), (AUTHORITY, AUTHORITY_NAME));
+    assert!(run.stdout.contains(loaded.sha256()), "the store's identity is printed:\n{}", run.transcript());
+    // The file it wrote is an authority store: "issuers": [] (format §4.2).
+    let written: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&store).unwrap()).unwrap();
+    assert_eq!(written["issuers"], serde_json::json!([]));
+
+    let check = vmr(&["pack", "check", "--pack", &signed, "--authority-store", &store, "--at", T]);
+    check.expect_code(0);
+    assert!(check.stdout.contains("Signature:    valid — signed by "), "{}", check.transcript());
+    assert!(check.stdout.contains(AUTHORITY_NAME), "the operator's name, not the pack's:\n{}", check.transcript());
+    // And a gate that requires a signature accepts it.
+    vmr(&["pack", "check", "--pack", &signed, "--authority-store", &store, "--at", T, "--require-signed"])
+        .expect_code(0);
+}
+
+#[test]
+fn an_authority_key_joins_a_store_that_verifies_records_and_never_signs_one() {
+    // The same store may hold both lists: the issuers records are verified
+    // against, and the policy authorities packs are judged by. Adding an
+    // authority keeps the issuers as they are, and the key stays out of
+    // `issuers` - one key speaks for records or for packs, never both.
+    let s = Scratch::new("ts-authority-beside-issuers");
+    let (_, issuer_public, issuer_id) = exported_key(&s, "factory");
+    let (authority_key, authority_public, authority_id) = exported_key(&s, "authority");
+    let store = s.arg("trust-store.json");
+    vmr(&add(&store, &issuer_public, ISSUER, NAME)).expect_code(0);
+    let run = vmr(&add_authority(&store, &authority_public, AUTHORITY, AUTHORITY_NAME));
+    run.expect_code(0);
+    assert!(run.stdout.contains("updated"), "{}", run.transcript());
+    let loaded = load(&store);
+    assert_eq!((loaded.issuer_count(), loaded.key_count()), (1, 1), "the issuer is kept");
+    assert_eq!((loaded.authority_count(), loaded.authority_key_count()), (1, 1));
+    assert_eq!(loaded.lookup(&issuer_id).unwrap().issuer_id, ISSUER);
+    assert!(loaded.lookup(&authority_id).is_none(), "the authority's key is not an issuer's");
+    assert!(loaded.lookup_authority(&issuer_id).is_none(), "the issuer's key is not an authority's");
+    // The file is written in canonical order, as `add` writes it.
+    let text = std::fs::read_to_string(&store).unwrap();
+    assert_eq!(text, serde_json::to_string_pretty(&loaded.to_document()).unwrap() + "\n");
+    // `pack check --trust-store` reads the authorities of this very store.
+    let signed = s.arg("signed-pack.json");
+    vmr(&["pack", "sign", "--pack", &reference_pack(), "--key", &authority_key, "--output", &signed])
+        .expect_code(0);
+    let check = vmr(&["pack", "check", "--pack", &signed, "--trust-store", &store, "--at", T]);
+    check.expect_code(0);
+    assert!(check.stdout.contains("Signature:    valid — signed by "), "{}", check.transcript());
+}
+
+#[test]
+fn an_authority_entry_is_never_weakened_in_place() {
+    // The refusals `add` makes, for the other list: the same key twice, a key
+    // already trusted for an issuer, and a name that contradicts the store.
+    // Every one leaves the file exactly as it was.
+    let s = Scratch::new("ts-authority-refuse");
+    let (_, public, _) = exported_key(&s, "authority");
+    let (_, other, _) = exported_key(&s, "other");
+    let store = s.arg("authorities.json");
+    vmr(&add_authority(&store, &public, AUTHORITY, AUTHORITY_NAME)).expect_code(0);
+    let before = std::fs::read(&store).unwrap();
+    for (args, fragment) in [
+        (add_authority(&store, &public, AUTHORITY, AUTHORITY_NAME), "already in the trust store, trusted for the policy authority"),
+        (add_authority(&store, &public, "another-authority.example", "Another"), "already in the trust store"),
+        (add_authority(&store, &other, AUTHORITY, "Someone Else"), "already in the trust store as"),
+        (add(&store, &public, ISSUER, NAME), "trust_store.duplicate_key"),
+    ] {
+        let run = vmr(&args);
+        run.expect_code(1);
+        assert!(run.stderr.contains(fragment), "expected `{fragment}`:\n{}", run.transcript());
+        assert_eq!(std::fs::read(&store).unwrap(), before, "the store is unchanged");
+    }
+}
+
+#[test]
+fn every_authority_decision_is_explicit_and_no_key_material_is_printed() {
+    let s = Scratch::new("ts-authority-explicit");
+    let (key, public, _) = exported_key(&s, "authority");
+    let store = s.arg("authorities.json");
+    let full = add_authority(&store, &public, AUTHORITY, AUTHORITY_NAME);
+    for flag in ["--authority-id", "--authority-name", "--valid-from", "--public-key", "--trust-store"] {
+        let pos = full.iter().position(|a| *a == flag).unwrap();
+        let mut args = full.clone();
+        args.drain(pos..pos + 2);
+        let run = vmr(&args);
+        run.expect_code(1);
+        assert!(run.stderr.contains(flag), "{flag}:\n{}", run.transcript());
+        assert!(!s.path("authorities.json").exists(), "nothing written without {flag}");
+    }
+    // A private key is not a public key file, and nothing of it is printed.
+    let run = vmr(&add_authority(&store, &key, AUTHORITY, AUTHORITY_NAME));
+    run.expect_code(1);
+    assert!(run.stderr.contains("not a public key file"), "{}", run.transcript());
+    assert!(!run.stderr.contains("PRIVATE KEY"), "no key material:\n{}", run.transcript());
+    assert!(!s.path("authorities.json").exists());
+    // The window is the operator's decision, and an end is optional.
+    let mut args = add_authority(&store, &public, AUTHORITY, AUTHORITY_NAME);
+    args.extend(["--valid-until", "2025-01-01T00:00:00Z"]);
+    let run = vmr(&args);
+    run.expect_code(1);
+    assert!(run.stderr.contains("trust_store.validity_window"), "{}", run.transcript());
+    assert!(!s.path("authorities.json").exists());
 }

@@ -120,10 +120,26 @@ pub struct PackEvaluator {
     authority_store: Option<AuthorityStoreSummary>,
 }
 
-/// Read and validate the pack at `path`. Every failure is the operator's
-/// (exit 1), named by `vmr-policy`'s own typed refusal (P6-9), which says
-/// which member of the pack is at fault.
-pub fn load(path: &Path) -> Result<PackEvaluator, CliError> {
+/// A pack file that cannot be used: `why` names its refusal, and the hint
+/// says where working examples are. Every caller that refuses a pack file
+/// uses this, so one refusal reads like another.
+fn unusable(path: &Path, why: String) -> CliError {
+    CliError::input(format!("policy pack {} cannot be used: {why}", shown(path))).with_hint(
+        "a policy pack is an authority's rules in JSON (specs/policy-pack-schema/v0.1.json); \
+         the five reference packs under specs/policy-packs/ are working examples",
+    )
+}
+
+/// Read and validate the pack at `path`, and return it as `vmr-policy` loads
+/// it: the typed pack, the document as received, and its payload hash. Every
+/// failure is the operator's (exit 1), named by `vmr-policy`'s own typed
+/// refusal (P6-9), which says which member of the pack is at fault.
+///
+/// It does NOT decide the key-free half of a signature check: a caller that
+/// reads a pack's signature does that ([`load`] does), while `pack sign`,
+/// which replaces the section, must be able to re-sign a pack whose old
+/// section no longer matches it.
+pub fn load_pack(path: &Path) -> Result<LoadedPack, CliError> {
     let limit = vmr_policy::MAX_PACK_BYTES as u64;
     let bytes = match files::read_bounded(path, limit) {
         Ok(bytes) => bytes,
@@ -139,12 +155,6 @@ pub fn load(path: &Path) -> Result<PackEvaluator, CliError> {
             return Err(CliError::input(format!("cannot read policy pack {}: {e}", shown(path))))
         }
     };
-    let unusable = |why: String| {
-        CliError::input(format!("policy pack {} cannot be used: {why}", shown(path))).with_hint(
-            "a policy pack is an authority's rules in JSON (specs/policy-pack-schema/v0.1.json); \
-             the five reference packs under specs/policy-packs/ are working examples",
-        )
-    };
     // vmr-policy decides which refusal the bytes are, in the order of
     // specs/policy-pack-format-v0.1.md §3: the size, then the depth counted
     // over the bytes whatever else they break, then bytes that are not UTF-8,
@@ -152,18 +162,24 @@ pub fn load(path: &Path) -> Result<PackEvaluator, CliError> {
     // (docs/dev/task-6.16.md A16-20, A16-22). A BOM or UTF-16 is refused like
     // every other JSON input of this tool, as refusal 2, but says why (QA
     // P5-07): the parser's own message points at bytes the operator cannot see.
-    let pack = vmr_policy::load_pack_bytes(&bytes).map_err(|e| match (e.refusal(), files::byte_order_mark(&bytes)) {
+    vmr_policy::load_pack_bytes(&bytes).map_err(|e| match (e.refusal(), files::byte_order_mark(&bytes)) {
         (Some(Refusal::Structure), Some(bom)) => {
-            unusable(format!("{}: {bom}, which a policy pack may not have", e.refusal_id()))
+            unusable(path, format!("{}: {bom}, which a policy pack may not have", e.refusal_id()))
                 .with_hint(files::SAVE_WITHOUT_BOM)
         }
-        _ => unusable(format!("{}: {e}", e.refusal_id())),
-    })?;
+        _ => unusable(path, format!("{}: {e}", e.refusal_id())),
+    })
+}
+
+/// [`load_pack`], and then the key-free half of a signature check: the
+/// evaluator `record verify` and `pack check` use.
+pub fn load(path: &Path) -> Result<PackEvaluator, CliError> {
+    let pack = load_pack(path)?;
     // The key-free half of a signature check (QA Q6-05, P6-16): the payload
     // hash the section states must be the pack's own. Both strings are
     // schema-checked `sha256:` hashes, so quoting them is safe.
     if let (Err(e), Some(section)) = (pack.check_payload_hash(), &pack.pack().signature) {
-        return Err(unusable(format!(
+        return Err(unusable(path, format!(
             "{}: its signature section states signed_payload_hash {}, but the pack as received hashes to \
              {}: the pack was changed after it was signed, or the section belongs to another pack",
             e.refusal_id(),
@@ -183,6 +199,22 @@ pub fn load(path: &Path) -> Result<PackEvaluator, CliError> {
 }
 
 impl PackEvaluator {
+    /// The pack as `vmr-policy` loaded it.
+    pub fn loaded(&self) -> &LoadedPack {
+        &self.pack
+    }
+
+    /// What is known about the pack's own signature so far: `unsigned`, or
+    /// `not_checked` until [`PackEvaluator::check_signature`] decides it.
+    pub fn signature_state(&self) -> &PackSignatureState {
+        &self.signature
+    }
+
+    /// The authority store the signature was checked against, if one was.
+    pub fn authority_store(&self) -> Option<&AuthorityStoreSummary> {
+        self.authority_store.as_ref()
+    }
+
     /// Decide the pack's own signature against `authorities`, at the
     /// evaluation time `at` (P6-16; specs/trust-store-format-v0.1.md §4.2).
     /// In order:
@@ -194,40 +226,44 @@ impl PackEvaluator {
     /// 4. the key may speak for the authority the pack names at `at`: trusted
     ///    for it, unrevoked, inside its window (vmr-verify) — then `valid`.
     ///
-    /// A failure at step 3 or 4 is refused. With `require_signed`, so are
-    /// `unsigned` and `not_checked`. Every refusal is exit 1.
+    /// A failure at step 3 or 4 is refused. `require_signed` is the name of
+    /// the flag the caller requires a signature with - `--require-signed-pack`
+    /// for `record verify`, `--require-signed` for `pack check` - and with it
+    /// `unsigned` and `not_checked` are refused too, naming that flag. Every
+    /// refusal is exit 1.
     pub fn check_signature(
         mut self,
         authorities: Authorities<'_>,
         at: Timestamp,
-        require_signed: bool,
+        require_signed: Option<&str>,
     ) -> Result<Self, CliError> {
         let store = authorities.name();
         self.authority_store = authorities.summary();
         // The key id passed the pack schema's pattern (an RFC 7638 thumbprint
         // URN), so it is safe to print whole.
         let Some(key_id) = self.pack.pack().signature.as_ref().map(|s| s.signing_key_id.clone()) else {
-            if require_signed {
+            if let Some(flag) = require_signed {
                 return Err(self.not_accepted(
                     UNSIGNED_REFUSED,
                     format!(
-                        "it carries no authority signature, and --require-signed-pack accepts only a pack signed \
-                         by a policy authority the {store} trusts"
+                        "it carries no authority signature, and {flag} accepts only a pack signed by a policy \
+                         authority the {store} trusts"
                     ),
+                    flag,
                 ));
             }
             self.signature = PackSignatureState::Unsigned;
             return Ok(self);
         };
         let Some(key) = authorities.store().lookup_authority(&key_id) else {
-            if require_signed {
+            if let Some(flag) = require_signed {
                 return Err(self.not_accepted(
                     NOT_CHECKED_REFUSED,
                     format!(
                         "it names {key_id} as its signer, but no policy authority in the {store} holds that key, \
-                         and --require-signed-pack accepts only a pack signed by a policy authority the {store} \
-                         trusts"
+                         and {flag} accepts only a pack signed by a policy authority the {store} trusts"
                     ),
+                    flag,
                 ));
             }
             self.signature = PackSignatureState::NotChecked { signing_key_id: key_id };
@@ -261,13 +297,14 @@ impl PackEvaluator {
         )
     }
 
-    /// A pack `--require-signed-pack` does not accept, refused as `id`.
-    fn not_accepted(&self, id: &str, why: String) -> CliError {
-        CliError::input(format!("policy pack {} cannot be used: {id}: {why}", self.shown)).with_hint(
-            "trust the authority's key in the policy_authorities of the trust store, or of --authority-store \
-             (specs/trust-store-format-v0.1.md §4.2); without --require-signed-pack such a pack is evaluated, and \
-             the output says it is unsigned or not checked",
-        )
+    /// A pack the flag named `flag` does not accept, refused as `id`.
+    fn not_accepted(&self, id: &str, why: String, flag: &str) -> CliError {
+        CliError::input(format!("policy pack {} cannot be used: {id}: {why}", self.shown)).with_hint(format!(
+            "trust the authority's key in the policy_authorities of the trust store, or of --authority-store, \
+             with `{} trust-store add-authority` (specs/trust-store-format-v0.1.md §4.2); without {flag} such a \
+             pack is not refused, and the output says it is unsigned or not checked",
+            crate::tool_name!()
+        ))
     }
 }
 
@@ -415,14 +452,25 @@ mod tests {
     fn an_unsigned_pack_is_unsigned_whatever_the_authorities_and_refused_only_when_a_signature_is_required() {
         let store = TrustStore::from_json(br#"{"trust_store_version":"0.1","issuers":[]}"#).unwrap();
         let at = Timestamp::parse("2026-09-11T00:00:00Z").unwrap();
-        let e = load(&eu_pack_path()).unwrap().check_signature(Authorities::TrustStore(&store), at, false).unwrap();
+        let e = load(&eu_pack_path()).unwrap().check_signature(Authorities::TrustStore(&store), at, None).unwrap();
         assert_eq!((e.signature.clone(), e.authority_store.clone()), (PackSignatureState::Unsigned, None));
-        let e = load(&eu_pack_path()).unwrap().check_signature(Authorities::AuthorityStore(&store), at, false).unwrap();
+        let e = load(&eu_pack_path()).unwrap().check_signature(Authorities::AuthorityStore(&store), at, None).unwrap();
         assert_eq!(e.authority_store, Some(AuthorityStoreSummary::of(&store)));
-        let refused =
-            load(&eu_pack_path()).unwrap().check_signature(Authorities::TrustStore(&store), at, true).unwrap_err();
+        // The flag that required the signature is the CALLER's, and the
+        // refusal names it: `record verify` and `pack check` spell it
+        // differently, and a message naming the wrong one sends an operator
+        // to an option their command does not have.
+        let refused = load(&eu_pack_path())
+            .unwrap()
+            .check_signature(Authorities::TrustStore(&store), at, Some("--require-signed-pack"))
+            .unwrap_err();
         assert_eq!(refused.code, crate::error::EXIT_INPUT);
         assert!(refused.message.contains("--require-signed-pack"), "{}", refused.message);
+        let other = load(&eu_pack_path())
+            .unwrap()
+            .check_signature(Authorities::TrustStore(&store), at, Some("--require-signed"))
+            .unwrap_err();
+        assert!(other.message.contains("and --require-signed accepts only"), "{}", other.message);
         assert!(refused.message.contains(&format!("cannot be used: {UNSIGNED_REFUSED}: ")), "{}", refused.message);
     }
 

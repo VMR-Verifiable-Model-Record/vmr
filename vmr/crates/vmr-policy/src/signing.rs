@@ -1,6 +1,7 @@
-//! The bytes an authority signs, and checking its signature (P6-7, P6-8).
+//! The bytes an authority signs, making its signature and checking it
+//! (P6-7, P6-8).
 // ============================================================================
-//  signing.rs — pack signature verification
+//  signing.rs — making and checking a pack signature
 //
 //  A pack is signed by the authority that authors it. What is signed is the
 //  DOCUMENT AS RECEIVED with its `signature` member removed, canonicalised
@@ -20,12 +21,19 @@
 //  no COSE envelope in v0.1, so the signed bytes are the JCS payload itself.
 //  The algorithm (ES256), the signature encoding, the `signed_payload_hash`
 //  form and the key id are identical, so one key management serves both.
+//
+//  Making a signature lives here beside checking one, over the same
+//  `signed_payload`: the two cannot drift apart, and the crate that defines
+//  the format is the crate that can produce a pack in it. `sign_pack` holds
+//  no notion of a privileged authority - any P-256 key signs any pack, and
+//  whose key may speak for which authority stays a trust decision its caller
+//  makes (the reference CLI's is a trust store's `policy_authorities`).
 // ============================================================================
 
 use crate::error::Error;
 use crate::pack::{PackSignature, PolicyPack};
 use crate::schema::quote;
-use p256::ecdsa::VerifyingKey;
+use p256::ecdsa::{SigningKey, VerifyingKey};
 use serde_json::Value;
 use vmr_record::canonical::jcs;
 use vmr_record::hash::{format_hash, sha256};
@@ -43,6 +51,38 @@ pub fn signed_payload(document: &Value) -> String {
 /// `sha256:` + the hex of the SHA-256 of [`signed_payload`].
 pub fn payload_hash(document: &Value) -> String {
     format_hash(&sha256(signed_payload(document).as_bytes()))
+}
+
+/// Sign `document` as the authority that authors it, and return the
+/// `signature` section to put back into it (format §4).
+///
+/// What is signed is [`signed_payload`]: the document with any top-level
+/// `signature` removed, in its JCS form. A pack that already carries a
+/// section is therefore signed over exactly the bytes an unsigned copy of it
+/// would be, so replacing a signature never changes the payload hash.
+///
+/// Everything cryptographic is `vmr-record`'s, as the check is (P6-7): ES256
+/// over the payload's bytes with RFC 6979 and the low-s rule, the
+/// `base64url:` encoding of the 64-byte `r ‖ s`, and the RFC 7638 key id.
+/// Because RFC 6979 makes ES256 deterministic, the same document and key
+/// give the same section on every machine and every run.
+///
+/// The section this returns is what [`verify_pack_signature`] accepts under
+/// `key`'s public half, and nothing else here decides anything: WHICH
+/// authority may sign a pack, and whether this key is that authority's, is
+/// the caller's trust decision, held wherever it keeps its trust. Any
+/// authority's key signs any pack — the format has no privileged signer, and
+/// neither has this function.
+pub fn sign_pack(document: &Value, key: &SigningKey) -> Result<PackSignature, Error> {
+    let payload = signed_payload(document);
+    let signature = vmr_record::sign::sign(key, payload.as_bytes())
+        .map_err(|e| Error::PackSignature(format!("the pack could not be signed: {e}")))?;
+    Ok(PackSignature {
+        algorithm: "ES256".to_string(),
+        signature: format!("base64url:{}", vmr_record::sign::signature_to_b64url(&signature)),
+        signed_payload_hash: format_hash(&sha256(payload.as_bytes())),
+        signing_key_id: vmr_record::jwk::key_id(key.verifying_key()),
+    })
 }
 
 /// Verify a pack's signature under `key`.

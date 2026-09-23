@@ -25,10 +25,33 @@ you make per gate, and it is visible: the pack file, its author, its signature,
 and its payload hash, which names the exact text that was applied. Pin the
 payload hash and you know which words judged you.
 
-One limit, today: the signature is the format's, not yet this tool's. `vmr`
-checks a pack's signature against the authorities you trust, but has no command
-to make one, so a pack you publish now is an unsigned file — pin it by its
-payload hash. KHALM's own five are unsigned.
+`vmr` makes that signature, checks it, and provisions the side that decides
+whether to believe it — three commands, all in the free Community edition:
+
+- `vmr pack sign --pack <FILE> --key <KEY> --output <FILE>` signs a pack with
+  your own P-256 key and writes the pack with its `signature` section added.
+- `vmr trust-store add-authority --trust-store <FILE> --public-key <FILE>
+  --authority-id <ID> --authority-name <NAME> --valid-from <T>` is the other
+  party's decision: it trusts that key for that authority, in their own store.
+  Nothing is trusted because a pack says so, and no authority is built in.
+- `vmr pack check --pack <FILE>` says what a pack is and what state its
+  signature is in; with `--authority-store`, or `--trust-store` when the
+  authorities live in the store you verify records with, it checks that
+  signature against the policy authorities you trust, by the same steps and in
+  the same code as `record verify` (`docs/CLI.md` §3.8, §3.9, §3.10). It
+  *reports* by default and exits 0; `--require-signed` refuses an unsigned pack
+  and one signed by a key no trusted authority holds, so a script can gate on
+  it.
+
+The signature is deterministic, so the same pack and key give the same bytes
+anywhere, and signing does not move the pack's payload hash. A standard whose
+signatures only one vendor's tool can make is not an open standard — and
+neither is one where only the vendor's authority can be trusted without
+hand-editing a file.
+
+KHALM's own five reference packs stay unsigned on purpose. A KHALM signature on
+them would read as a badge from a vendor, and the point of the format is that
+the authority is whoever you choose — pin them by their payload hash.
 
 ## 2. KHALM's five are examples, not instruments
 
@@ -112,6 +135,16 @@ Nothing above has to be taken on trust:
   statements, never merged; the pack's signature state and payload hash; and
   every rule that did not pass, with the clause it cites and why. Exit 0 means
   verified and accepted, 4 verified but not accepted, 3 not verified.
+
+- **Read the pack on its own.**
+
+  ```
+  vmr pack check --pack specs/policy-packs/khalm-reading-eu-ai-act-2026.json
+  ```
+  Its id and version, the authority it names, its payload hash, every rule with
+  its severity, and the state of its signature — checked against the
+  authorities you trust when you pass `--authority-store`, and plainly reported
+  as unchecked when you do not.
 
 - **Compare implementations.** The format is normative
   (`specs/policy-pack-format-v0.1.md`) and the vectors under

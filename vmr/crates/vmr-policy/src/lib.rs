@@ -77,7 +77,7 @@ pub use pack::{
     DocumentationDeclaredRule, ExecutionIntegrityRule, ExportControlRule, PackSignature,
     PolicyPack, Rule, RuleCommon, Severity, SourceScreeningRule,
 };
-pub use signing::{payload_hash, signed_payload, verify_pack_signature};
+pub use signing::{payload_hash, sign_pack, signed_payload, verify_pack_signature};
 pub use validator::validate;
 
 /// The format crate, re-exported: a caller (or a test) that needs a
