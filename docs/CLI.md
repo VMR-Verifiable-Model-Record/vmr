@@ -46,11 +46,11 @@ time, `kernel32.dll`, all part of Windows. An engine library built before this c
 against the DLL runtime and no longer links (`LNK1120` after `LNK4098`):
 rebuild it with CMake, then `cargo clean -p vmr-ffi`.
 
-`vmr --version` tells the builds apart: `vmr 0.1.4 (KHALM-VMR, a reference
+`vmr --version` tells the builds apart: `vmr 0.1.5 (KHALM-VMR, a reference
 implementation of the Verifiable Model Record standard; record format v0.1)`
-for the default build, `vmr 0.1.0 (KHALM-VMR, implements the Verifiable
+for the default build, `vmr 0.1.5 (KHALM-VMR, implements the Verifiable
 Model Record standard; record format v0.1; engine build: record emit also
-takes a KHALM engine brain)` for the engine build; each build carries its own
+takes a KHALM engine brain)` for the engine build; both builds carry the same
 version number, and the record format they implement is the same. The default
 build has no
 engine: its `record emit` takes
@@ -983,6 +983,380 @@ Trusted key urn:ietf:params:oauth:jwk-thumbprint:sha-256:...
   Trust store:   'authorities.json' created: 1 policy authority, 1 key, sha256:...
 ```
 
+### 3.11 `vmr log verify`
+
+```
+vmr log verify --log <FILE> [--audit-key <FILE>] [--checkpoint <FILE>]...
+               [--checkpoints <FILE>] [--profile core|khalm-vmr.enforcer|vmr.agent]
+```
+
+Reads an audit log in the audit-log format v0.1
+([`specs/audit-log-format-v0.1.md`](../specs/audit-log-format-v0.1.md)) and
+checks its signed checkpoints under the audit key you pin. Any writer's log:
+whose log it is, and what its entries record, is the profile's (§5 of the
+format), never this command's.
+
+- **The log** is read as it streams from the file, one mebibyte at a time,
+  whatever its length; only the line in progress and the tree's frontier are
+  held. Every line must be the canonical (JCS) form of an entry whose `index`
+  is its position and whose `previous_root` is the Merkle root of the entries
+  before it, and the file must end on a complete line. The first line that
+  fails is the answer, with the format's own identifier and in the format's
+  order (§4.4): `audit_entry.size`, `.syntax`, `.not_canonical`, `.version`,
+  `.structure`, then `audit_log.index`, `.previous_root`, `.torn_tail`.
+- **Each `--checkpoint`** (any number) is checked under `--audit-key` — a
+  public key file as `vmr key export` writes it (§4.2) — by the format's checks
+  in their order (§6): `checkpoint.size` (a file over 16 384 bytes is refused
+  unread), `.syntax`, `.version`, `.structure`, `.empty_tree`,
+  `.signature_section`, `.wrong_key`, `.signature_invalid`. Then against the
+  log: the log must hold at least `tree_size` entries, and its root over the
+  first `tree_size` must be the checkpoint's `root_hash`. The format asks for
+  that check and names no identifier for it; this command refuses with its own,
+  `log_verify.checkpoint_not_in_log`. `--checkpoint` needs `--audit-key`.
+- **`--checkpoints`** takes a checkpoint history, one checkpoint a line, as
+  `log seal` writes `checkpoints.jsonl` (§3.13). Every line is checked as one
+  `--checkpoint` is, under the same key and against the log, and each line's
+  `tree_size` must not be smaller than the line before it: a history out of
+  order is refused as `log_verify.checkpoints_out_of_order`, this command's own
+  identifier. A refusal names the file and the line. The output sums the
+  history in one line: how many checkpoints, and the first and last
+  `tree_size`. An empty history is exit 1. `--checkpoints` needs `--audit-key`
+  and may be given with `--checkpoint`.
+- **What the output claims is what was checked** (format §5.1). It names each
+  checkpoint's `tree_size`, its `issued_at` (the writer's clock, not checked
+  against anything) and the entries it covers, and the entries after the
+  largest checkpoint as covered by none: only the chain links those, and no
+  signature. Without a checkpoint only the chain is checked, and the output
+  says that no signature was: the chain shows that the lines agree with one
+  another, not who wrote them.
+- **`--profile`** names the vocabulary of the log's kinds. `core`, the default,
+  reads any kind the format's grammar allows with any detail, and says that
+  nothing about what the entries mean was checked. `khalm-vmr.enforcer` (format
+  §5.2, KHALM's enforcer) and `vmr.agent` (below) also check each entry's kind
+  and detail against their rules. No profile checks that what an entry records
+  happened: a log is its writer's statement, and a checkpoint's signature binds
+  the writer's key to it. The profiles are a table in the tool: another
+  writer's profile is one more row.
+- **`--profile vmr.agent`** reads a log of the agent profile
+  ([`specs/audit-profile-agent-v0.1.md`](../specs/audit-profile-agent-v0.1.md)):
+  what any agent runtime decided about the tool calls a model proposed, whoever
+  made the runtime and whichever model it runs. Each entry is checked by that
+  document's §4.6, and an entry that breaks one of its rules refuses the log as
+  `audit_entry.structure`, with a message that names the kind and the member.
+  When the log verifies, the output goes on with **what the entries say**,
+  labelled as the writer's statements, not verified facts: the sessions the
+  entries name, the calls proposed and refused (by gate), the approvals granted,
+  denied and timed out, the events the writer says it lost (`events.dropped`:
+  the log is incomplete) and the torn tails it moved aside. Then a **note**
+  wherever the entries break the rules between entries, which the profile
+  leaves to the writer (§4.6, its last paragraph): a `call.proposed` naming as
+  `tool` a tool its session could not reach (a writer names any other proposed
+  tool as a digest, so this may be model output written in clear), a call's
+  entry with no earlier `call.proposed`, anything of a call after its
+  `call.refused`, and an `approval` gate decision with no person's answer before
+  it and no standing approval covering it. The first 20 notes are shown and the
+  rest counted. A note never changes the exit code. The digests in the entries
+  are keyed with a secret the log never holds (§3), so nothing here reads what a
+  session said.
+- A log or checkpoint the format refuses, or a checkpoint that is not of this
+  log, is exit 3 and the first line of the output names the refusal; how many
+  entries were accepted before it follows. A file that cannot be read, an
+  unusable key file or a profile this build does not have is exit 1.
+
+```
+Audit log verified: 6000 entries; 2 checkpoints signed by the pinned audit key cover entries 0 to 4999
+  Log:          'audit.jsonl'
+  Profile:      core: any kind the format's grammar allows, with any detail; nothing about what the entries mean is checked
+  Checked:      every line an entry of the audit-log format v0.1, canonical and in its place; the chain (each entry names the root of the entries before it); each checkpoint's signature under the pinned audit key, and its root against the log
+  Entries:      6000, root sha256:b64059a3...
+  Audit key:    urn:ietf:params:oauth:jwk-thumbprint:sha-256:qpkv..., pinned from 'audit-key.json'
+  Checkpoint:   'cp-4.json': tree_size 4, issued at 2026-09-30T12:00:00Z (the writer's clock); signed by the audit key; covers entries 0 to 3: the log's root over them is its root_hash
+  Checkpoint:   'cp-5000.json': tree_size 5000, issued at 2026-09-30T12:00:00Z (the writer's clock); signed by the audit key; covers entries 0 to 4999: the log's root over them is its root_hash
+  Not covered:  entries 5000 to 5999 are in no checkpoint given: the chain links them, and no signature covers them
+```
+
+```
+Audit log verified: 12 entries; its chain only: no checkpoint was given, so no signature was checked
+  Log:          'agent.jsonl'
+  Profile:      vmr.agent: each entry's kind and detail are checked against this profile's rules; not that what an entry records happened
+  Checked:      every line an entry of the audit-log format v0.1, canonical and in its place; the chain (each entry names the root of the entries before it); no signature was checked
+  Entries:      12, root sha256:c944c43a...
+  Audit key:    none given
+  Checkpoints:  none given: no signature was checked, and the chain shows only that the lines agree with one another, not who wrote them
+
+What the entries say (the writer's statements, not verified facts):
+  Sessions:     1
+  Calls:        2 proposed; 1 refused: 1 by dispatch
+  Approvals:    1 granted, 0 denied, 0 timed out
+  Lost events:  2 the writer says it could not record (events.dropped): the log is incomplete
+  Notes:        1: where the entries break the profile's rules between entries; a note does not change the result
+  Note:         entry 7: session urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90: call 1 proposes the tool "transfer_funds", which the session could not reach (§4.1); a writer names any other proposed tool as tool_digest, so this may be model output written in clear
+```
+
+```
+Audit log NOT verified: audit_log.previous_root: line 3's previous_root is not the root of the lines before it
+  Log:          'changed.jsonl'
+  Profile:      core: any kind the format's grammar allows, with any detail; nothing about what the entries mean is checked
+  Entries:      3 entries accepted before the refusal
+```
+
+### 3.12 `vmr log init`
+
+```
+vmr log init --dir <DIR>
+```
+
+Starts a directory for one audit log that `vmr log seal` (§3.13) writes. The
+directory is created if it does not exist. If it exists and is not empty, it
+is refused and nothing is written: one log, one audit key, one content secret
+(profile §5; format §9). It writes four files:
+
+| File | What it is |
+|---|---|
+| `audit-key.pem` | the log's audit key: a PKCS#8 PEM private key of P-256, exactly as `key generate` writes one (§4.1). It signs the log's checkpoints and nothing else (format §9). |
+| `audit-key.pub.json` | its public key file, exactly as `key export` writes one (§4.2). **This is the file an auditor pins**: `log verify --audit-key` takes it. |
+| `content-secret` | the `vmr.agent` profile's content secret (profile §3): 32 random bytes, as 64 lower-case hexadecimal characters and a line feed. It keys every digest of content and never appears in the log. |
+| `log.jsonl` | the log, empty. |
+
+The audit key and the content secret come from the operating system's
+cryptographic random-number generator (§6). They are written once, to new
+files, owner-only on Unix. On Windows they inherit the folder's permissions,
+and the output prints the `icacls` command that restricts each one. `vmr`
+never prints either. The output names each file and says which one to give an
+auditor. Exit 0, or exit 1 for a directory that is not empty or cannot be
+written.
+
+### 3.13 `vmr log seal`
+
+```
+vmr log seal --dir <DIR> [--profile vmr.agent|core] [--checkpoint-every <N>] [--checkpoint-minutes <M>]
+```
+
+A long-running process an agent runtime starts and writes its events to, one
+JSON object a line, on standard input. It writes each event to the log of a
+directory `log init` made, and answers each line on standard output. Any
+runtime in any language can drive it through a pipe. `docs/examples/agent-log/`
+has one in Python, using the standard library only. This section is the
+interface such a runtime codes against.
+
+`--profile` names the profile the entries are written under: `vmr.agent`
+(the default, [`specs/audit-profile-agent-v0.1.md`](../specs/audit-profile-agent-v0.1.md))
+or `core` (any kind the format's grammar allows, and no digests).
+`--checkpoint-every` defaults to 1000 and `--checkpoint-minutes` to 10.
+
+**Input.** One line per event, UTF-8, at most 1 MiB (1 048 576 bytes) before
+its line feed. A carriage return before the line feed is allowed. A last line
+without a line feed is read as a line.
+
+```
+{"kind": "<kind>", "detail": {...}, "content": {...}}
+```
+
+- `kind` (a string) and `detail` (an object) are the entry's, as the profile
+  defines them. `vmr` adds `log_version`, `index`, `previous_root` and
+  `recorded_at`.
+- `content` is optional. Each of its members names a **digest member** the
+  kind defines (`arguments_digest`, `tool_digest`, `input_digest`,
+  `result_digest`, `schema_digest`, `grammar_digest`, `presented_digest`
+  under `vmr.agent`, each on the kinds its §4 gives it). Its value is exactly
+  one of:
+  - `{"text": "<string>"}`: the content is the string's UTF-8 bytes;
+  - `{"base64": "<standard base64>"}`: the content is the decoded bytes. The
+    encoding is RFC 4648 §4: the alphabet `A–Z a–z 0–9 + /`, padded with `=`
+    to a multiple of 4 characters, with no bits set past the data;
+  - `{"json": <any JSON value>}`: the content is the UTF-8 bytes of the
+    value's canonical form (JCS, RFC 8785).
+
+  Profile §3 says which to use. Content the runtime received as bytes or text
+  (the text the model generated for a call's arguments, a tool's raw output)
+  is given as `text` or `base64`, as received, before any parsing. Content
+  the runtime received only as a parsed JSON value is given as `json`.
+- For each content member, `vmr` computes the keyed digest of profile §3,
+  with the content secret, the detail's `session_id` and the index it is about
+  to give the entry. It puts the digest in the detail under that member's
+  name. The content is written nowhere: not to the log, not to a file, not to
+  the output.
+- A `detail` that already carries a digest member of its kind is refused:
+  only the sealer holds the secret. `content` under the `core` profile is
+  refused.
+
+**Each entry** gets `recorded_at` from this machine's clock (§6). It is
+checked as a reader checks it (format §4.4 rows 1 to 5, and the profile's
+rules for that one entry: its kind, its members and their types), so the log
+never holds an entry its reader would refuse. It is written with one write
+and synced to the disk before the answer.
+
+The sealer checks each entry alone. It checks none of the profile's rules
+between entries: an entry that breaks one (a call's entries out of order, an
+approval gate with no answer, a second `session.ended` for one session) is
+written like any other. `vmr log verify --profile vmr.agent` (§3.11) checks
+the rules between entries and adds a note wherever the entries break one.
+Keeping the sequence right is the runtime's part.
+
+**Output.** One JSON line on standard output for each input line, in order.
+Each is written only after the entry is durable:
+
+```
+{"index":14}
+{"message":"detail carries the digest member arguments_digest: give the item under content, and the sealer, which holds the content secret, computes the digest","recorded":{"index":15,"kind":"events.dropped"},"refused":"seal.digest_in_detail"}
+```
+
+- `{"index": N}`: the event is entry N of the log.
+- `{"refused": "<id>", "message": "<text>"}`: the event was not written. The
+  message never quotes content. Under `vmr.agent` the refused event is itself
+  recorded, as an `events.dropped` entry with `count` 1 (profile §5: loss is
+  recorded). The answer then carries `"recorded": {"kind": "events.dropped",
+  "index": N}`. Under `core`, nothing is recorded.
+
+**An event with no answer.** If the sealer stops (an I/O error, a crash, a
+killed process) the runtime may have sent events it got no answer for. Each
+of them may or may not be in the log: an entry is durable before its answer
+is written, so an entry can be on the disk while its answer was never sent.
+After a restart, the runtime finds out by reading the log, which it may do
+while the new sealer runs (**Reading while it runs**, below):
+
+- `log.jsonl` has one entry a line, and entry N is line N + 1. The runtime
+  keeps the index of the last answer it got. Every entry after it was
+  written without an answer.
+- Those entries may also include `events.dropped` for refused events, and
+  the `log.recovered` the new sealer wrote on start.
+- An unanswered event that is not among them was not written. Send it again.
+  Compare by `kind` and `detail`: a digest member cannot be compared without
+  the content secret, but the other members can.
+
+Each answer is canonical JSON (JCS): its members are sorted. The refusal
+identifiers are these:
+
+| Id | The line was refused because |
+|---|---|
+| `seal.size` | it is longer than 1 MiB |
+| `seal.syntax` | it is not UTF-8 JSON, it nests past 127 levels, or a member appears twice |
+| `seal.structure` | it is not an object of `kind` (a string), `detail` (an object) and, optionally, `content` (an object), or it has another member |
+| `seal.reserved_kind` | its `kind` is `log.recovered`, which only the sealer writes, when it moves a torn tail aside on start |
+| `seal.digest_in_detail` | its `detail` carries a digest member of its kind |
+| `seal.content` | `content` under the `core` profile; a member that is not a digest member of the kind (or a kind the profile does not know); a value that is not exactly one of the three forms; base64 that is not standard padded base64; or a detail with no `session_id` string to key the digest |
+| `audit_entry.structure`, `audit_entry.size` | the entry the event makes breaks the profile's rules (the message names the kind and the member), or is longer than 65 536 bytes (format §4.4) |
+
+**Checkpoints** (profile §5, format §6). A checkpoint is signed with the audit
+key over the whole log:
+
+- after every `session.ended`;
+- after every `--checkpoint-every` entries since the last one;
+- at the first entry `--checkpoint-minutes` or more after the last one;
+- at the end of the input.
+
+A checkpoint made after an entry is on the disk before that entry's answer.
+Each one is appended as one canonical JSON line to `checkpoints.jsonl`, and
+synced. It then replaces `checkpoint.json` atomically: `vmr` writes a
+temporary file in the same directory, syncs it, and renames it over the old
+one. `checkpoints.jsonl` is the authoritative record; `checkpoint.json` is a
+convenience that may lag. If another process holds `checkpoint.json` open in
+a way that forbids replacing it (on Windows, a program that opens files
+without delete sharing, as .NET, Python and many editors do, or a virus
+scanner), `vmr` tries again a few times over about 200 ms. Then it prints a
+warning on standard error and goes on. The next checkpoint replaces the file.
+No checkpoint is made of an empty log, or twice over the same size in
+one run. `log verify --checkpoint checkpoint.json` checks the latest, and
+`--checkpoints checkpoints.jsonl` the whole history.
+
+**Start and stop.**
+
+- On start, `vmr` takes an exclusive lock on `log.jsonl.lock` beside the log
+  (created when absent) and holds it while it runs. A second `log seal` on
+  the same directory, while the first holds the lock, is refused with exit 1.
+  The operating system releases the lock when the process ends, however it
+  ends, so a crash never leaves a stale lock. The log itself is not locked.
+- It replays the log in the memory of one line. If the log's last line has no
+  line feed (a crash while writing), `vmr` moves those bytes to
+  `log.jsonl.torn-<offset>`, truncates the log to its last complete line, and
+  records a `log.recovered` entry (format §4.4). It then signs a checkpoint.
+  Any other fault in the log is not repaired: exit 1, and `log verify` names
+  the line. A torn last line of `checkpoints.jsonl` is moved aside to
+  `checkpoints.jsonl.torn-<offset>` in the same way.
+- A torn-bytes file never replaces an earlier one. If `<file>.torn-<offset>`
+  already holds other bytes, the next name is `<file>.torn-<offset>.1`, then
+  `.2`, and so on. A file that already holds exactly these bytes is kept.
+- A crash between the truncation and the `log.recovered` entry is completed
+  on the next start: a torn-bytes file at the log's length is one no entry
+  names yet, and `vmr` records it then.
+- The end of the input writes the final checkpoint and exits 0.
+- Any I/O error (a write or sync that fails, standard output closed) prints a
+  message on standard error and exits 1. `vmr` signs a last checkpoint first
+  when it can.
+
+**Reading while it runs.** On every system, other processes may read
+`log.jsonl`, `checkpoints.jsonl` and `checkpoint.json` while `log seal`
+runs: `log verify`, `log disclose` and `log check-item` work on a live log.
+
+- On Windows, a reader must open `log.jsonl` and `checkpoints.jsonl` in a
+  way that allows another process to write them, because the sealer holds
+  them open for writing. Rust's standard library, Python's `open`,
+  PowerShell's `Get-Content` and `vmr` do. .NET's `File.OpenRead` and
+  `File.ReadAllText` allow other readers only, so Windows refuses them while
+  the sealer runs ("being used by another process"): open the file with
+  `FileShare.ReadWrite` instead.
+- A reader can meet the sealer mid-append: then the last line has no line
+  feed yet, and `log verify` refuses it as `audit_log.torn_tail`. Read
+  again. Everything up to the last line feed is complete and durable.
+- A reader that holds `checkpoint.json` open delays its replacement, as
+  said under **Checkpoints**. It never stops the sealer.
+
+### 3.14 `vmr log disclose`
+
+```
+vmr log disclose --dir <DIR> --index <N> --member <NAME>
+```
+
+The holder's side of a disclosure (profile §3). It reads the directory's
+content secret and its log, up to entry N, under `vmr.agent`. It then prints
+the **item key** of that entry's digest member NAME, as 64 hexadecimal
+characters and a line feed, and nothing else. The item key is HMAC-SHA-256
+of `<kind>/<member>/<index>` under the session's key.
+
+Give the item key and the content to whoever should check it. An item key
+opens that one digest and no other: it is the narrowest key that answers the
+question. The kind must define NAME as a digest member, the entry must carry
+it, and the entry must name a `session_id`; otherwise the command exits 1.
+The content secret is never printed.
+
+### 3.15 `vmr log check-item`
+
+```
+vmr log check-item --log <FILE> --index <N> --member <NAME> --item-key <HEX>
+                   (--content-text <TEXT> | --content-file <FILE> | --content-json <FILE>)
+```
+
+The auditor's side. It needs no secret. It reads the log up to entry N, and
+every line up to it is checked as `log verify` checks it (under the core
+profile). It then recomputes the digest of the content under the item key and
+says whether it is the digest member NAME that entry N carries.
+
+The content is one of:
+
+- the UTF-8 bytes of `--content-text`;
+- the bytes of `--content-file`;
+- the canonical JSON form of the value in `--content-json`. A file that
+  repeats a member is refused, because its value would be ambiguous.
+
+```
+Item matches: entry 4's arguments_digest is the digest of this content under this item key
+  Log:          'log.jsonl'
+  Entry:        4 (call.proposed), label call.proposed/arguments_digest/4
+  Content:      the UTF-8 bytes of --content-text
+  In the entry: hmac-sha256:8fbf1837...
+  Computed:     hmac-sha256:8fbf1837...
+  Not checked:  whether a signed checkpoint covers entry 4: run `vmr log verify --log <FILE> --audit-key <KEY> --checkpoint <FILE>`
+```
+
+It does not say whether a signed checkpoint covers the entry: `log verify`
+says that, and the output says to run it. The exit code is:
+
+- 0 when the content matches;
+- 3 when it does not match, or when a line of the log up to the entry is
+  refused;
+- 1 for an entry without that digest member, an item key that is not 64
+  hexadecimal characters, or a file that cannot be read.
+
 ## 4. Files
 
 ### 4.1 Private key
@@ -1103,7 +1477,10 @@ Record, predecessor and trust-store files: 16 MiB (larger files are not
 read: exit 1; the verifier itself refuses records over 1 MiB with
 `input.size`, exit 3). Manifest: 1 MiB. Key files: 64 KiB. Training input:
 `i32::MAX` bytes. A model's files and training records: any size, read in
-1 MiB pieces; the record itself is at most 1 MiB (§3.3.1).
+1 MiB pieces; the record itself is at most 1 MiB (§3.3.1). An audit log: any
+size, read in 1 MiB pieces, one line at most 65 536 bytes (§3.11); a
+checkpoint: 16 384 bytes (a larger one is refused unread, `checkpoint.size`,
+exit 3).
 
 ### 4.8 Files `vmr` writes
 
@@ -1135,6 +1512,25 @@ other work (no key is generated, no model file is read, the engine never runs):
 
 An existing regular file is refused unless `--force`.
 
+`log init --dir` (§3.12) writes `audit-key.pem`, `audit-key.pub.json`,
+`content-secret` and an empty `log.jsonl` as new files, the same way. It
+refuses a directory that is not empty, and has no `--force`. `log seal --dir`
+(§3.13) writes to that directory and nowhere else:
+
+- it creates `log.jsonl.lock`, an empty file it holds an exclusive lock on
+  while it runs, and never removes;
+- it appends entries to `log.jsonl`, each synced;
+- it appends checkpoints to `checkpoints.jsonl`, each synced;
+- it replaces `checkpoint.json` through a temporary file
+  `.checkpoint.json.vmr-<process id>-<n>.tmp` in the same directory, where
+  `n` counts that process's replaces. A file of that name left by a crashed
+  process is removed first;
+- it moves a torn last line of either `.jsonl` file to a new
+  `<file>.torn-<offset>` (or `.torn-<offset>.1`, `.2`, ... when that name
+  holds other bytes), and never overwrites one.
+
+On Unix it syncs the directory after it creates or renames a file in it.
+
 ## 5. Exit codes
 
 | Code | Meaning |
@@ -1142,8 +1538,13 @@ An existing regular file is refused unless `--force`.
 | 0 | done; for `record verify`: the record verified |
 | 1 | usage, input or I/O error: bad arguments, unreadable or malformed input files, an unusable trust store, authority store or policy pack, a pack signature that does not verify or that `--require-signed-pack` (`record verify`) or `--require-signed` (`pack check`) does not accept, a pack `pack sign` will not sign again without `--replace`, a key or an authority a trust store already holds, a bad `--at`, an existing output file — the command could not do its job. A fault in `vmr` itself exits 1 too, and says so in as many words rather than blaming the input |
 | 2 | engine error: the engine refused the brain, profile or backend (the engine build only; the default build never returns it) |
-| 3 | verification failed: the record is malformed, truncated, tampered, forged or not trusted by this store |
+| 3 | verification failed: the record is malformed, truncated, tampered, forged or not trusted by this store; for `log verify`, a line of the audit log or a checkpoint was refused, a checkpoint is not of this log, or a checkpoint history is out of order (§3.11); for `log check-item`, the content is not what the entry's digest committed to, or a line of the log up to the entry was refused (§3.15) |
 | 4 | verified, but the policy evaluation did not accept it: `record verify --policy-pack` found the record non-compliant, or could not decide it (an indeterminate result is not acceptance — §3.1.1). Only this flag can return it; without it a verified record is exit 0 |
+
+`log seal` (§3.13) answers each event on standard output. A refused event is an
+answer, not an exit code: the command exits 0 when its input ends, and 1 for
+an I/O error, a log it cannot open or lock, or a directory `log init` did not
+make.
 
 Results go to standard output, errors to standard error as `vmr: error: …`
 (with a `hint:` line when there is something to do). Every error line is
@@ -1235,5 +1636,14 @@ boundary where they enter, each in one place and each visible:
   spec §6.1.)
   Verification fails `time.not_future` if the record is dated after `T`:
   across two machines, keep their clocks synchronized (NTP) or pass `--at`.
-- **Randomness**: only `key generate`, from the operating system's CSPRNG.
-  Record bytes are a pure function of their inputs, the key included.
+  `log seal` (§3.13) reads the same clock for each entry's `recorded_at` and
+  each checkpoint's `issued_at`. The audit-log format defines both as the log
+  writer's clock (format §4.1, §6), and a log records when it was written, so
+  they take no flag.
+- **Randomness**, from the operating system's CSPRNG, in two places:
+  - `key generate` draws a key;
+  - `log init` (§3.12) draws a log's audit key and its content secret.
+
+  Record bytes are a pure function of their inputs, the key included. A log's
+  digests are a pure function of the content secret, the entry and the
+  content.

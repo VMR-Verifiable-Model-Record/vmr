@@ -277,8 +277,18 @@ fn create_file(path: &Path, bytes: &[u8], force: bool, what: &str, owner_only: b
     }
     file.write_all(bytes)
         .and_then(|()| file.sync_all())
-        .map_err(|e| CliError::input(format!("cannot write {what} {}: {e}", shown(path))))
+        .map_err(|e| CliError::input(format!("cannot write {what} {}: {e}", shown(path))))?;
+    sync_directory_of(path)
 }
+
+/// Make a file's creation or rename in its directory durable: on Unix, sync
+/// the directory (QA S3 of the log sealer); nothing on Windows.
+fn sync_directory_of(path: &Path) -> Result<(), CliError> {
+    vmr_audit_writer::sync_parent(path).map_err(|e| CliError::input(e.to_string()))
+}
+
+/// How many temporary files this process has made for [`replace_file`].
+static TEMP_FILES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 /// Replace the file at `path` with `bytes` (or create it) atomically: the
 /// bytes go to a new temporary file in the same directory, which is then
@@ -289,7 +299,21 @@ pub fn replace_file(path: &Path, bytes: &[u8], what: &str) -> Result<(), CliErro
         .file_name()
         .ok_or_else(|| CliError::input(format!("{what} {} is not a file name", shown(path))))?;
     let dir = path.parent().filter(|d| !d.as_os_str().is_empty()).unwrap_or(Path::new("."));
-    let temp = dir.join(format!(".{}.vmr-{}.tmp", name.to_string_lossy(), std::process::id()));
+    // `.<name>.vmr-<process id>-<n>.tmp`, n counting this process's
+    // replaces, built on the OS string (QA N8): no two replaces of one
+    // process share a name, and the live process with this id is this one,
+    // so a file already there is a crashed process's, left behind; it is
+    // removed rather than stopping every later replace.
+    let n = TEMP_FILES.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let mut temp_name = std::ffi::OsString::from(".");
+    temp_name.push(name);
+    temp_name.push(format!(".vmr-{}-{n}.tmp", std::process::id()));
+    let temp = dir.join(temp_name);
+    match std::fs::remove_file(&temp) {
+        Ok(()) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+        Err(e) => return Err(CliError::input(format!("cannot remove the stale temporary file {}: {e}", shown(&temp)))),
+    }
     create_file(&temp, bytes, false, what, false)?;
     std::fs::rename(&temp, path).map_err(|e| {
         // The temporary file is ours and useless now; if even removing it
@@ -302,7 +326,8 @@ pub fn replace_file(path: &Path, bytes: &[u8], what: &str) -> Result<(), CliErro
             ));
         }
         CliError::input(format!("cannot replace {what} {}: {e}", shown(path)))
-    })
+    })?;
+    sync_directory_of(path)
 }
 
 /// Owner-only files on Unix: created with mode 0600, and set to 0600 again
@@ -405,6 +430,26 @@ mod tests {
         assert!(why.contains("exists and is not a regular file (a directory)"), "{why}");
         assert_eq!(output_problem(Path::new("no/such/dir/k.pem")), None, "the open reports that");
         assert!(output_problem(Path::new("..")).is_some());
+    }
+
+    #[test]
+    fn a_stale_temporary_file_never_stops_a_replace() {
+        // QA N8: a crashed process may leave its temporary file, and a later
+        // process may get the same process id. Such a file is removed, never
+        // an obstacle, and two replaces in one process never share a name.
+        let dir = std::env::temp_dir().join(format!("vmr-files-stale-temp-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("checkpoint.json");
+        let pid = std::process::id();
+        std::fs::write(dir.join(format!(".checkpoint.json.vmr-{pid}.tmp")), b"stale").unwrap();
+        for n in 0..64 {
+            std::fs::write(dir.join(format!(".checkpoint.json.vmr-{pid}-{n}.tmp")), b"stale").unwrap();
+        }
+        replace_file(&path, b"one", "checkpoint").unwrap();
+        replace_file(&path, b"two", "checkpoint").unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), b"two");
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 
     #[test]

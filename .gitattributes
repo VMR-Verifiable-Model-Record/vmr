@@ -41,3 +41,7 @@ docs/examples/**/*.vmr binary
 docs/examples/**/*.json text eol=lf
 docs/examples/**/*.md text eol=lf
 docs/examples/**/*.txt text eol=lf
+# The agent-log example (docs/examples/agent-log/): each line of its log is
+# a Merkle leaf, and its script writes that log.
+docs/examples/**/*.jsonl text eol=lf
+docs/examples/**/*.py text eol=lf

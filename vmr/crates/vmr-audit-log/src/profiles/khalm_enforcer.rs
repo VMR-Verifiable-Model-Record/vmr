@@ -16,7 +16,7 @@ use crate::error::Error;
 use crate::profile::EntryProfile;
 use crate::entry::is_key_id_urn;
 use serde_json::{Map, Value};
-use vmr_record::hash::parse_hash;
+use crate::types::{is_hash, is_pos_int, is_refusal, is_safe_int, is_u64_string, is_uuid};
 use vmr_record::timestamp::Timestamp;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
@@ -37,35 +37,17 @@ impl EntryProfile for EnforcerProfile {
 /// The `khalm-vmr.enforcer` profile ([`EnforcerProfile`]).
 pub const PROFILE: EnforcerProfile = EnforcerProfile;
 
-fn is_hash(v: &Value) -> bool {
-    v.as_str().is_some_and(|s| parse_hash(s).is_ok())
-}
 fn is_timestamp(v: &Value) -> bool {
     v.as_str().is_some_and(|s| Timestamp::parse(s).is_ok())
 }
-fn is_uuid(v: &Value) -> bool {
-    v.as_str().is_some_and(is_uuid_urn)
-}
 fn is_key_id(v: &Value) -> bool {
     v.as_str().is_some_and(is_key_id_urn)
-}
-fn is_refusal(v: &Value) -> bool {
-    v.as_str().is_some_and(is_refusal_id)
 }
 fn is_text(v: &Value) -> bool {
     v.as_str().is_some_and(|s| s.len() <= 4096)
 }
 fn is_u32(v: &Value) -> bool {
     v.as_u64().is_some_and(|n| n <= u64::from(u32::MAX))
-}
-fn is_u64_string(v: &Value) -> bool {
-    v.as_str().is_some_and(is_decimal_u64)
-}
-fn is_pos_int(v: &Value) -> bool {
-    v.as_u64().is_some_and(|n| (1..=vmr_record::canonical::MAX_SAFE_INTEGER).contains(&n))
-}
-fn is_safe_int(v: &Value) -> bool {
-    v.as_u64().is_some_and(|n| n <= vmr_record::canonical::MAX_SAFE_INTEGER)
 }
 fn is_port(v: &Value) -> bool {
     v.as_u64().is_some_and(|n| n <= 65535)
@@ -93,31 +75,6 @@ fn is_destination(v: &Value) -> bool {
 fn is_enum(v: &Value, allowed: &[&str]) -> bool {
     v.as_str().is_some_and(|s| allowed.contains(&s))
 }
-fn is_uuid_urn(s: &str) -> bool {
-    let Some(rest) = s.strip_prefix("urn:uuid:") else { return false };
-    let groups = [8usize, 4, 4, 4, 12];
-    let parts: Vec<&str> = rest.split('-').collect();
-    parts.len() == groups.len()
-        && parts.iter().zip(groups).all(|(p, n)| p.len() == n && p.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
-}
-fn is_refusal_id(s: &str) -> bool {
-    match s.split_once('.') {
-        Some((ns, name)) => {
-            !ns.is_empty()
-                && !name.is_empty()
-                && ns.bytes().all(|b| b.is_ascii_lowercase() || b == b'_')
-                && name.bytes().all(|b| b.is_ascii_lowercase() || b == b'_')
-        }
-        None => false,
-    }
-}
-fn is_decimal_u64(s: &str) -> bool {
-    if s == "0" {
-        return true;
-    }
-    !s.is_empty() && !s.starts_with('0') && s.bytes().all(|b| b.is_ascii_digit()) && s.parse::<u64>().is_ok()
-}
-
 /// A member's checker and whether it is required.
 struct Spec {
     name: &'static str,

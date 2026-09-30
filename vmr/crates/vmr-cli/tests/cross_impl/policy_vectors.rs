@@ -223,6 +223,6 @@ fn every_pack_signature_vector_gives_its_exit_code_and_state_through_vmr() {
 
 /// The bytes a vector's lower-case `hex` stands for.
 fn hex_bytes(hex: &str) -> Vec<u8> {
-    assert!(hex.len() % 2 == 0 && hex.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f')), "not lower-case hex");
+    assert!(hex.len().is_multiple_of(2) && hex.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f')), "not lower-case hex");
     (0..hex.len()).step_by(2).map(|i| u8::from_str_radix(&hex[i..i + 2], 16).unwrap()).collect()
 }

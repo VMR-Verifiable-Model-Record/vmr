@@ -229,7 +229,7 @@ fn calendar_date_exists(s: &str) -> bool {
     let y: u32 = s[0..4].parse().unwrap();
     let m: u32 = s[5..7].parse().unwrap();
     let d: u32 = s[8..10].parse().unwrap();
-    let leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+    let leap = (y.is_multiple_of(4) && !y.is_multiple_of(100)) || y.is_multiple_of(400);
     let len = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     d <= len[(m - 1) as usize]
 }

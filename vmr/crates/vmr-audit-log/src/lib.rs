@@ -30,8 +30,11 @@
 //! `specs/audit-log-schema/v0.1.json` for the documents' structure.
 //!
 //! An entry's kinds are a profile's ([`profile::EntryProfile`]):
-//! [`profile::CORE`] accepts any kind the core's grammar allows, and
-//! [`profiles::khalm_enforcer::PROFILE`] is KHALM's enforcer's vocabulary.
+//! [`profile::CORE`] accepts any kind the core's grammar allows,
+//! [`profiles::khalm_enforcer::PROFILE`] is KHALM's enforcer's vocabulary, and
+//! [`profiles::vmr_agent::PROFILE`] is `vmr.agent`, what any agent runtime
+//! decided about the tool calls a model proposed
+//! (`specs/audit-profile-agent-v0.1.md`).
 
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
@@ -65,6 +68,7 @@ pub mod profiles;
 pub mod proof;
 pub mod signing;
 pub mod tree;
+pub(crate) mod types;
 
 pub use error::Error;
 

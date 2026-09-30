@@ -49,6 +49,9 @@ pub mod error;
 pub mod files;
 pub mod inspect_cmd;
 pub mod keys;
+pub mod log_cmd;
+pub mod log_disclose;
+pub mod log_seal;
 pub mod manifest;
 pub mod model_cmd;
 #[cfg(test)]
@@ -67,7 +70,7 @@ pub mod view;
 pub mod width_tables;
 
 use clap::FromArgMatches;
-use cli::{Cli, Command, KeyCommand, ModelCommand, PackCommand, RecordCommand, TrustStoreCommand};
+use cli::{Cli, Command, KeyCommand, LogCommand, ModelCommand, PackCommand, RecordCommand, TrustStoreCommand};
 use error::CliError;
 use output::Output;
 use std::process::ExitCode;
@@ -110,6 +113,7 @@ fn writes_data(command: &Command) -> bool {
         Command::Model(ModelCommand::Hash(args)) => args.json,
         Command::Key(KeyCommand::Export(args)) => args.output.is_none(),
         Command::Pack(PackCommand::Check(args)) => args.json,
+        Command::Log(LogCommand::Seal(_) | LogCommand::Disclose(_)) => true,
         _ => false,
     }
 }
@@ -143,6 +147,11 @@ pub fn run(cli: &Cli) -> Result<Output, CliError> {
         Command::TrustStore(TrustStoreCommand::AddAuthority(args)) => trust_store_cmd::add_authority(args),
         Command::Pack(PackCommand::Sign(args)) => pack_cmd::sign(args),
         Command::Pack(PackCommand::Check(args)) => pack_cmd::check(args),
+        Command::Log(LogCommand::Verify(args)) => log_cmd::verify(args),
+        Command::Log(LogCommand::Init(args)) => log_seal::init(args),
+        Command::Log(LogCommand::Seal(args)) => log_seal::seal(args),
+        Command::Log(LogCommand::Disclose(args)) => log_disclose::disclose(args),
+        Command::Log(LogCommand::CheckItem(args)) => log_disclose::check_item(args),
     }
 }
 

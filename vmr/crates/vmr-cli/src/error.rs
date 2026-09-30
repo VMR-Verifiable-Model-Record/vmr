@@ -38,9 +38,49 @@ Exit codes:
      found the record non-compliant, or could not decide it";
 
 /// The exit-code table the top-level `--help` prints: every code this tool
-/// returns, which are `record verify`'s. A build that adds a command with
-/// codes of its own prints its own table.
-pub const EXIT_CODES_HELP: &str = EXIT_CODES_VERIFY;
+/// returns, which are `record verify`'s, with `log verify`'s refusals under
+/// code 3. A build that adds a command with codes of its own prints its own
+/// table.
+pub const EXIT_CODES_HELP: &str = "\
+Exit codes:
+  0  done; for `record verify`: the record verified
+  1  usage, input or I/O error (bad arguments, unreadable or malformed input
+     files, an unusable trust store, authority store or policy pack, a pack
+     signature that does not verify or that --require-signed-pack does not
+     accept, an existing output file)
+  3  verification failed (malformed, truncated, tampered, forged or untrusted
+     record; for `log verify`, an audit log or a checkpoint refused; for `log
+     check-item`, content that is not what the entry committed to)
+  4  verified, but the policy evaluation did not accept it: --policy-pack
+     found the record non-compliant, or could not decide it";
+
+/// `log verify`'s exit codes, as its `--help` prints them.
+pub const EXIT_CODES_LOG_VERIFY: &str = "\
+Exit codes:
+  0  done: the log verified, and every checkpoint given with it
+  1  usage, input or I/O error (bad arguments, an unreadable log or checkpoint
+     file, an unusable audit key file)
+  3  verification failed: a line of the log or a checkpoint was refused, or a
+     checkpoint is not of this log";
+
+/// `log seal`'s exit codes, as its `--help` prints them. A refused event is
+/// an answer on standard output, not an exit code.
+pub const EXIT_CODES_LOG_SEAL: &str = "\
+Exit codes:
+  0  done: the input ended and the final checkpoint was written
+  1  usage, input or I/O error (bad arguments, a directory `log init` did not
+     make, a log another seal holds or a line of it refused, a write that
+     failed, standard output closed)";
+
+/// `log check-item`'s exit codes, as its `--help` prints them.
+pub const EXIT_CODES_LOG_CHECK_ITEM: &str = "\
+Exit codes:
+  0  done: the content is what the entry's digest committed to
+  1  usage, input or I/O error (bad arguments, an unreadable file, an entry
+     with no such digest member, an item key that is not 64 hexadecimal
+     characters)
+  3  the content is not what the entry's digest committed to, or a line of the
+     log up to the entry was refused";
 
 /// The exit codes of every other command: `record emit`, `record inspect`,
 /// `model hash`, `key generate`, `key export` and `trust-store add`.

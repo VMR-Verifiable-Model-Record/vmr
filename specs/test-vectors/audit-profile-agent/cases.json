@@ -1,0 +1,581 @@
+{
+  "digests": [
+    {
+      "content_hex": "7b22616d6f756e74223a203235302c2022746f223a202241434d452d37227d",
+      "content_secret": "10a526dbec40534b4194b46fae458f91d915b3dbfade93a452f14c788ab2c36d",
+      "content_secret_label": "vmr.agent vectors: content secret (test-only)",
+      "content_text": "{\"amount\": 250, \"to\": \"ACME-7\"}",
+      "description": "arguments the model generated, as received: their bytes before any parsing (not their JCS form)",
+      "digest": "hmac-sha256:c35d4645210f09f047375c6df7fa900069ef7ac08bdb0acd606cc99c9cd7b0a7",
+      "id": "agent-digest-bytes",
+      "index": 1043,
+      "item_key": "58334c870aee26aed0a98fb7eea7aa9d41d7e8582e565791519bf7880582ff3a",
+      "kind": "call.proposed",
+      "label": "call.proposed/arguments_digest/1043",
+      "member": "arguments_digest",
+      "session_id": "urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90",
+      "session_key": "54ce6562a2e66f207275d740b228c4ad0a105391700f74c1d8e6481ef69cdcfc"
+    },
+    {
+      "content_hex": "7b22616d6f756e74223a3235302e352c226d656d6f223a22636166c3a9222c22746f223a2241434d452d37227d",
+      "content_json": {
+        "amount": 250.5,
+        "memo": "café",
+        "to": "ACME-7"
+      },
+      "content_secret": "10a526dbec40534b4194b46fae458f91d915b3dbfade93a452f14c788ab2c36d",
+      "content_secret_label": "vmr.agent vectors: content secret (test-only)",
+      "description": "a result received only as a parsed JSON value: the UTF-8 bytes of its JCS form",
+      "digest": "hmac-sha256:add770ee396c8a29509b18679e6b2faca0839ae9f034d21ccb12abd37444888a",
+      "id": "agent-digest-json",
+      "index": 1047,
+      "item_key": "106eb6b407cfc1c294824b09a2fdfb7cc15577abd9838c92ef9707a6fc8bacf4",
+      "kind": "call.executed",
+      "label": "call.executed/result_digest/1047",
+      "member": "result_digest",
+      "session_id": "urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90",
+      "session_key": "54ce6562a2e66f207275d740b228c4ad0a105391700f74c1d8e6481ef69cdcfc"
+    },
+    {
+      "content_hex": "73656e64207061796d656e74",
+      "content_secret": "10a526dbec40534b4194b46fae458f91d915b3dbfade93a452f14c788ab2c36d",
+      "content_secret_label": "vmr.agent vectors: content secret (test-only)",
+      "content_text": "send payment",
+      "description": "a short, guessable tool name that is not a name, at index 0",
+      "digest": "hmac-sha256:422740ffdfc9efdb951a682cf46045ee4716720511708ca6c782ed0a9c0cdce9",
+      "id": "agent-digest-tool-name",
+      "index": 0,
+      "item_key": "41e4a7485d70ec5bdbf7874429467bea104d20fc0665171f11890dfa1e2f7e07",
+      "kind": "tool.registered",
+      "label": "tool.registered/tool_digest/0",
+      "member": "tool_digest",
+      "session_id": "urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90",
+      "session_key": "54ce6562a2e66f207275d740b228c4ad0a105391700f74c1d8e6481ef69cdcfc"
+    },
+    {
+      "content_hex": "",
+      "content_secret": "10a526dbec40534b4194b46fae458f91d915b3dbfade93a452f14c788ab2c36d",
+      "content_secret_label": "vmr.agent vectors: content secret (test-only)",
+      "content_text": "",
+      "description": "empty content",
+      "digest": "hmac-sha256:5df8eb28306fab9e23cd9b4ac7db9806c87c1829b90748a83566dadcc149eb26",
+      "id": "agent-digest-empty",
+      "index": 7,
+      "item_key": "e2a980920a54e2449321882e844e13f3309b2308cce01d33362fa9d3ba343e0e",
+      "kind": "turn.started",
+      "label": "turn.started/input_digest/7",
+      "member": "input_digest",
+      "session_id": "urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90",
+      "session_key": "54ce6562a2e66f207275d740b228c4ad0a105391700f74c1d8e6481ef69cdcfc"
+    },
+    {
+      "content_hex": "7b22616d6f756e74223a203235302c2022746f223a202241434d452d37227d",
+      "content_secret": "10a526dbec40534b4194b46fae458f91d915b3dbfade93a452f14c788ab2c36d",
+      "content_secret_label": "vmr.agent vectors: content secret (test-only)",
+      "content_text": "{\"amount\": 250, \"to\": \"ACME-7\"}",
+      "description": "the content, kind, member and index of agent-digest-bytes in another session: another session key, another digest",
+      "digest": "hmac-sha256:9403d10d99feb9065eda80dc8c290f98452d3094c575a888e2e830112431af2e",
+      "id": "agent-digest-other-session",
+      "index": 1043,
+      "item_key": "1a241ef035d4badac0d4b345013a35d918375cc9bcc6e68d699234c0e501f9df",
+      "kind": "call.proposed",
+      "label": "call.proposed/arguments_digest/1043",
+      "member": "arguments_digest",
+      "session_id": "urn:uuid:7b1e2d3c-4a5f-4e6d-8c7b-9a0f1e2d3c4b",
+      "session_key": "71fd2cced3f272b45d4074035c9527689a9fb6d550f96c469f8c22a878d0990f"
+    }
+  ],
+  "entries": [
+    {
+      "description": "session.started with its required members",
+      "expect": "accept",
+      "id": "agent-session-started",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "session.started with every optional member: a sub-agent session with the largest u64 seed",
+      "expect": "accept",
+      "id": "agent-session-started-full",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"model_hash\":\"sha256:e55aa0cf421139fb1455386f3e793cdc3f4e4a0c054b307443fcdec427ca30de\",\"parent_call\":4,\"parent_session_id\":\"urn:uuid:7b1e2d3c-4a5f-4e6d-8c7b-9a0f1e2d3c4b\",\"record_id\":\"urn:uuid:22222222-2222-4222-8222-222222222222\",\"runtime\":\"example-runtime 2.3.1\",\"seed\":\"18446744073709551615\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "runtime of 128 two-byte characters: 256 bytes, the limit",
+      "expect": "accept",
+      "id": "agent-session-started-text-at-limit",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "session.ended, completed",
+      "expect": "accept",
+      "id": "agent-session-ended",
+      "raw": "{\"detail\":{\"outcome\":\"completed\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "session.ended, stopped by a person named by a pseudonymous id",
+      "expect": "accept",
+      "id": "agent-session-ended-stopped",
+      "raw": "{\"detail\":{\"outcome\":\"stopped\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"stopped_by\":\"staff:4411\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "session.ended, stopped, with no stopped_by: only its presence without \"stopped\" is refused",
+      "expect": "accept",
+      "id": "agent-session-ended-stopped-anonymous",
+      "raw": "{\"detail\":{\"outcome\":\"stopped\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "policy.loaded for every session: no session_id",
+      "expect": "accept",
+      "id": "agent-policy-loaded",
+      "raw": "{\"detail\":{\"policy_hash\":\"sha256:cc0dfe57a592f86314cadfae5eacadb858ed95e044d4752c0b5fa4cf0c78895c\"},\"index\":0,\"kind\":\"policy.loaded\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "policy.loaded for one session",
+      "expect": "accept",
+      "id": "agent-policy-loaded-session",
+      "raw": "{\"detail\":{\"policy_hash\":\"sha256:cc0dfe57a592f86314cadfae5eacadb858ed95e044d4752c0b5fa4cf0c78895c\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"policy.loaded\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "policy.refused with a writer's own refusal id",
+      "expect": "accept",
+      "id": "agent-policy-refused",
+      "raw": "{\"detail\":{\"detail\":\"the policy's signature does not verify\",\"policy_hash\":\"sha256:cc0dfe57a592f86314cadfae5eacadb858ed95e044d4752c0b5fa4cf0c78895c\",\"refusal\":\"policy.bad_signature\"},\"index\":0,\"kind\":\"policy.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "policy.refused inside one session",
+      "expect": "accept",
+      "id": "agent-policy-refused-session",
+      "raw": "{\"detail\":{\"detail\":\"the policy forbids the tool\",\"refusal\":\"policy.forbidden\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"policy.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "tool.registered by name, with its provider and its schema's digest",
+      "expect": "accept",
+      "id": "agent-tool-registered",
+      "raw": "{\"detail\":{\"provider\":\"mcp:web-tools\",\"schema_digest\":\"hmac-sha256:e30b486bb17252927fe0683f33b2a51c3eeb064f5db8acd09f426256bb023f88\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\"},\"index\":0,\"kind\":\"tool.registered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "tool.registered as a digest: its name is not a name",
+      "expect": "accept",
+      "id": "agent-tool-registered-digest",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool_digest\":\"hmac-sha256:422740ffdfc9efdb951a682cf46045ee4716720511708ca6c782ed0a9c0cdce9\"},\"index\":0,\"kind\":\"tool.registered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "tool.unregistered by name and provider",
+      "expect": "accept",
+      "id": "agent-tool-unregistered",
+      "raw": "{\"detail\":{\"provider\":\"mcp:web-tools\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\"},\"index\":0,\"kind\":\"tool.unregistered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "turn.started with every optional member: a turn routed to another model",
+      "expect": "accept",
+      "id": "agent-turn-started",
+      "raw": "{\"detail\":{\"grammar_digest\":\"hmac-sha256:0fbefd52136a9413ac11efd4e371f7d904975aa611ec4df2330ff07d4008ca5f\",\"input_digest\":\"hmac-sha256:672ef2fd0186cd562112d23be91fe3dd1f69d734512dfd05f09d375cae4aa7cd\",\"model\":\"example-model-70b\",\"model_hash\":\"sha256:33d2fc78cfae0637776055cf248ce2c850a97b309cf6e2b0d33eed695d81236a\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"turn\":0},\"index\":0,\"kind\":\"turn.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "call.proposed naming a tool the session could reach",
+      "expect": "accept",
+      "id": "agent-call-proposed",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "call.proposed naming another tool: model output, written as a digest",
+      "expect": "accept",
+      "id": "agent-call-proposed-digest",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":1,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool_digest\":\"hmac-sha256:24a510ffbec07c41745fe0f2ac6e4fc378b0cae5f3c9645fb6869fe97690ec02\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "gate.decided, permitted by the dispatch gate",
+      "expect": "accept",
+      "id": "agent-gate-decided-permitted",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"permitted\",\"gate\":\"dispatch\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "gate.decided, refused by the policy gate with a registered refusal",
+      "expect": "accept",
+      "id": "agent-gate-decided-refused",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"refused\",\"gate\":\"policy\",\"refusal\":\"policy.forbidden\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "gate.decided of a gate the profile does not register: the writer's own",
+      "expect": "accept",
+      "id": "agent-gate-decided-writer-gate",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"refused\",\"gate\":\"rate_limit\",\"refusal\":\"rate_limit.exceeded\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "call.executed, ok, with its result's digest",
+      "expect": "accept",
+      "id": "agent-call-executed",
+      "raw": "{\"detail\":{\"call\":0,\"outcome\":\"ok\",\"result_digest\":\"hmac-sha256:fb4766c28b07d2eb276ea80c58a57cce077514a7a182cafcf47e9503d97d9c8e\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.executed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "call.executed, error, with no result",
+      "expect": "accept",
+      "id": "agent-call-executed-error",
+      "raw": "{\"detail\":{\"call\":0,\"outcome\":\"error\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.executed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "call.refused by the approval gate",
+      "expect": "accept",
+      "id": "agent-call-refused",
+      "raw": "{\"detail\":{\"call\":0,\"gate\":\"approval\",\"refusal\":\"approval.denied\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.requested with what the person was shown",
+      "expect": "accept",
+      "id": "agent-approval-requested",
+      "raw": "{\"detail\":{\"call\":0,\"presented_digest\":\"hmac-sha256:3350106ce486e52283bdc9431dfa9a1595b2bebbf0f4ff9e3c5ae1eb43b5f417\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.requested\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.granted of tool scope, with edited arguments",
+      "expect": "accept",
+      "id": "agent-approval-granted",
+      "raw": "{\"detail\":{\"approver\":\"staff:4411\",\"arguments_digest\":\"hmac-sha256:4158edf7e975bbabe7d816a3b765dedf9d5040dcff2b0e46229707785e0f36e7\",\"call\":0,\"latency_ms\":5210,\"scope\":\"tool\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.granted\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.denied",
+      "expect": "accept",
+      "id": "agent-approval-denied",
+      "raw": "{\"detail\":{\"approver\":\"acct.7f3e\",\"call\":0,\"latency_ms\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.denied\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.granted by a person named by an identity provider's subject, with a |",
+      "expect": "accept",
+      "id": "agent-approval-granted-provider-subject",
+      "raw": "{\"detail\":{\"approver\":\"google-oauth2|103547991597142817347\",\"call\":0,\"latency_ms\":5210,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.granted\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.denied by a person named by a base64 id, with +, / and =",
+      "expect": "accept",
+      "id": "agent-approval-denied-base64-id",
+      "raw": "{\"detail\":{\"approver\":\"q+Zk/3xY7w==\",\"call\":0,\"latency_ms\":40,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.denied\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "approval.timed_out",
+      "expect": "accept",
+      "id": "agent-approval-timed-out",
+      "raw": "{\"detail\":{\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"waited_ms\":300000},\"index\":0,\"kind\":\"approval.timed_out\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "events.dropped, the least count",
+      "expect": "accept",
+      "id": "agent-events-dropped",
+      "raw": "{\"detail\":{\"count\":1},\"index\":0,\"kind\":\"events.dropped\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "log.recovered: the core's recovery of a torn tail",
+      "expect": "accept",
+      "id": "agent-log-recovered",
+      "raw": "{\"detail\":{\"length\":37,\"offset\":0,\"sha256\":\"sha256:3e4655e0005b84b0261c910d6bfad9981847dec2bd39a83ea6cb3f246f820cdc\"},\"index\":0,\"kind\":\"log.recovered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}"
+    },
+    {
+      "description": "a kind section 4 does not name",
+      "expect": "audit_entry.structure",
+      "id": "agent-kind-unknown",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"tool.called\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 1
+    },
+    {
+      "description": "another profile's kind (khalm-vmr.enforcer's), which the core profile would accept",
+      "expect": "audit_entry.structure",
+      "id": "agent-kind-other-profile",
+      "raw": "{\"detail\":{},\"index\":0,\"kind\":\"enforcer.stopped\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 1
+    },
+    {
+      "description": "call.proposed carrying the arguments themselves: a member the kind does not name",
+      "expect": "audit_entry.structure",
+      "id": "agent-member-unknown-content",
+      "raw": "{\"detail\":{\"arguments\":{\"query\":\"weather in Lisbon\"},\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 2
+    },
+    {
+      "description": "session.ended with a member the kind does not name",
+      "expect": "audit_entry.structure",
+      "id": "agent-member-unknown",
+      "raw": "{\"detail\":{\"outcome\":\"completed\",\"reason\":\"done\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 2
+    },
+    {
+      "description": "session.started without configuration_hash",
+      "expect": "audit_entry.structure",
+      "id": "agent-member-missing",
+      "raw": "{\"detail\":{\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 2
+    },
+    {
+      "description": "call.executed without session_id",
+      "expect": "audit_entry.structure",
+      "id": "agent-member-missing-session",
+      "raw": "{\"detail\":{\"call\":0,\"outcome\":\"ok\"},\"index\":0,\"kind\":\"call.executed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 2
+    },
+    {
+      "description": "an optional member written as null",
+      "expect": "audit_entry.structure",
+      "id": "agent-member-null",
+      "raw": "{\"detail\":{\"model_hash\":null,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"turn\":0},\"index\":0,\"kind\":\"turn.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "call as a string",
+      "expect": "audit_entry.structure",
+      "id": "agent-integer-as-string",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":\"0\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "latency_ms below 0",
+      "expect": "audit_entry.structure",
+      "id": "agent-integer-negative",
+      "raw": "{\"detail\":{\"approver\":\"staff:4411\",\"call\":0,\"latency_ms\":-1,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.denied\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "turn with a fraction",
+      "expect": "audit_entry.structure",
+      "id": "agent-integer-fraction",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"turn\":1.5},\"index\":0,\"kind\":\"turn.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "call over 2^53 - 1",
+      "expect": "audit_entry.structure",
+      "id": "agent-integer-over-safe",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":9007199254740992,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "session_id in upper case",
+      "expect": "audit_entry.structure",
+      "id": "agent-uuid-upper-case",
+      "raw": "{\"detail\":{\"outcome\":\"completed\",\"session_id\":\"urn:uuid:0F3C6A2E-8D4B-4C1E-9A7F-2B5D8E1C4A90\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "configuration_hash in upper case",
+      "expect": "audit_entry.structure",
+      "id": "agent-hash-upper-case",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8BE1D54CFC9525975A67D74F14DB81904729BD5DD7297D0628FC23D455EE222E\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "seed as a JSON number: a u64 is a string",
+      "expect": "audit_entry.structure",
+      "id": "agent-u64-number",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"seed\":7,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "seed with a leading zero",
+      "expect": "audit_entry.structure",
+      "id": "agent-u64-leading-zero",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"seed\":\"07\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "seed of 2^64",
+      "expect": "audit_entry.structure",
+      "id": "agent-u64-over",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"example-runtime 2.3.1\",\"seed\":\"18446744073709551616\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a refusal id in upper case",
+      "expect": "audit_entry.structure",
+      "id": "agent-refusal-bad",
+      "raw": "{\"detail\":{\"call\":0,\"gate\":\"approval\",\"refusal\":\"Approval.Denied\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a tool name with a space: it is written as tool_digest",
+      "expect": "audit_entry.structure",
+      "id": "agent-name-space",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"send payment\"},\"index\":0,\"kind\":\"tool.registered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a tool name of 129 characters",
+      "expect": "audit_entry.structure",
+      "id": "agent-name-too-long",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt\"},\"index\":0,\"kind\":\"tool.registered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "an empty provider",
+      "expect": "audit_entry.structure",
+      "id": "agent-provider-empty",
+      "raw": "{\"detail\":{\"provider\":\"\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\"},\"index\":0,\"kind\":\"tool.unregistered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a gate starting with a digit",
+      "expect": "audit_entry.structure",
+      "id": "agent-gate-bad",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"permitted\",\"gate\":\"2fa\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a gate of 65 characters",
+      "expect": "audit_entry.structure",
+      "id": "agent-gate-too-long",
+      "raw": "{\"detail\":{\"call\":0,\"gate\":\"ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg\",\"refusal\":\"policy.forbidden\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a plain SHA-256 where a keyed digest is required",
+      "expect": "audit_entry.structure",
+      "id": "agent-digest-plain-hash",
+      "raw": "{\"detail\":{\"arguments_digest\":\"sha256:f13ed49f08c8c86fef44a583922d3247db05a02f7d5005371ed3d9912be043e1\",\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a digest in upper case",
+      "expect": "audit_entry.structure",
+      "id": "agent-digest-upper-case",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28C741DA467F87A7286AD4E6A4D334AD68A594CBCCA47844E86144762E15B785\",\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a digest of 63 digits",
+      "expect": "audit_entry.structure",
+      "id": "agent-digest-short",
+      "raw": "{\"detail\":{\"call\":0,\"outcome\":\"ok\",\"result_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b78\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.executed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "an approver written as an e-mail address",
+      "expect": "audit_entry.structure",
+      "id": "agent-person-address",
+      "raw": "{\"detail\":{\"approver\":\"ana@example.com\",\"call\":0,\"latency_ms\":5210,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.granted\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "an approver written as an identity provider's id that holds an e-mail address",
+      "expect": "audit_entry.structure",
+      "id": "agent-person-provider-address",
+      "raw": "{\"detail\":{\"approver\":\"auth0|ana@example.com\",\"call\":0,\"latency_ms\":40,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.denied\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "stopped_by written as a name with a space",
+      "expect": "audit_entry.structure",
+      "id": "agent-person-name",
+      "raw": "{\"detail\":{\"outcome\":\"stopped\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"stopped_by\":\"Ana Lopez\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "runtime of 129 two-byte characters: 258 bytes, over the 256-byte limit although under 256 characters",
+      "expect": "audit_entry.structure",
+      "id": "agent-text-over-limit-bytes",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"runtime\":\"ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "a turn's model of 257 bytes",
+      "expect": "audit_entry.structure",
+      "id": "agent-text-model-over-limit",
+      "raw": "{\"detail\":{\"model\":\"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"turn\":0},\"index\":0,\"kind\":\"turn.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "policy.refused's detail of 4097 bytes",
+      "expect": "audit_entry.structure",
+      "id": "agent-text-detail-over-limit",
+      "raw": "{\"detail\":{\"detail\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"refusal\":\"policy.bad_signature\"},\"index\":0,\"kind\":\"policy.refused\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "session.ended's outcome outside its list",
+      "expect": "audit_entry.structure",
+      "id": "agent-session-outcome-unlisted",
+      "raw": "{\"detail\":{\"outcome\":\"cancelled\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "gate.decided's decision outside its list",
+      "expect": "audit_entry.structure",
+      "id": "agent-decision-unlisted",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"deferred\",\"gate\":\"policy\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "call.executed's outcome outside its list",
+      "expect": "audit_entry.structure",
+      "id": "agent-call-outcome-unlisted",
+      "raw": "{\"detail\":{\"call\":0,\"outcome\":\"timeout\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"call.executed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "approval.granted's scope outside its list",
+      "expect": "audit_entry.structure",
+      "id": "agent-scope-unlisted",
+      "raw": "{\"detail\":{\"approver\":\"staff:4411\",\"call\":0,\"latency_ms\":5210,\"scope\":\"forever\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"approval.granted\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "events.dropped's count below its least value, 1",
+      "expect": "audit_entry.structure",
+      "id": "agent-count-zero",
+      "raw": "{\"detail\":{\"count\":0},\"index\":0,\"kind\":\"events.dropped\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "log.recovered's length below its least value, 1",
+      "expect": "audit_entry.structure",
+      "id": "agent-length-zero",
+      "raw": "{\"detail\":{\"length\":0,\"offset\":0,\"sha256\":\"sha256:3e4655e0005b84b0261c910d6bfad9981847dec2bd39a83ea6cb3f246f820cdc\"},\"index\":0,\"kind\":\"log.recovered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 3
+    },
+    {
+      "description": "call.proposed with both tool and tool_digest",
+      "expect": "audit_entry.structure",
+      "id": "agent-tool-both",
+      "raw": "{\"detail\":{\"arguments_digest\":\"hmac-sha256:28c741da467f87a7286ad4e6a4d334ad68a594cbcca47844e86144762e15b785\",\"call\":0,\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"tool_digest\":\"hmac-sha256:2aeb42cda123113e5229688473171abd3303f3722b3ceb776354f5b5e7ac6fa1\",\"turn\":0},\"index\":0,\"kind\":\"call.proposed\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 4
+    },
+    {
+      "description": "tool.registered with neither tool nor tool_digest",
+      "expect": "audit_entry.structure",
+      "id": "agent-tool-neither",
+      "raw": "{\"detail\":{\"provider\":\"mcp:web-tools\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"tool.registered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 4
+    },
+    {
+      "description": "tool.unregistered with both tool and tool_digest",
+      "expect": "audit_entry.structure",
+      "id": "agent-tool-both-unregistered",
+      "raw": "{\"detail\":{\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"tool\":\"search_web\",\"tool_digest\":\"hmac-sha256:ec9765a4b8fc80bbabb3647e72cd4bcbc2492e38ee24e1b0a84de9fceab59e52\"},\"index\":0,\"kind\":\"tool.unregistered\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 4
+    },
+    {
+      "description": "gate.decided refused, without refusal",
+      "expect": "audit_entry.structure",
+      "id": "agent-refused-without-refusal",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"refused\",\"gate\":\"policy\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 5
+    },
+    {
+      "description": "gate.decided permitted, with a refusal",
+      "expect": "audit_entry.structure",
+      "id": "agent-permitted-with-refusal",
+      "raw": "{\"detail\":{\"call\":0,\"decision\":\"permitted\",\"gate\":\"policy\",\"refusal\":\"policy.forbidden\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"gate.decided\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 5
+    },
+    {
+      "description": "parent_call without parent_session_id",
+      "expect": "audit_entry.structure",
+      "id": "agent-parent-call-alone",
+      "raw": "{\"detail\":{\"configuration_hash\":\"sha256:8be1d54cfc9525975a67d74f14db81904729bd5dd7297d0628fc23d455ee222e\",\"model\":\"example-model-7b-instruct\",\"parent_call\":4,\"runtime\":\"example-runtime 2.3.1\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\"},\"index\":0,\"kind\":\"session.started\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 6
+    },
+    {
+      "description": "stopped_by with outcome completed",
+      "expect": "audit_entry.structure",
+      "id": "agent-stopped-by-not-stopped",
+      "raw": "{\"detail\":{\"outcome\":\"completed\",\"session_id\":\"urn:uuid:0f3c6a2e-8d4b-4c1e-9a7f-2b5d8e1c4a90\",\"stopped_by\":\"staff:4411\"},\"index\":0,\"kind\":\"session.ended\",\"log_version\":\"0.1\",\"previous_root\":\"sha256:dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986\",\"recorded_at\":\"2026-09-30T09:00:00Z\"}",
+      "rule": 6
+    }
+  ],
+  "note": "VMR audit log profile vmr.agent v0.1 vectors (specs/audit-profile-agent-v0.1.md). Each entry case is one line, read as a log of one entry under the vmr.agent profile: accepted, or refused with audit_entry.structure (rule names the section 4.6 check it breaks). Each digest case gives a content secret derived from a fixed label (sha256 of it, tests only), a session, a kind, a member, an index and the content, with the session key, item key and digest section 3 gives. Every expected result was declared by hand; the digests were computed once with an independent implementation. Regenerate with VMR_WRITE_VECTORS=1 cargo test -p vmr-audit-log --test agent_vectors -- --ignored.",
+  "profile": "vmr.agent",
+  "vector_version": "0.1"
+}

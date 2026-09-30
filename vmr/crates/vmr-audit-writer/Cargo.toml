@@ -1,0 +1,24 @@
+[package]
+name = "vmr-audit-writer"
+version.workspace = true
+edition.workspace = true
+# The workspace floor, 1.89, is this crate's: File::try_lock (one writer per log).
+rust-version.workspace = true
+license.workspace = true
+description = "The VMR audit log's file writer: one locked log file, replayed on open in the memory of one line, a torn tail recovered as the format allows, and entries of any profile appended durably. Open and general: any writer's profile. Normative reference: specs/audit-log-format-v0.1.md."
+
+[lib]
+name = "vmr_audit_writer"
+crate-type = ["rlib"]
+
+# The writer's footprint: the audit log's format crate (the entry, the reader,
+# the tree, the checkpoint), serde_json, SHA-256 for a moved tail's hash, and
+# p256 for the audit key's type. It opens files and reads no clock: every
+# time is an input. `cargo tree -p vmr-audit-writer -e normal,build,dev` must
+# never show vmr-ffi or bindgen.
+
+[dependencies]
+vmr-audit-log = { path = "../vmr-audit-log" }
+serde_json.workspace = true
+sha2.workspace = true
+p256.workspace = true

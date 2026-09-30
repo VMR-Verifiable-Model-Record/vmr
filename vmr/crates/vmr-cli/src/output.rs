@@ -210,6 +210,13 @@ fn write_progress(stderr: &mut std::io::StderrLock<'_>, text: &str) {
     }
 }
 
+/// Write `vmr: warning: <message>` to stderr while a command goes on (the
+/// log sealer's, when checkpoint.json cannot be replaced). The message is
+/// the caller's, escaped as an error's is. Best effort, like the error.
+pub fn warning_to_stderr(message: &str) {
+    to_stderr(&format!("{TOOL}: warning: {}\n", escape_controls(message.to_string())));
+}
+
 /// Write to stderr. When stderr itself cannot be written there is nowhere
 /// left to report that; the exit code still says what happened.
 fn to_stderr(text: &str) {

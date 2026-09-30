@@ -15,9 +15,10 @@ use crate::entry::is_key_id_urn;
 use crate::error::Error;
 use crate::json::parse_document;
 use crate::signing::{self, SigFail};
+use crate::types;
 use crate::MAX_CHECKPOINT_BYTES;
 use serde_json::{json, Value};
-use vmr_record::hash::{format_hash, parse_hash, DIGEST_LEN};
+use vmr_record::hash::{format_hash, DIGEST_LEN};
 use vmr_record::timestamp::Timestamp;
 
 /// The claims a verified checkpoint makes (§6).
@@ -98,16 +99,21 @@ pub(crate) fn checkpoint_claims(document: &Value, key: &p256::ecdsa::VerifyingKe
     }
     let log_id = obj.get("log_id").and_then(Value::as_str).filter(|s| is_key_id_urn(s)).ok_or_else(|| refuse("checkpoint.structure", "log_id is not a key id"))?;
     let tree_size = obj.get("tree_size").and_then(Value::as_u64).filter(|&n| n <= vmr_record::canonical::MAX_SAFE_INTEGER).ok_or_else(|| refuse("checkpoint.structure", "tree_size is not an integer"))?;
-    let root_hash = obj.get("root_hash").and_then(Value::as_str).filter(|s| parse_hash(s).is_ok()).ok_or_else(|| refuse("checkpoint.structure", "root_hash is not a hash"))?;
+    let root_hash = obj.get("root_hash").and_then(Value::as_str).filter(|s| types::parse_hash(s).is_some()).ok_or_else(|| refuse("checkpoint.structure", "root_hash is not a hash"))?;
     let issued_at_ok = obj.get("issued_at").and_then(Value::as_str).is_some_and(|s| Timestamp::parse(s).is_ok());
     if !issued_at_ok {
         return Err(refuse("checkpoint.structure", "issued_at is not a timestamp"));
     }
-    if obj.get("signature").is_none() {
-        return Err(refuse("checkpoint.signature_section", "no signature section"));
-    }
+    // Checks 5 to 8 in §6's order, so the first that fails names the refusal:
+    // the empty tree, then the section (§3 check 1), then the key (log_id,
+    // and signing_key_id in check_signature), then the signature.
     if tree_size == 0 {
         return Err(refuse("checkpoint.empty_tree", "tree_size is 0"));
+    }
+    match signing::section_signing_key_id(document) {
+        Ok(_) => {}
+        Err(SigFail::NoSection) => return Err(refuse("checkpoint.signature_section", "no signature section")),
+        Err(_) => return Err(refuse("checkpoint.signature_section", "the signature section is malformed")),
     }
     if log_id != vmr_record::jwk::key_id(key) {
         return Err(refuse("checkpoint.wrong_key", "log_id is not the pinned audit key's id"));

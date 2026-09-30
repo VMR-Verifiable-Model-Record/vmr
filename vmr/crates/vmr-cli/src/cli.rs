@@ -12,7 +12,10 @@
 //  extends it from outside this crate, with clap's builder API (D13a-3).
 // ============================================================================
 
-use crate::error::{EXIT_CODES_DONE, EXIT_CODES_HELP, EXIT_CODES_VERIFY};
+use crate::error::{
+    EXIT_CODES_DONE, EXIT_CODES_HELP, EXIT_CODES_LOG_CHECK_ITEM, EXIT_CODES_LOG_SEAL, EXIT_CODES_LOG_VERIFY,
+    EXIT_CODES_VERIFY,
+};
 use crate::names::TOOL;
 use clap::{Args, Parser, Subcommand};
 use std::path::PathBuf;
@@ -123,6 +126,9 @@ pub enum Command {
     /// Sign a policy pack as its authority, and read what a pack says.
     #[command(subcommand)]
     Pack(PackCommand),
+    /// Write an audit log, and read one: its entries, its chain and its signed checkpoints.
+    #[command(subcommand)]
+    Log(LogCommand),
 }
 
 /// `vmr pack ...`
@@ -234,6 +240,198 @@ pub struct PackCheckArgs {
     /// Print what the pack is as JSON instead of the summary.
     #[arg(long)]
     pub json: bool,
+}
+
+/// `vmr log ...`
+#[derive(Debug, Subcommand)]
+pub enum LogCommand {
+    /// Check an audit log's entries and chain, and its checkpoints under a pinned audit key.
+    #[command(long_about = LOG_VERIFY_LONG)]
+    Verify(LogVerifyArgs),
+    /// Start a log's directory: a new audit key, its public key file, a content secret and an empty log.
+    #[command(long_about = LOG_INIT_LONG)]
+    Init(LogInitArgs),
+    /// Write events read from standard input to a log, one JSON object per line, and sign its checkpoints.
+    #[command(long_about = LOG_SEAL_LONG)]
+    Seal(LogSealArgs),
+    /// Print the item key of one digest in a log, for the holder to hand over with its content.
+    #[command(long_about = LOG_DISCLOSE_LONG)]
+    Disclose(LogDiscloseArgs),
+    /// Check that disclosed content is what a log entry's digest committed to.
+    #[command(long_about = LOG_CHECK_ITEM_LONG)]
+    CheckItem(LogCheckItemArgs),
+}
+
+const LOG_INIT_LONG: &str = "\
+Start a log's directory: a new audit key, its public key file, a content secret and an empty log.\n\n\
+Refuses a directory that is not empty (it is created when absent). Writes four files: audit-key.pem, the log's \
+audit key (a PKCS#8 PEM private key, as `key generate` writes it: it signs the log's checkpoints and nothing \
+else); audit-key.pub.json, its public key file (as `key export` writes it: what an auditor pins); content-secret, \
+32 random bytes as 64 lower-case hexadecimal characters and a line feed (the vmr.agent profile's content secret, \
+which keys every digest of content and never appears in the log); and log.jsonl, empty. The key and the secret \
+come from the operating system's cryptographic random-number generator, are written once, owner-only on Unix, \
+and are never printed. One log, one audit key, one content secret: a new log gets a new directory.";
+
+const LOG_SEAL_LONG: &str = "\
+Write events read from standard input to a log, one JSON object per line, and sign its checkpoints.\n\n\
+A long-running process a runtime starts and writes events to. Each input line is one JSON object of at most \
+1 MiB: {\"kind\": ..., \"detail\": {...}, \"content\": {...}}, content optional. Each member of content names \
+a digest member the kind defines under the profile (arguments_digest, tool_digest, ...), and its value is exactly \
+one of {\"text\": string} (its UTF-8 bytes), {\"base64\": standard padded base64} (the decoded bytes) or \
+{\"json\": any value} (the UTF-8 bytes of its canonical JSON form). The sealer computes each digest under the \
+content secret with the index it is about to assign, puts it in the detail, and writes the content nowhere. A \
+detail that already carries a digest member is refused; so is content under the core profile.\n\n\
+Each entry is recorded at this machine's current time, checked as a reader checks it, written and synced to the \
+disk before its answer: one JSON line on standard output per input line, {\"index\": N}, or {\"refused\": id, \
+\"message\": text} when the event was not written. Under vmr.agent a refused event is itself recorded as \
+events.dropped with count 1, and its answer names that entry's index.\n\n\
+Checkpoints are signed with the audit key after every session.ended, every --checkpoint-every entries, at the \
+first entry --checkpoint-minutes after the last one, and when the input ends: each is appended to \
+checkpoints.jsonl and replaces checkpoint.json (a checkpoint.json another process holds open lags, with a warning). \
+On start the sealer locks log.jsonl.lock beside the log (a second seal on the directory is refused; other \
+processes may still read the log) and a torn last line is moved aside and recorded as log.recovered. The input's end writes the final \
+checkpoint and exits 0; an I/O error exits 1.";
+
+const LOG_DISCLOSE_LONG: &str = "\
+Print the item key of one digest in a log, for the holder to hand over with its content.\n\n\
+Reads the directory's content secret and its log, and prints the item key of the digest member --member of \
+entry --index as 64 hexadecimal characters: HMAC-SHA-256 of the entry's kind, member and index under its \
+session's key. An item key opens that one digest and no other. The entry must carry that digest member, and \
+belong to a session. Whoever holds the key and the content checks them with `log check-item`.";
+
+const LOG_CHECK_ITEM_LONG: &str = "\
+Check that disclosed content is what a log entry's digest committed to.\n\n\
+Reads the log up to entry --index (every line up to it checked as `log verify` checks it), recomputes the \
+digest of the content given under the item key given, and says whether it is the digest member --member the \
+entry carries. The content is the bytes of --content-text, the bytes of --content-file, or the canonical JSON \
+form of the value in --content-json. It does not say whether a signed checkpoint covers the entry: \
+`log verify` with the log's audit key and a checkpoint says that.";
+
+/// `vmr log init`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_DONE)]
+pub struct LogInitArgs {
+    /// The log's directory: created when absent, refused when not empty.
+    #[arg(long, value_name = "DIR")]
+    pub dir: PathBuf,
+}
+
+/// `vmr log seal`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_LOG_SEAL)]
+pub struct LogSealArgs {
+    /// The log's directory, as `log init` made it.
+    #[arg(long, value_name = "DIR")]
+    pub dir: PathBuf,
+
+    /// The entry profile the events are written under.
+    #[arg(long, value_name = "NAME", default_value = "vmr.agent", value_parser = clap::builder::PossibleValuesParser::new(crate::log_seal::SEAL_PROFILES.iter().map(|p| p.name)))]
+    pub profile: String,
+
+    /// Sign a checkpoint every N entries.
+    #[arg(long, value_name = "N", default_value_t = 1000, value_parser = clap::value_parser!(u64).range(1..))]
+    pub checkpoint_every: u64,
+
+    /// Sign a checkpoint at the first entry M minutes after the last one.
+    #[arg(long, value_name = "M", default_value_t = 10, value_parser = clap::value_parser!(u64).range(1..=525_600))]
+    pub checkpoint_minutes: u64,
+}
+
+/// `vmr log disclose`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_DONE)]
+pub struct LogDiscloseArgs {
+    /// The log's directory, as `log init` made it.
+    #[arg(long, value_name = "DIR")]
+    pub dir: PathBuf,
+
+    /// The entry's index.
+    #[arg(long, value_name = "N")]
+    pub index: u64,
+
+    /// The digest member (arguments_digest, result_digest, ...).
+    #[arg(long, value_name = "NAME")]
+    pub member: String,
+}
+
+/// `vmr log check-item`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_LOG_CHECK_ITEM)]
+#[command(group(clap::ArgGroup::new("content").required(true).args(["content_text", "content_file", "content_json"])))]
+pub struct LogCheckItemArgs {
+    /// The audit log.
+    #[arg(long, value_name = "FILE")]
+    pub log: PathBuf,
+
+    /// The entry's index.
+    #[arg(long, value_name = "N")]
+    pub index: u64,
+
+    /// The digest member (arguments_digest, result_digest, ...).
+    #[arg(long, value_name = "NAME")]
+    pub member: String,
+
+    /// The item key the holder disclosed: 64 hexadecimal characters.
+    #[arg(long, value_name = "HEX")]
+    pub item_key: String,
+
+    /// The content as text: its UTF-8 bytes.
+    #[arg(long, value_name = "TEXT")]
+    pub content_text: Option<String>,
+
+    /// The content as a file: its bytes.
+    #[arg(long, value_name = "FILE")]
+    pub content_file: Option<PathBuf>,
+
+    /// The content as a JSON file: the canonical JSON form of its value.
+    #[arg(long, value_name = "FILE")]
+    pub content_json: Option<PathBuf>,
+}
+
+const LOG_VERIFY_LONG: &str = "\
+Check an audit log's entries and chain, and its checkpoints under a pinned audit key.\n\n\
+Reads a log in the audit-log format v0.1 as it streams from the file, whatever its length: every line must be \
+the canonical form of an entry whose index is its position and whose previous_root is the Merkle root of the \
+entries before it, and the file must end on a complete line. The first line that fails is the answer, with the \
+format's own refusal identifier (audit_entry.*, audit_log.*).\n\n\
+Each --checkpoint is checked under the pinned --audit-key as the format says (checkpoint.*): its structure, that \
+its log_id and signing key are the audit key's, and its signature. Then against the log: the log must hold at \
+least tree_size entries, and its root over the first tree_size entries must be the checkpoint's root_hash \
+(log_verify.checkpoint_not_in_log). The output names the entries each checkpoint covers, and the entries no \
+checkpoint covers. Without a checkpoint only the chain is checked, and the output says that no signature was.\n\n\
+--profile names the vocabulary of kinds the log's entries use. Under the core profile (the default) any kind the \
+format's grammar allows is read, and nothing about what an entry means is checked; a named profile \
+(this build knows khalm-vmr.enforcer and vmr.agent) also checks each entry's kind and detail against its rules. \
+No profile checks that what an entry records happened: a log is its writer's statement, and a checkpoint's \
+signature binds the writer's key to it.\n\n\
+Under vmr.agent, a log that verifies is followed by what its entries say, as the writer's statements and not \
+verified facts: its sessions, calls, refusals and approvals, and a note wherever the entries break the profile's \
+rules between entries (a tool proposed by name that its session could not reach, a call's entries out of order, \
+an approval gate with no answer). A note never changes the exit code.";
+
+/// `vmr log verify`
+#[derive(Debug, Args)]
+#[command(after_help = EXIT_CODES_LOG_VERIFY)]
+pub struct LogVerifyArgs {
+    /// The audit log: one entry per line, each ended by a line feed.
+    #[arg(long, value_name = "FILE")]
+    pub log: PathBuf,
+
+    // The pinned audit key.
+    #[arg(long, value_name = "FILE", help = concat!("The log's audit key, pinned: a public key file (`", crate::tool_name!(), " key export`). Needed to check a checkpoint"))]
+    pub audit_key: Option<PathBuf>,
+
+    /// A checkpoint the log's writer signed; may be given more than once.
+    #[arg(long = "checkpoint", value_name = "FILE", requires = "audit_key")]
+    pub checkpoints: Vec<PathBuf>,
+
+    /// A checkpoint history (`log seal`'s checkpoints.jsonl): one checkpoint a line, tree_size never falling.
+    #[arg(long = "checkpoints", value_name = "FILE", requires = "audit_key")]
+    pub checkpoint_history: Option<PathBuf>,
+
+    /// The entry profile the log's kinds are read under: core, or a named profile.
+    #[arg(long, value_name = "NAME", default_value = "core", value_parser = clap::builder::PossibleValuesParser::new(crate::log_cmd::PROFILES.iter().map(|p| p.name)))]
+    pub profile: String,
 }
 
 /// `vmr model ...`

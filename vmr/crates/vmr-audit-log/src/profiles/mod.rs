@@ -3,3 +3,4 @@
 //! else in this crate changes.
 
 pub mod khalm_enforcer;
+pub mod vmr_agent;

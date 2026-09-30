@@ -655,20 +655,32 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vmr-audit-log"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "hex",
+ "hmac",
  "p256",
  "serde",
  "serde_json",
+ "sha2",
  "thiserror",
  "vmr-record",
  "vmr-verify",
 ]
 
 [[package]]
+name = "vmr-audit-writer"
+version = "0.1.5"
+dependencies = [
+ "p256",
+ "serde_json",
+ "sha2",
+ "vmr-audit-log",
+]
+
+[[package]]
 name = "vmr-builder"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "p256",
  "serde_json",
@@ -679,7 +691,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-cli"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anstream",
  "anstyle-query",
@@ -688,6 +700,8 @@ dependencies = [
  "rand_core",
  "serde",
  "serde_json",
+ "vmr-audit-log",
+ "vmr-audit-writer",
  "vmr-builder",
  "vmr-policy",
  "vmr-record",
@@ -696,7 +710,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-policy"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "p256",
  "regex",
@@ -708,7 +722,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-record"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "coset",
  "ecdsa",
@@ -724,7 +738,7 @@ dependencies = [
 
 [[package]]
 name = "vmr-verify"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "coset",
  "hex",

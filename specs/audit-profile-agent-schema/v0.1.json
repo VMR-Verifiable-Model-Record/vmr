@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiablemodel.org/schemas/audit-profile-agent/v0.1.json",
+  "title": "VMR Audit Log Profile vmr.agent v0.1",
+  "description": "The structure of an audit entry of the vmr.agent profile (specs/audit-profile-agent-v0.1.md) of the VMR audit log format v0.1 (specs/audit-log-format-v0.1.md): validate an entry against $defs.vmr_agent_entry. Every object is closed. The profile's section 4.6 checks are expressed here: the kinds, each kind's members and their types, exactly one of tool and tool_digest (oneOf), refusal exactly when a gate refused, parent_call only with parent_session_id, and stopped_by only when a person stopped the session. This schema is normative for structure only. What it cannot express is the documents': a text's limit in bytes of UTF-8 (maxLength counts characters, so a text of many-byte characters can pass here and be refused by the profile), calendar-valid timestamps, an entry's JCS form, the chain, and every rule between entries (section 4.6's last paragraph: the writer's, reported by a reader and never refused). An integer has one spelling: no -0, fraction or exponent.",
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$"
+    },
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "uuid_urn": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "integer": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "positive_integer": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "u64_string": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "description": "at most 18446744073709551615, which the pattern does not bound"
+    },
+    "refusal_id": { "type": "string", "pattern": "^[a-z_]+[.][a-z_]+$" },
+    "text": { "type": "string", "maxLength": 4096, "description": "at most 4096 bytes of UTF-8" },
+    "short_text": { "type": "string", "maxLength": 256, "description": "at most 256 bytes of UTF-8" },
+    "name": { "type": "string", "pattern": "^[A-Za-z0-9_./:-]{1,128}$" },
+    "gate": { "type": "string", "pattern": "^[a-z][a-z_]{0,63}$" },
+    "digest": { "type": "string", "pattern": "^hmac-sha256:[0-9a-f]{64}$" },
+    "person": { "type": "string", "pattern": "^[A-Za-z0-9_.:|+=/-]{1,128}$" },
+    "detail_session_started": {
+      "type": "object",
+      "required": ["session_id", "runtime", "model", "configuration_hash"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "runtime": { "$ref": "#/$defs/short_text" },
+        "model": { "$ref": "#/$defs/short_text" },
+        "model_hash": { "$ref": "#/$defs/hash" },
+        "record_id": { "$ref": "#/$defs/uuid_urn" },
+        "configuration_hash": { "$ref": "#/$defs/hash" },
+        "seed": { "$ref": "#/$defs/u64_string" },
+        "parent_session_id": { "$ref": "#/$defs/uuid_urn" },
+        "parent_call": { "$ref": "#/$defs/integer" }
+      },
+      "dependentRequired": { "parent_call": ["parent_session_id"] },
+      "additionalProperties": false
+    },
+    "detail_session_ended": {
+      "type": "object",
+      "required": ["session_id", "outcome"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "outcome": { "type": "string", "enum": ["completed", "stopped", "terminated", "failed"] },
+        "stopped_by": { "$ref": "#/$defs/person" }
+      },
+      "if": { "required": ["stopped_by"] },
+      "then": { "properties": { "outcome": { "const": "stopped" } } },
+      "additionalProperties": false
+    },
+    "detail_policy_loaded": {
+      "type": "object",
+      "required": ["policy_hash"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "policy_hash": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "detail_policy_refused": {
+      "type": "object",
+      "required": ["refusal", "detail"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "policy_hash": { "$ref": "#/$defs/hash" },
+        "refusal": { "$ref": "#/$defs/refusal_id" },
+        "detail": { "$ref": "#/$defs/text" }
+      },
+      "additionalProperties": false
+    },
+    "detail_tool_registered": {
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "tool": { "$ref": "#/$defs/name" },
+        "tool_digest": { "$ref": "#/$defs/digest" },
+        "provider": { "$ref": "#/$defs/name" },
+        "schema_digest": { "$ref": "#/$defs/digest" }
+      },
+      "oneOf": [{ "required": ["tool"] }, { "required": ["tool_digest"] }],
+      "additionalProperties": false
+    },
+    "detail_tool_unregistered": {
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "tool": { "$ref": "#/$defs/name" },
+        "tool_digest": { "$ref": "#/$defs/digest" },
+        "provider": { "$ref": "#/$defs/name" }
+      },
+      "oneOf": [{ "required": ["tool"] }, { "required": ["tool_digest"] }],
+      "additionalProperties": false
+    },
+    "detail_turn_started": {
+      "type": "object",
+      "required": ["session_id", "turn"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "turn": { "$ref": "#/$defs/integer" },
+        "input_digest": { "$ref": "#/$defs/digest" },
+        "grammar_digest": { "$ref": "#/$defs/digest" },
+        "model": { "$ref": "#/$defs/short_text" },
+        "model_hash": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "detail_call_proposed": {
+      "type": "object",
+      "required": ["session_id", "call", "turn", "arguments_digest"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "turn": { "$ref": "#/$defs/integer" },
+        "tool": { "$ref": "#/$defs/name" },
+        "tool_digest": { "$ref": "#/$defs/digest" },
+        "arguments_digest": { "$ref": "#/$defs/digest" }
+      },
+      "oneOf": [{ "required": ["tool"] }, { "required": ["tool_digest"] }],
+      "additionalProperties": false
+    },
+    "detail_gate_decided": {
+      "type": "object",
+      "required": ["session_id", "call", "gate", "decision"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "gate": { "$ref": "#/$defs/gate" },
+        "decision": { "type": "string", "enum": ["permitted", "refused"] },
+        "refusal": { "$ref": "#/$defs/refusal_id" }
+      },
+      "if": { "required": ["decision"], "properties": { "decision": { "const": "refused" } } },
+      "then": { "required": ["refusal"] },
+      "else": { "not": { "required": ["refusal"] } },
+      "additionalProperties": false
+    },
+    "detail_call_executed": {
+      "type": "object",
+      "required": ["session_id", "call", "outcome"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "outcome": { "type": "string", "enum": ["ok", "error"] },
+        "result_digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "detail_call_refused": {
+      "type": "object",
+      "required": ["session_id", "call", "gate", "refusal"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "gate": { "$ref": "#/$defs/gate" },
+        "refusal": { "$ref": "#/$defs/refusal_id" }
+      },
+      "additionalProperties": false
+    },
+    "detail_approval_requested": {
+      "type": "object",
+      "required": ["session_id", "call"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "presented_digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "detail_approval_granted": {
+      "type": "object",
+      "required": ["session_id", "call", "approver", "latency_ms"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "approver": { "$ref": "#/$defs/person" },
+        "latency_ms": { "$ref": "#/$defs/integer" },
+        "scope": { "type": "string", "enum": ["call", "tool", "session"] },
+        "arguments_digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "detail_approval_denied": {
+      "type": "object",
+      "required": ["session_id", "call", "approver", "latency_ms"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "approver": { "$ref": "#/$defs/person" },
+        "latency_ms": { "$ref": "#/$defs/integer" }
+      },
+      "additionalProperties": false
+    },
+    "detail_approval_timed_out": {
+      "type": "object",
+      "required": ["session_id", "call", "waited_ms"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid_urn" },
+        "call": { "$ref": "#/$defs/integer" },
+        "waited_ms": { "$ref": "#/$defs/integer" }
+      },
+      "additionalProperties": false
+    },
+    "detail_events_dropped": {
+      "type": "object",
+      "required": ["count"],
+      "properties": {
+        "count": { "$ref": "#/$defs/positive_integer" }
+      },
+      "additionalProperties": false
+    },
+    "detail_log_recovered": {
+      "type": "object",
+      "required": ["offset", "length", "sha256"],
+      "properties": {
+        "offset": { "$ref": "#/$defs/integer" },
+        "length": { "$ref": "#/$defs/positive_integer" },
+        "sha256": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "vmr_agent_entry": {
+      "type": "object",
+      "required": ["log_version", "index", "previous_root", "recorded_at", "kind", "detail"],
+      "properties": {
+        "log_version": { "type": "string", "const": "0.1" },
+        "index": { "$ref": "#/$defs/integer" },
+        "previous_root": { "$ref": "#/$defs/hash" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "session.started",
+            "session.ended",
+            "policy.loaded",
+            "policy.refused",
+            "tool.registered",
+            "tool.unregistered",
+            "turn.started",
+            "call.proposed",
+            "gate.decided",
+            "call.executed",
+            "call.refused",
+            "approval.requested",
+            "approval.granted",
+            "approval.denied",
+            "approval.timed_out",
+            "events.dropped",
+            "log.recovered"
+          ]
+        },
+        "detail": { "type": "object" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "session.started" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_session_started" } } } },
+        { "if": { "properties": { "kind": { "const": "session.ended" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_session_ended" } } } },
+        { "if": { "properties": { "kind": { "const": "policy.loaded" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_policy_loaded" } } } },
+        { "if": { "properties": { "kind": { "const": "policy.refused" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_policy_refused" } } } },
+        { "if": { "properties": { "kind": { "const": "tool.registered" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_tool_registered" } } } },
+        { "if": { "properties": { "kind": { "const": "tool.unregistered" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_tool_unregistered" } } } },
+        { "if": { "properties": { "kind": { "const": "turn.started" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_turn_started" } } } },
+        { "if": { "properties": { "kind": { "const": "call.proposed" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_call_proposed" } } } },
+        { "if": { "properties": { "kind": { "const": "gate.decided" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_gate_decided" } } } },
+        { "if": { "properties": { "kind": { "const": "call.executed" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_call_executed" } } } },
+        { "if": { "properties": { "kind": { "const": "call.refused" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_call_refused" } } } },
+        { "if": { "properties": { "kind": { "const": "approval.requested" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_approval_requested" } } } },
+        { "if": { "properties": { "kind": { "const": "approval.granted" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_approval_granted" } } } },
+        { "if": { "properties": { "kind": { "const": "approval.denied" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_approval_denied" } } } },
+        { "if": { "properties": { "kind": { "const": "approval.timed_out" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_approval_timed_out" } } } },
+        { "if": { "properties": { "kind": { "const": "events.dropped" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_events_dropped" } } } },
+        { "if": { "properties": { "kind": { "const": "log.recovered" } } }, "then": { "properties": { "detail": { "$ref": "#/$defs/detail_log_recovered" } } } }
+      ]
+    }
+  }
+}

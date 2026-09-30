@@ -94,7 +94,7 @@ fn parse_hashes(value: Option<&Value>, most: usize) -> Result<Vec<[u8; DIGEST_LE
     }
     array
         .iter()
-        .map(|v| v.as_str().ok_or("a path element is not a string".to_string()).and_then(|s| parse_hash(s).map_err(|e| e.to_string())))
+        .map(|v| v.as_str().ok_or("a path element is not a string".to_string()).and_then(|s| crate::types::parse_hash(s).ok_or_else(|| "a path element is not a hash".to_string())))
         .collect()
 }
 

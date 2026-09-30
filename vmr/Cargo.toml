@@ -9,6 +9,7 @@
 resolver = "2"
 members = [
     "crates/vmr-audit-log",
+    "crates/vmr-audit-writer",
     "crates/vmr-builder",
     "crates/vmr-record",
     "crates/vmr-policy",
@@ -17,19 +18,23 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.89"
 license = "Apache-2.0"
 
 [workspace.dependencies]
 thiserror = "1.0"
 sha2 = "0.10"
+hmac = "0.12.1"
 hex = "0.4"
 p256 = { version = "0.13", features = ["ecdsa", "digest"] }
 ecdsa = { version = "0.16", features = ["hazmat", "der"] }
 coset = "0.3"
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+# float_roundtrip: numbers are read correctly rounded, as RFC 8785 and every
+# other implementation read them (QA B1 of the log sealer); the default parser
+# reads some 16- and 17-digit doubles one unit in the last place off.
+serde_json = { version = "1.0", features = ["float_roundtrip"] }
 ryu-js = "1.0"
 vmr-record = { path = "crates/vmr-record", version = "0.1.0" }

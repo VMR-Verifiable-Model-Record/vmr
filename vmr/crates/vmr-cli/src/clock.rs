@@ -69,6 +69,13 @@ pub fn refuse_future(t: Timestamp, flag: &'static str, what: &str) -> Result<(),
     Ok(())
 }
 
+/// The current UTC second, for a command whose output is a record of when it
+/// wrote (`log seal`'s `recorded_at` and a checkpoint's `issued_at`: the
+/// format defines both as the log writer's clock). The same one clock read.
+pub fn now() -> Result<Timestamp, CliError> {
+    now_utc()
+}
+
 /// The current UTC second.
 #[allow(clippy::disallowed_methods)] // the one clock read (C2): the boundary where "now" enters
 fn now_utc() -> Result<Timestamp, CliError> {

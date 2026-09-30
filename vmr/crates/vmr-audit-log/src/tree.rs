@@ -6,8 +6,9 @@
 //  same in both. A leaf is an entry's JCS bytes.
 // ============================================================================
 
-//! The log's Merkle tree: the root over a run of leaves, an inclusion path, a
-//! consistency proof's path, and the check of one.
+//! The log's Merkle tree: the root over a run of leaves, the same tree kept
+//! as it grows, an inclusion path, a consistency proof's path, and the check
+//! of one.
 
 use vmr_record::hash::{sha256, DIGEST_LEN};
 use vmr_record::merkle::empty_root;
@@ -51,6 +52,67 @@ pub fn root_of(leaf_hashes: &[[u8; DIGEST_LEN]]) -> [u8; DIGEST_LEN] {
         level = next_level(&level);
     }
     level.into_iter().next().unwrap_or_else(empty_root)
+}
+
+/// The same tree kept as it grows (§4.3): the roots of its perfect subtrees,
+/// one per set bit of its size, largest (leftmost) first. An append combines
+/// equal-sized subtrees as a binary counter carries, amortised O(1) node
+/// hashes; the root folds the subtrees from the right, O(log n). For every
+/// size it is exactly [`root_of`]'s root, the empty tree's `SHA-256(0x02)`
+/// included, so a writer and a reader name every entry's `previous_root`
+/// without going back over the log (it holds the nodes
+/// `vmr_record::merkle::MerkleStream` holds, over leaf hashes, which a log's
+/// writer already keeps for its proofs).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct MerkleFrontier {
+    size: u64,
+    peaks: Vec<[u8; DIGEST_LEN]>,
+}
+
+impl MerkleFrontier {
+    /// The empty tree.
+    pub fn new() -> MerkleFrontier {
+        MerkleFrontier::default()
+    }
+
+    /// The tree over `leaf_hashes`, in order.
+    pub fn from_leaves(leaf_hashes: &[[u8; DIGEST_LEN]]) -> MerkleFrontier {
+        let mut frontier = MerkleFrontier::new();
+        for leaf in leaf_hashes {
+            frontier.push(*leaf);
+        }
+        frontier
+    }
+
+    /// Append one leaf, given its leaf hash.
+    pub fn push(&mut self, leaf_hash: [u8; DIGEST_LEN]) {
+        // Each trailing set bit of the size is a subtree as large as the one
+        // being carried: the two become one twice the size, to their parent.
+        let mut node = leaf_hash;
+        let mut size = self.size;
+        while size & 1 == 1 {
+            // One peak per set bit, so a set bit always has its peak.
+            let Some(left) = self.peaks.pop() else { break };
+            node = hash_node(&left, &node);
+            size >>= 1;
+        }
+        self.peaks.push(node);
+        self.size += 1;
+    }
+
+    /// The number of leaves.
+    pub fn size(&self) -> u64 {
+        self.size
+    }
+
+    /// The Merkle root over every leaf; the empty-tree root for none.
+    pub fn root(&self) -> [u8; DIGEST_LEN] {
+        // RFC 9162 splits at the largest power of two below the size: the
+        // largest subtree is the left child, the rest of the tree the right.
+        let mut peaks = self.peaks.iter().rev();
+        let Some(smallest) = peaks.next() else { return empty_root() };
+        peaks.fold(*smallest, |right, left| hash_node(left, &right))
+    }
 }
 
 /// The inclusion path for leaf `index` of a tree of leaf hashes: the siblings

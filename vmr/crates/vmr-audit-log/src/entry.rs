@@ -13,7 +13,6 @@ use crate::error::Error;
 use crate::profile::EntryProfile;
 use crate::{LOG_VERSION, MAX_ENTRY_BYTES};
 use serde_json::Value;
-use vmr_record::hash::parse_hash;
 use vmr_record::timestamp::Timestamp;
 
 /// A refusal of `audit_entry.structure`, the id every structural fault of an
@@ -97,7 +96,7 @@ pub fn validate_entry(
     }
     let index = obj.get("index").and_then(Value::as_u64).filter(|&n| n <= vmr_record::canonical::MAX_SAFE_INTEGER)
         .ok_or_else(|| structure("index is not an integer in range"))?;
-    let previous_root = obj.get("previous_root").and_then(Value::as_str).filter(|s| parse_hash(s).is_ok())
+    let previous_root = obj.get("previous_root").and_then(Value::as_str).filter(|s| crate::types::parse_hash(s).is_some())
         .ok_or_else(|| structure("previous_root is not a sha256 hash"))?
         .to_string();
     let recorded_at = obj.get("recorded_at").and_then(Value::as_str).and_then(|s| Timestamp::parse(s).ok())

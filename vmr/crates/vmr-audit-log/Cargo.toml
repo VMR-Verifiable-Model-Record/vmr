@@ -25,7 +25,9 @@ serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 p256.workspace = true
-
-[dev-dependencies]
-# the robustness lanes print a mutant's bytes when an oracle fails
+# The vmr.agent profile's keyed digests (specs/audit-profile-agent-v0.1.md
+# §3): HMAC-SHA-256 from the crates vmr-record's ES256 already builds on
+# (rfc6979 takes hmac 0.12.1), and the digest's hexadecimal.
+hmac.workspace = true
+sha2.workspace = true
 hex.workspace = true

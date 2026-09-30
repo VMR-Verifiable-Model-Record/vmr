@@ -8,12 +8,12 @@ description = "KHALM-VMR's command-line tool: emit, verify and inspect Verifiabl
 
 # The Community `vmr` (docs/dev/phase5.md, C1; task 10.13a, D13a-3): a library
 # and the binary. It makes records of any model's files and verifies them: it
-# links the verifier, the format crate, the policy evaluator and the
-# engine-free record builder, and nothing that can reach the engine - `cargo
-# tree -p vmr-cli --all-features --target all -e normal,build,dev` must never
-# show vmr-ffi, vmr-provenance, bindgen, clang-sys or cc. A build that adds an
-# engine extends this library from outside the Community workspace; nothing
-# here names one.
+# links the verifier, the format crate, the policy evaluator, the
+# engine-free record builder and the audit log's reader, and nothing that can
+# reach the engine - `cargo tree -p vmr-cli --all-features --target all -e
+# normal,build,dev` must never show vmr-ffi, vmr-provenance, bindgen,
+# clang-sys or cc. A build that adds an engine extends this library from
+# outside the Community workspace; nothing here names one.
 [lib]
 name = "vmr_cli"
 path = "src/lib.rs"
@@ -34,6 +34,14 @@ vmr-policy = { path = "../vmr-policy" }
 # (task 10.13a): the engine-free record builder and the walk of spec §7.2. A
 # Community crate: no engine, no FFI, no build script.
 vmr-builder = { path = "../vmr-builder" }
+# `log verify`: the open audit log (specs/audit-log-format-v0.1.md) - its
+# streaming reader, the checkpoint and the entry profiles. A Community crate
+# like the verifier: no engine, no FFI, no build script, no clock, no I/O.
+vmr-audit-log = { path = "../vmr-audit-log" }
+# `log init`, `log seal`, `log disclose`: the audit log's open file writer
+# (one locked log, replayed on open, a torn tail recovered, durable appends).
+# A Community crate: no engine, no FFI, no build script, no clock.
+vmr-audit-writer = { path = "../vmr-audit-writer" }
 # The command tree (docs/dev/phase5.md C14): already in the local Cargo cache,
 # resolved offline. No `color` feature: with it clap strips escape sequences
 # from the argument it quotes in a usage error, before vmr can show them
