@@ -46,6 +46,9 @@ fn the_committed_vector_verifies_and_names_the_trust_stores_issuer() {
     let expect = [
         "  Issuer:        did:web:factory-operator.ph (New Clark City Fab Operator, per trust store)",
         "  Key:           urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg (software)",
+        // The grouped fingerprint beside the key id: the first 24 characters
+        // of the thumbprint, which an issuer publishes and a reader compares.
+        "  Fingerprint:   HyoP YysS FOQ5 d6x6 4H8_ pHdd",
         "  Record:        urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00, issued 2026-09-10T00:00:00Z",
         "  Policy status: \"compliant\", declared by the issuer, not evaluated (example-policy-pack-v1)",
         "  Lineage chain: 1 record (initial)",

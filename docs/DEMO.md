@@ -254,6 +254,7 @@ Generated signing key: urn:ietf:params:oauth:jwk-thumbprint:sha-256:VECBx806vLga
   Permissions:  on Windows the file inherits its folder's permissions; to let only its owner read it, run: icacls "factory.key" /inheritance:r /grant:r *S-1-3-4:F
 PS issuer> .\vmr key export --key factory.key --output factory.pub.json
 Exported public key: urn:ietf:params:oauth:jwk-thumbprint:sha-256:VECBx806vLgaJhTyvmqRU4OTCVqKxA1CCwtvYnTJ3Tw
+  Fingerprint:     VECB x806 vLga JhTy vmqR U4OT
   Public key file: 'factory.pub.json' (the public key only: no private key material)
 PS verifier> .\vmr trust-store add --trust-store trust-store.json --public-key factory.pub.json --issuer-id did:web:factory-operator.ph --issuer-name "New Clark City Fab Operator" --attestation-level software --valid-from 2026-01-01T00:00:00Z
 Trusted key urn:ietf:params:oauth:jwk-thumbprint:sha-256:VECBx806vLgaJhTyvmqRU4OTCVqKxA1CCwtvYnTJ3Tw
@@ -291,11 +292,12 @@ model.vmr
 vmr.exe
 trust-store.json
 PS verifier> .\vmr --version
-vmr 0.1.5 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)
+vmr 0.1.6 (KHALM-VMR, a reference implementation of the Verifiable Model Record standard; record format v0.1)
 PS verifier> .\vmr record verify --record model.vmr --trust-store trust-store.json
 ✓ Record valid — signed by a key the trust store trusts for this issuer
   Issuer:        did:web:factory-operator.ph (New Clark City Fab Operator, per trust store)
   Key:           urn:ietf:params:oauth:jwk-thumbprint:sha-256:VECBx806vLgaJhTyvmqRU4OTCVqKxA1CCwtvYnTJ3Tw (software)
+  Fingerprint:   VECB x806 vLga JhTy vmqR U4OT
   Record:        urn:uuid:417425e9-7eaf-8cea-9c8d-2c7d17b217a3, issued 2026-09-15T01:48:49Z
   Model:         sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435 (snn-compact-v1)
   Model state:   sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435

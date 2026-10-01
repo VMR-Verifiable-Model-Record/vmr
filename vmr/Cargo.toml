@@ -15,10 +15,11 @@ members = [
     "crates/vmr-policy",
     "crates/vmr-verify",
     "crates/vmr-cli",
+    "crates/vmr-check",
 ]
 
 [workspace.package]
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 rust-version = "1.89"
 license = "Apache-2.0"

@@ -33,8 +33,7 @@ use crate::output::Output;
 use crate::render::{plural, shown_value};
 use crate::verify_cmd::load_trust_store;
 use vmr_verify::trust_store::{
-    AttestationLevel, AuthorityDocument, IssuerDocument, KeyDocument, TrustStoreDocument,
-    TRUST_STORE_VERSION,
+    AddIssuerKeyError, AttestationLevel, AuthorityDocument, KeyDocument, TrustStoreDocument,
 };
 use vmr_verify::TrustStore;
 
@@ -50,13 +49,6 @@ pub fn add(args: &TrustStoreAddArgs) -> Result<Output, CliError> {
     let unchanged = |why: String| {
         CliError::input(format!("{why}; trust store {} was not changed", shown(&args.trust_store)))
     };
-    if let Some(holder) = document.issuers.iter().find(|i| i.keys.iter().any(|k| k.key_id == key.key_id)) {
-        return Err(unchanged(format!(
-            "key {} is already in the trust store, trusted for {}",
-            key.key_id,
-            shown_value(&holder.issuer_id)
-        )));
-    }
     let entry = KeyDocument {
         key_id: key.key_id.clone(),
         public_key: key.public_key,
@@ -65,29 +57,30 @@ pub fn add(args: &TrustStoreAddArgs) -> Result<Output, CliError> {
         valid_until: args.valid_until.map(|t| t.to_string()),
         revoked: false,
     };
-    match document.issuers.iter_mut().find(|i| i.issuer_id == args.issuer_id) {
-        Some(issuer) if issuer.issuer_name != args.issuer_name => {
-            return Err(unchanged(format!(
-                "issuer {} is already in the trust store as \"{}\", not \"{}\"",
-                shown_value(&issuer.issuer_id),
-                shown_value(&issuer.issuer_name),
-                shown_value(&args.issuer_name)
-            )))
-        }
-        Some(issuer) => issuer.keys.push(entry),
-        None => document.issuers.push(IssuerDocument {
-            issuer_id: args.issuer_id.clone(),
-            issuer_name: args.issuer_name.clone(),
-            keys: vec![entry],
-        }),
-    }
+    // The entry is vmr-verify's (`add_issuer_key`), so every tool that
+    // writes this decision writes the same bytes (vmr-check's
+    // storeForEmbeddedKey among them).
+    document.add_issuer_key(&args.issuer_id, &args.issuer_name, entry).map_err(|e| match e {
+        AddIssuerKeyError::KeyAlreadyTrusted { issuer_id } => unchanged(format!(
+            "key {} is already in the trust store, trusted for {}",
+            key.key_id,
+            shown_value(&issuer_id)
+        )),
+        AddIssuerKeyError::IssuerNameDiffers { issuer_id, existing_name } => unchanged(format!(
+            "issuer {} is already in the trust store as \"{}\", not \"{}\"",
+            shown_value(&issuer_id),
+            shown_value(&existing_name),
+            shown_value(&args.issuer_name)
+        )),
+    })?;
 
     // Every rule of the format, checked before anything is written.
     let store = TrustStore::new(document)
         .map_err(|e| unchanged(format!("the trust store would not be valid: {e}")))?;
-    let text = serde_json::to_string_pretty(&store.to_document())
+    let text = store
+        .to_file_json()
         .map_err(|e| CliError::input(format!("cannot write the trust store as JSON: {e}")))?;
-    files::replace_file(&args.trust_store, format!("{text}\n").as_bytes(), "trust store")?;
+    files::replace_file(&args.trust_store, text.as_bytes(), "trust store")?;
 
     let window = match args.valid_until {
         Some(until) => format!("from {} until {until} (exclusive)", args.valid_from),
@@ -174,9 +167,10 @@ pub fn add_authority(args: &TrustStoreAddAuthorityArgs) -> Result<Output, CliErr
     // Every rule of the format, checked before anything is written.
     let store = TrustStore::new(document)
         .map_err(|e| unchanged(format!("the trust store would not be valid: {e}")))?;
-    let text = serde_json::to_string_pretty(&store.to_document())
+    let text = store
+        .to_file_json()
         .map_err(|e| CliError::input(format!("cannot write the trust store as JSON: {e}")))?;
-    files::replace_file(&args.trust_store, format!("{text}\n").as_bytes(), "trust store")?;
+    files::replace_file(&args.trust_store, text.as_bytes(), "trust store")?;
 
     let window = match args.valid_until {
         Some(until) => format!("from {} until {until} (exclusive)", args.valid_from),
@@ -216,14 +210,7 @@ pub fn add_authority(args: &TrustStoreAddAuthorityArgs) -> Result<Output, CliErr
 fn read_or_new(path: &std::path::Path) -> Result<(TrustStoreDocument, bool), CliError> {
     match std::fs::metadata(path) {
         Ok(_) => Ok((load_trust_store(path)?.to_document(), false)),
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok((
-            TrustStoreDocument {
-                trust_store_version: TRUST_STORE_VERSION.into(),
-                issuers: Vec::new(),
-                policy_authorities: Vec::new(),
-            },
-            true,
-        )),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok((TrustStoreDocument::empty(), true)),
         Err(e) => Err(CliError::input(format!("cannot read trust store {}: {e}", shown(path)))),
     }
 }

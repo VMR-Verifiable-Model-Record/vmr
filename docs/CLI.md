@@ -46,9 +46,9 @@ time, `kernel32.dll`, all part of Windows. An engine library built before this c
 against the DLL runtime and no longer links (`LNK1120` after `LNK4098`):
 rebuild it with CMake, then `cargo clean -p vmr-ffi`.
 
-`vmr --version` tells the builds apart: `vmr 0.1.5 (KHALM-VMR, a reference
+`vmr --version` tells the builds apart: `vmr 0.1.6 (KHALM-VMR, a reference
 implementation of the Verifiable Model Record standard; record format v0.1)`
-for the default build, `vmr 0.1.5 (KHALM-VMR, implements the Verifiable
+for the default build, `vmr 0.1.6 (KHALM-VMR, implements the Verifiable
 Model Record standard; record format v0.1; engine build: record emit also
 takes a KHALM engine brain)` for the engine build; both builds carry the same
 version number, and the record format they implement is the same. The default
@@ -131,6 +131,7 @@ A pass:
 ✓ Record valid — signed by a key the trust store trusts for this issuer
   Issuer:        did:web:factory-operator.ph (New Clark City Fab Operator, per trust store)
   Key:           urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg (software)
+  Fingerprint:   HyoP YysS FOQ5 d6x6 4H8_ pHdd
   Record:        urn:uuid:2b6a0c48-9f21-4f3a-8c51-1d0b4a7e9c00, issued 2026-09-10T00:00:00Z
   Model:         sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435 (snn-compact-v1)
   Model state:   sha256:ca124043b83197f265fddd74ea89492026d824e26af356786c50972fbf594435
@@ -145,6 +146,11 @@ A pass:
   The record's own `issuer_name` is a claim and is not shown on a pass.
 - **Key** is the signing key's id; in parentheses the attestation level the
   record declares (never more than the store grants).
+- **Fingerprint** is the key's fingerprint: the first 24 characters of its
+  RFC 7638 thumbprint (the key id after its fixed prefix), in groups of four.
+  `vmr key export --output` prints the same for the issuer to publish, and
+  the browser checker shows it (`docs/BROWSER.md`), so a reader can compare a
+  key with the issuer's published one by eye.
 - **Model** is the record's `model_hash`, the model's identity under both
   descriptions (spec §7.3, §7.4), with its `model_format`. The line after it is
   `learned_state_hash`: **Model state**, the state's hash, in the engine
@@ -661,6 +667,20 @@ vmr key export --key <FILE> [--output <FILE> [--force]]
 
 Writes the public key file (§4.2) to standard output, or to a new `--output`
 file. No private key material leaves the key file.
+
+With `--output`, it also prints the key id and the key's **fingerprint**, the
+first 24 characters of its thumbprint in groups of four:
+
+```
+Exported public key: urn:ietf:params:oauth:jwk-thumbprint:sha-256:HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg
+  Fingerprint:     HyoP YysS FOQ5 d6x6 4H8_ pHdd
+  Public key file: 'factory.pub.json' (the public key only: no private key material)
+```
+
+An issuer publishes the fingerprint beside its key id (its website, a signed
+letter); `record verify` prints it for the key it trusted (§3.1) and the
+browser checker for a record's key, so a reader can compare the two. Without
+`--output`, standard output is the public key file and nothing else.
 
 ### 3.6 `vmr trust-store add`
 

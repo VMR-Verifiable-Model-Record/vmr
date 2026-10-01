@@ -154,6 +154,7 @@ pub fn verification(report: &VerificationReport, time: TimeSource) -> Vec<Line> 
                 ],
             ),
             row("Signing key", vec![vec![p(key(&issuer.key_id)), st(format!(" · {} attestation", s(level)), Style::Dim)]]),
+            row("Fingerprint", one(vmr_record::jwk::fingerprint(&issuer.key_id).unwrap_or_default())),
         ]));
     }
     if let Some(r) = &report.record {
@@ -746,6 +747,9 @@ pub fn key_exported(key_id: &str, file: &str) -> Vec<Line> {
         p(format!("   {file} · the public key only, no private key material")),
     ]]));
     out.push(vec![p("  "), st("Key id", Style::Dim), p(format!("  {}", key(key_id)))]);
+    if let Some(fingerprint) = vmr_record::jwk::fingerprint(key_id) {
+        out.push(vec![p("  "), st("Fingerprint", Style::Dim), p(format!("  {fingerprint}"))]);
+    }
     out.extend(paragraph(
         &[
             p("  "),

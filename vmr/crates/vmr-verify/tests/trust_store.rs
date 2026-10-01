@@ -1257,3 +1257,55 @@ fn text_nested_more_than_127_levels_is_trust_store_syntax() {
     doc["issuers"][0]["issuer_name"] = json!(format!("{}\\\"{}", "[{".repeat(200), "]".repeat(3)));
     load(&doc).unwrap();
 }
+
+// ---------------------------------------------------------------------------
+//  add_issuer_key and to_file_json: the entry `vmr trust-store add` writes,
+//  shared with the browser checker (vmr-check's storeForEmbeddedKey)
+// ---------------------------------------------------------------------------
+
+fn key_doc(label: &str, from: &str) -> vmr_verify::trust_store::KeyDocument {
+    let j = jwk(label);
+    vmr_verify::trust_store::KeyDocument {
+        key_id: j.key_id(),
+        public_key: j,
+        attestation_level: AttestationLevel::Software,
+        valid_from: from.into(),
+        valid_until: None,
+        revoked: false,
+    }
+}
+
+#[test]
+fn add_issuer_key_adds_an_issuer_then_a_key_and_the_file_reads_back_as_the_same_store() {
+    use vmr_verify::trust_store::TrustStoreDocument;
+    let mut doc = TrustStoreDocument::empty();
+    assert!(doc.issuers.is_empty() && doc.policy_authorities.is_empty());
+    doc.add_issuer_key("did:web:factory-operator.ph", "New Clark City Fab Operator", key_doc(VECTOR_KEY, "2026-01-01T00:00:00Z"))
+        .unwrap();
+    doc.add_issuer_key("did:web:factory-operator.ph", "New Clark City Fab Operator", key_doc("second", "2026-02-01T00:00:00Z"))
+        .unwrap();
+    let store = TrustStore::new(doc).unwrap();
+    assert_eq!((store.issuer_count(), store.key_count()), (1, 2));
+    let text = store.to_file_json().unwrap();
+    assert!(text.ends_with("}\n") && !text.ends_with("\n\n"), "{text}");
+    assert_eq!(text, format!("{}\n", serde_json::to_string_pretty(&store.to_document()).unwrap()));
+    let again = TrustStore::from_json(text.as_bytes()).unwrap();
+    assert_eq!(again.sha256(), store.sha256());
+}
+
+#[test]
+fn add_issuer_key_refuses_a_key_already_trusted_and_a_second_name_and_leaves_the_document_unchanged() {
+    use vmr_verify::trust_store::{AddIssuerKeyError, TrustStoreDocument};
+    let mut doc = TrustStoreDocument::empty();
+    doc.add_issuer_key("did:web:a.example", "A", key_doc(VECTOR_KEY, "2026-01-01T00:00:00Z")).unwrap();
+    let before = doc.clone();
+    assert_eq!(
+        doc.add_issuer_key("did:web:b.example", "B", key_doc(VECTOR_KEY, "2026-01-01T00:00:00Z")),
+        Err(AddIssuerKeyError::KeyAlreadyTrusted { issuer_id: "did:web:a.example".into() })
+    );
+    assert_eq!(
+        doc.add_issuer_key("did:web:a.example", "Not A", key_doc("other", "2026-01-01T00:00:00Z")),
+        Err(AddIssuerKeyError::IssuerNameDiffers { issuer_id: "did:web:a.example".into(), existing_name: "A".into() })
+    );
+    assert_eq!(doc, before);
+}

@@ -61,6 +61,10 @@ fn export_to_a_file_never_overwrites_without_force() {
     let run = vmr(&["key", "export", "--key", &key, "--output", &out]);
     run.expect_code(0);
     assert!(run.stdout.contains(&id), "{}", run.transcript());
+    // The grouped fingerprint an issuer publishes beside its key id, the one
+    // `record verify` prints for the key and vmr-check's inspect shows.
+    let fingerprint = vmr_record::jwk::fingerprint(&id).unwrap();
+    assert!(run.stdout.contains(&format!("\n  Fingerprint:     {fingerprint}\n")), "{}", run.transcript());
     let written: Value = serde_json::from_str(&std::fs::read_to_string(&out).unwrap()).unwrap();
     assert_eq!(written["key_id"], id.as_str());
 
@@ -119,6 +123,8 @@ fn the_export_drops_into_a_trust_store_that_then_verifies_the_keys_records() {
     let run = vmr(&["record", "verify", "--record", &record, "--trust-store", &store_path, "--at", T]);
     run.expect_code(0);
     assert!(run.stdout.contains(&format!("  Key:           {id} (software)")), "{}", run.transcript());
+    let fingerprint = vmr_record::jwk::fingerprint(&id).unwrap();
+    assert!(run.stdout.contains(&format!("  Fingerprint:   {fingerprint}\n")), "{}", run.transcript());
 }
 
 #[test]

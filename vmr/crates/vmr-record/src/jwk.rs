@@ -111,6 +111,40 @@ pub fn key_id(key: &VerifyingKey) -> String {
     JwkPublicKey::from_verifying_key(key).key_id()
 }
 
+/// How many characters of a key's thumbprint its fingerprint shows.
+pub const FINGERPRINT_CHARS: usize = 24;
+
+impl JwkPublicKey {
+    /// This key's fingerprint: the first [`FINGERPRINT_CHARS`] characters of
+    /// its RFC 7638 thumbprint, in groups of four separated by spaces
+    /// (`HyoP YysS FOQ5 d6x6 4H8_ pHdd`). An issuer publishes it beside its
+    /// key id, and a reader compares the two by eye. It names the key as its
+    /// members stand, whatever key id a document claims for it.
+    pub fn fingerprint(&self) -> String {
+        grouped(&self.thumbprint()).unwrap_or_default()
+    }
+}
+
+/// The fingerprint of the key a key id names (see
+/// [`JwkPublicKey::fingerprint`]): the thumbprint after [`KEY_ID_PREFIX`],
+/// grouped. `None` when `key_id` is not that prefix followed by at least
+/// [`FINGERPRINT_CHARS`] base64url characters. It reads the id's text and
+/// checks no key: give it a key id that was checked against its key.
+pub fn fingerprint(key_id: &str) -> Option<String> {
+    grouped(key_id.strip_prefix(KEY_ID_PREFIX)?)
+}
+
+/// The first [`FINGERPRINT_CHARS`] characters of a thumbprint, in groups of
+/// four; `None` when it has fewer, or a character that is not base64url.
+fn grouped(thumbprint: &str) -> Option<String> {
+    let head: Vec<char> = thumbprint.chars().take(FINGERPRINT_CHARS).collect();
+    let base64url = |c: &char| c.is_ascii_alphanumeric() || *c == '-' || *c == '_';
+    if head.len() != FINGERPRINT_CHARS || !head.iter().all(base64url) {
+        return None;
+    }
+    Some(head.chunks(4).map(|group| group.iter().collect::<String>()).collect::<Vec<_>>().join(" "))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -135,6 +169,23 @@ mod tests {
         assert_eq!(jwk.key_id(), VECTOR_KID);
         assert_eq!(key_id(k.verifying_key()), VECTOR_KID);
         assert_eq!(jwk.thumbprint().len(), 43);
+    }
+
+    #[test]
+    fn the_fingerprint_is_the_thumbprints_first_24_characters_in_groups_of_four() {
+        let jwk = JwkPublicKey::from_verifying_key(key(b"khalm v0.1 test-vector signing key").verifying_key());
+        assert_eq!(jwk.fingerprint(), "HyoP YysS FOQ5 d6x6 4H8_ pHdd");
+        assert_eq!(fingerprint(VECTOR_KID).as_deref(), Some("HyoP YysS FOQ5 d6x6 4H8_ pHdd"));
+        assert_eq!(fingerprint(&jwk.key_id()), Some(jwk.fingerprint()));
+        // Not a key id, too short, or not base64url: no fingerprint.
+        assert_eq!(fingerprint("HyoPYysSFOQ5d6x64H8_pHddcHp7E91G5SZbdiaeWJg"), None);
+        assert_eq!(fingerprint(&format!("{KEY_ID_PREFIX}HyoPYysSFOQ5d6x64H8_pHd")), None);
+        assert_eq!(fingerprint(&format!("{KEY_ID_PREFIX}HyoPYysSFOQ5d6x64H8+pHddcHp7")), None);
+        assert_eq!(fingerprint(&format!("{KEY_ID_PREFIX}HyoPYysSFOQ5d6x64H8\u{202e}pHddcHp7")), None);
+        // Distinct keys, distinct fingerprints.
+        let other = JwkPublicKey::from_verifying_key(key(b"b").verifying_key());
+        assert_ne!(other.fingerprint(), jwk.fingerprint());
+        assert_eq!(other.fingerprint().len(), 29);
     }
 
     #[test]

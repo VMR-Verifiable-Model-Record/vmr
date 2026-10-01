@@ -146,6 +146,10 @@ pub fn verification(report: &VerificationReport, time: TimeSource) -> String {
                 );
                 let level = report.record.as_ref().map_or(issuer.attestation_level.as_str(), |p| p.attestation_level.as_str());
                 field(&mut out, "Key", &format!("{} ({})", s(&issuer.key_id), s(level)));
+                // The store's key id passed its loader's thumbprint check.
+                if let Some(fingerprint) = vmr_record::jwk::fingerprint(&issuer.key_id) {
+                    field(&mut out, "Fingerprint", &fingerprint);
+                }
             }
             if let Some(p) = &report.record {
                 field(&mut out, "Record", &format!("{}, issued {}", s(&p.record_id), s(&p.issued_at)));

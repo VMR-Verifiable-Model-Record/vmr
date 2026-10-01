@@ -93,9 +93,12 @@ pub fn export(args: &KeyExportArgs) -> Result<Output, CliError> {
         None => Ok(Output::ok(format!("{json}\n"))),
         Some(path) => {
             files::write_public_new(path, format!("{json}\n").as_bytes(), args.force, "public key file")?;
+            // The grouped fingerprint (vmr-record's): what an issuer
+            // publishes beside its key id, and what a reader compares.
             Ok(Output::ok(format!(
-                "Exported public key: {}\n  Public key file: {} (the public key only: no private key material)\n",
+                "Exported public key: {}\n  Fingerprint:     {}\n  Public key file: {} (the public key only: no private key material)\n",
                 file.key_id,
+                file.public_key.fingerprint(),
                 shown(path)
             ))
             .with_rich(crate::screens::key_exported(&file.key_id, &shown(path))))

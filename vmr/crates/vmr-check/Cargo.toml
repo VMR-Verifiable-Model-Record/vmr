@@ -1,0 +1,47 @@
+[package]
+name = "vmr-check"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "KHALM-VMR's browser checker: the open Verifiable Model Record verifier, policy evaluator and model-file check, built for wasm32-unknown-unknown with plain C exports and a hand-written ES module. Offline: no clock, no network, no randomness, no embedded key."
+
+# Two products from one crate (docs/BROWSER.md): `vmr-check.wasm`, the
+# cdylib built for wasm32-unknown-unknown, which js/vmr-check.js loads; and
+# the rlib, which this crate's own tests and the parity generator call
+# natively. Nothing depends on it: the pieces `vmr` shares with it live in
+# the libraries (the fingerprint in vmr-record, the trust-store entry in
+# vmr-verify).
+#
+# The footprint is part of the claim:
+#   cargo tree -p vmr-check --target wasm32-unknown-unknown -e normal,build
+# never shows vmr-ffi, bindgen, cc or a networking crate. It shows getrandom
+# only with the `custom` feature and the source src/ffi.rs registers, which
+# always fails: p256's elliptic-curve takes crypto-bigint with its default
+# features, which pull in rand_core's getrandom, and getrandom 0.2 refuses
+# to build for wasm32-unknown-unknown without a source. No wasm-bindgen and
+# no generated glue; the built module imports nothing (js/test/api.test.mjs).
+[lib]
+name = "vmr_check"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+vmr-record.workspace = true
+vmr-verify = { path = "../vmr-verify" }
+vmr-policy = { path = "../vmr-policy" }
+p256.workspace = true
+sha2.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+# Already locked (p256 -> elliptic-curve -> crypto-bigint -> rand_core): only
+# its `custom` feature is named here, so that wasm32-unknown-unknown builds
+# with the always-failing source src/ffi.rs registers. On every other target
+# the feature changes nothing.
+getrandom = { version = "0.2", features = ["custom"] }
+
+[dev-dependencies]
+# The agreement tests (tests/cli_agreement.rs) run `vmr`'s own commands in
+# process and compare their bytes with this crate's: the trust store
+# `trust-store add` writes, and the report `record verify --json` prints.
+# Test-only: never in the wasm build (`-e normal,build`).
+vmr-cli = { path = "../vmr-cli" }

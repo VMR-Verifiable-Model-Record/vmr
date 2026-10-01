@@ -3,6 +3,9 @@
 # binary runs by verifying the records committed under docs/examples/, then
 # attach the archives to a DRAFT GitHub Release, with a SHA256SUMS file and a
 # build provenance attestation. A maintainer reads the draft and publishes it.
+# The same release carries the browser checker (docs/BROWSER.md):
+# vmr-check-<version>.wasm and vmr-check-<version>.js, built and tested in
+# Node before they are attached, in SHA256SUMS and attested like the archives.
 #
 # Run it by hand (workflow_dispatch) for a dry run: the same builds and
 # checks, the archives kept as workflow artifacts for a week, and SHA256SUMS
@@ -137,9 +140,75 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  browser:
+    name: build (the browser checker, wasm32-unknown-unknown)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      WASM: vmr/target/wasm32-unknown-unknown/release/vmr_check.wasm
+      REF_NAME: ${{ github.ref_name }}
+      REF_TYPE: ${{ github.ref_type }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: No RUSTFLAGS, so nothing reaches the wasm build unseen
+        run: |
+          if [ -n "${RUSTFLAGS:-}${CARGO_ENCODED_RUSTFLAGS:-}" ]; then
+            echo "::error::RUSTFLAGS is set; the browser checker is built with the repository's own settings only"
+            exit 1
+          fi
+
+      - name: Rust stable, for wasm32-unknown-unknown
+        run: |
+          rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown --no-self-update
+          rustup default stable
+          rustc --version
+
+      - name: Build
+        run: cargo build --release --locked --manifest-path vmr/Cargo.toml -p vmr-check --target wasm32-unknown-unknown
+
+      - name: The module names the version the tag does
+        run: |
+          node --version
+          version=$(node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            import { load } from './vmr/crates/vmr-check/js/vmr-check.js';
+            const vmr = await load(new Uint8Array(readFileSync(process.env.WASM)));
+            console.log(vmr.version().vmr);")
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          if [ "$REF_TYPE" = tag ] && [ "$REF_NAME" != "v$version" ]; then
+            echo "::error::the tag is $REF_NAME but the module says $version"
+            exit 1
+          fi
+
+      - name: It passes its Node tests (every published vector, the standard library only)
+        env:
+          VMR_CHECK_WASM: ${{ env.WASM }}
+        run: node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs
+
+      - name: Package
+        run: |
+          cp "$WASM" "vmr-check-$VERSION.wasm"
+          cp vmr/crates/vmr-check/js/vmr-check.js "vmr-check-$VERSION.js"
+          ls -l vmr-check-*
+
+      - name: Keep the files for the release job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vmr-check
+          path: vmr-check-*
+          if-no-files-found: error
+          retention-days: 7
+
   release:
     name: checksums, provenance and the draft release
-    needs: build
+    needs: [build, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -150,7 +219,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Collect the four archives
+      - name: Collect the four archives and the browser checker
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: vmr-*
@@ -162,7 +231,7 @@ jobs:
         run: |
           sha256sum vmr-* > SHA256SUMS
           cat SHA256SUMS
-          test "$(wc -l < SHA256SUMS)" -eq 4
+          test "$(wc -l < SHA256SUMS)" -eq 6
 
       - name: Build provenance for every file
         if: github.ref_type == 'tag'
@@ -191,6 +260,10 @@ jobs:
             echo 'Windows binary needs no Visual C++ runtime. The macOS binaries need'
             echo 'macOS 11 or later and are not notarized by Apple: the README says how to'
             echo 'open them.'
+            echo
+            echo '`vmr-check-*.wasm` and `vmr-check-*.js` are the browser checker: the same'
+            echo 'verifier, built for WebAssembly, that checks a record in a browser on the'
+            echo 'computer of whoever checks it, with nothing uploaded (docs/BROWSER.md).'
           } > notes.md
           gh release create "$TAG" dist/* --repo "$REPO" --draft --verify-tag \
             --title "$TAG" --notes-file notes.md

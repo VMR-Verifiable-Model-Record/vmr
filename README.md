@@ -49,7 +49,10 @@ carries a prebuilt `vmr`.
 | **macOS** Apple silicon | `vmr-<version>-aarch64-apple-darwin.tar.gz` | macOS 11 or later |
 | **macOS** Intel | `vmr-<version>-x86_64-apple-darwin.tar.gz` | macOS 11 or later |
 
-Each archive holds the binary, `LICENSE` and `NOTICE`.
+Each archive holds the binary, `LICENSE` and `NOTICE`. Every release also
+carries `vmr-check-<version>.wasm` and `vmr-check-<version>.js`: the same
+checker for a web page, which runs on the reader's own computer, uploads
+nothing and trusts no key by default (`docs/BROWSER.md`).
 
 **1 — Download** your system's archive and `SHA256SUMS` from the release.
 
@@ -138,7 +141,8 @@ says so.
 
 - `vmr/` — the format library, the offline verifier, the policy-pack
   evaluator, the engine-free record builder, the audit log's reader and
-  writer, and the `vmr` CLI;
+  writer, and the `vmr` CLI; `vmr/crates/vmr-check` is the same verifier
+  compiled to WebAssembly for a browser page;
 - `specs/` — the record, trust-store, policy-pack and audit-log formats, the
   `vmr.agent` audit-log profile, their schemas, test vectors, and five
   reference policy packs — one author's

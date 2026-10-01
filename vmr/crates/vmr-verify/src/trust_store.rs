@@ -67,6 +67,73 @@ pub struct TrustStoreDocument {
     pub policy_authorities: Vec<AuthorityDocument>,
 }
 
+/// Why [`TrustStoreDocument::add_issuer_key`] left a store unchanged.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AddIssuerKeyError {
+    /// The store already trusts the key, for the issuer named here: a key is
+    /// trusted for one issuer, and only once.
+    KeyAlreadyTrusted {
+        /// The issuer the store trusts the key for (raw store text).
+        issuer_id: String,
+    },
+    /// The store holds the issuer under another name: one issuer has one
+    /// name in a store.
+    IssuerNameDiffers {
+        /// The issuer (raw store text).
+        issuer_id: String,
+        /// The name the store already holds for it (raw store text).
+        existing_name: String,
+    },
+}
+
+impl TrustStoreDocument {
+    /// A store of this format's version that trusts nothing yet.
+    pub fn empty() -> Self {
+        TrustStoreDocument {
+            trust_store_version: TRUST_STORE_VERSION.into(),
+            issuers: Vec::new(),
+            policy_authorities: Vec::new(),
+        }
+    }
+
+    /// Trust `key` for the issuer `issuer_id`, shown as `issuer_name`: the
+    /// verifier operator's decision `vmr trust-store add` writes, here so
+    /// that every tool that writes it writes the same entry. The key is added
+    /// to the issuer's keys, or a new issuer is added with it. Refused, with
+    /// the document unchanged, when the store already trusts the key (for
+    /// any issuer) or holds the issuer under another name. Nothing else is
+    /// checked here: pass the result to [`TrustStore::new`], which checks
+    /// every rule of the format.
+    pub fn add_issuer_key(
+        &mut self,
+        issuer_id: &str,
+        issuer_name: &str,
+        key: KeyDocument,
+    ) -> Result<(), AddIssuerKeyError> {
+        if let Some(holder) = self.issuers.iter().find(|i| i.keys.iter().any(|k| k.key_id == key.key_id)) {
+            return Err(AddIssuerKeyError::KeyAlreadyTrusted { issuer_id: holder.issuer_id.clone() });
+        }
+        match self.issuers.iter_mut().find(|i| i.issuer_id == issuer_id) {
+            Some(issuer) if issuer.issuer_name != issuer_name => Err(AddIssuerKeyError::IssuerNameDiffers {
+                issuer_id: issuer.issuer_id.clone(),
+                existing_name: issuer.issuer_name.clone(),
+            }),
+            Some(issuer) => {
+                issuer.keys.push(key);
+                Ok(())
+            }
+            None => {
+                self.issuers.push(IssuerDocument {
+                    issuer_id: issuer_id.to_string(),
+                    issuer_name: issuer_name.to_string(),
+                    keys: vec![key],
+                });
+                Ok(())
+            }
+        }
+    }
+}
+
 /// One trusted issuer.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -843,6 +910,13 @@ impl TrustStore {
     /// policy authorities by `authority_id`, keys by `key_id`).
     pub fn to_document(&self) -> TrustStoreDocument {
         self.document.clone()
+    }
+
+    /// The store as a file: its canonical document as pretty-printed JSON
+    /// and a newline, the bytes `vmr trust-store add` writes. It is data to
+    /// save, not text to show: its names are the store's raw text.
+    pub fn to_file_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string_pretty(&self.document).map(|text| format!("{text}\n"))
     }
 }
 

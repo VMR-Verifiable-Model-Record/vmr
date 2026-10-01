@@ -40,6 +40,19 @@ pub enum NameError {
 }
 
 impl NameError {
+    /// The reason's name as spec §7.2 spells it, the one the conformance
+    /// suite compares: `empty`, `empty-segment`, `dot-segment`,
+    /// `dotdot-segment` or `not-ascending`.
+    pub fn id(self) -> &'static str {
+        match self {
+            NameError::Empty => "empty",
+            NameError::EmptySegment => "empty-segment",
+            NameError::DotSegment => "dot-segment",
+            NameError::DotDotSegment => "dotdot-segment",
+            NameError::NotAscending => "not-ascending",
+        }
+    }
+
     /// What is wrong, in words.
     pub fn reason(self) -> &'static str {
         match self {

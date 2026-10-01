@@ -250,6 +250,21 @@ fn reason_id(e: NameError) -> &'static str {
     }
 }
 
+#[test]
+fn name_error_ids_are_the_reasons_the_vectors_spell() {
+    // NameError::id is what a tool reports (vmr-check's refused_names);
+    // these vectors' spelling is the spec's (§7.2). Every variant, once.
+    for e in [
+        NameError::Empty,
+        NameError::EmptySegment,
+        NameError::DotSegment,
+        NameError::DotDotSegment,
+        NameError::NotAscending,
+    ] {
+        assert_eq!(e.id(), reason_id(e));
+    }
+}
+
 /// A case's members as (name, SHA-256), checking each stated SHA-256
 /// against its bytes.
 fn members_of(v: &Value) -> Vec<(String, [u8; 32])> {
