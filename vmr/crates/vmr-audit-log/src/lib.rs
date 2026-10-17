@@ -69,6 +69,7 @@ pub mod proof;
 pub mod signing;
 pub mod tree;
 pub(crate) mod types;
+pub mod verify;
 
 pub use error::Error;
 

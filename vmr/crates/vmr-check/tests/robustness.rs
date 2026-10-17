@@ -140,3 +140,35 @@ fn random_requests_never_panic() {
         assert!(v.is_object(), "{v}");
     }
 }
+
+#[test]
+fn mutated_logs_and_log_requests_never_panic() {
+    let example = |name: &str| std::fs::read(repo().join("docs/examples/agent-log").join(name)).unwrap();
+    let (key, cp, log) = (example("audit-key.pub.json"), example("checkpoint.json"), example("log.jsonl"));
+    let header = br#"{"profile":"vmr.agent","audit_key":true,"checkpoints":1,"checkpoints_jsonl":true}"#;
+    let item = br#"{"index":4,"member":"arguments_digest","item_key":"11200c6264981efb8fbbdcd4e3ce185d1db9dcda617e774843dff5c578b0cd3d"}"#;
+    let mut rng = Lcg(0x10C5_EED5);
+    let mut current = (log.clone(), cp.clone(), key.clone());
+    for i in 0..1_000 {
+        if i % 8 == 0 {
+            current = (log.clone(), cp.clone(), key.clone());
+        }
+        match rng.below(3) {
+            0 => current.0 = mutate(&mut rng, current.0.clone()),
+            1 => current.1 = mutate(&mut rng, current.1.clone()),
+            _ => current.2 = mutate(&mut rng, current.2.clone()),
+        }
+        let (l, c, k) = &current;
+        let mut session = api::log_session(&framed(&[header, k, c, c]));
+        let chunk = 1 + rng.below(64);
+        for piece in l.chunks(chunk) {
+            if !session.update(piece) {
+                break;
+            }
+        }
+        let answer = session.finish();
+        assert!(answer.get("outcome").is_some() || answer.get("refusal").is_some(), "{answer}");
+        let v: Value = serde_json::from_slice(&api::call(api::OP_CHECK_ITEM, &framed(&[item, l, c]))).unwrap();
+        assert!(v.get("matches").is_some() || v.get("refusal").is_some(), "{v}");
+    }
+}

@@ -18,10 +18,17 @@
 //                              record
 //    op 5 check_files          {files: [{name | name_utf16, sha256, size}]};
 //                              record
+//    op 6 check_item           {index, member, item_key}; log, content
+//
+//  `logVerifier` streams, so it is not one call: `log_session` reads its
+//  request ({profile, audit_key, checkpoints, checkpoints_jsonl}; [audit
+//  key], checkpoints..., [checkpoint history]) into a `LogSession` the
+//  script feeds chunk by chunk (ffi.rs).
 // ============================================================================
 
 use crate::files::{GivenFile, GivenName};
 use crate::inspect::read_record;
+use crate::log::{CheckItemRequest, LogRequest, LogSession};
 use crate::pack::{Authorities, PackEvaluator};
 use crate::refusal::{
     Refusal, AUTHORITY_STORE_ISSUERS, AUTHORITY_STORE_ISSUER_KEY, EVALUATION_TIME_RANGE, REQUEST_MALFORMED,
@@ -42,6 +49,8 @@ pub const OP_INSPECT: u32 = 3;
 pub const OP_STORE_FOR_EMBEDDED_KEY: u32 = 4;
 /// `checkFiles(...)`.
 pub const OP_CHECK_FILES: u32 = 5;
+/// `checkItem(...)`.
+pub const OP_CHECK_ITEM: u32 = 6;
 
 /// The arguments of `verify`.
 #[derive(Debug, Clone, Default)]
@@ -221,6 +230,38 @@ pub fn call(op: u32, request: &[u8]) -> Vec<u8> {
     serde_json::to_vec(&answer).unwrap_or_else(|_| b"{\"refusal\":{\"id\":\"request.malformed\"}}".to_vec())
 }
 
+/// The `LogSession` of a framed `logVerifier` request (see the module
+/// header); a request whose framing is broken gives a session whose answer is
+/// the fail shape.
+pub fn log_session(request: &[u8]) -> LogSession {
+    let refused = |detail: &str| LogSession::answered(malformed(detail));
+    let Some(frames) = frames(request) else {
+        return refused("the request's frames do not add up to its length");
+    };
+    let header: Value = match frames.first().map(|h| serde_json::from_slice(h)) {
+        Some(Ok(header @ Value::Object(_))) => header,
+        _ => return refused("frame 0 is not a JSON object"),
+    };
+    let blobs = frames.get(1..).unwrap_or_default();
+    let flag = |name: &str| header.get(name).and_then(Value::as_bool).unwrap_or(false);
+    let (has_key, has_history) = (flag("audit_key"), flag("checkpoints_jsonl"));
+    let count = header.get("checkpoints").and_then(Value::as_u64).and_then(|n| usize::try_from(n).ok()).unwrap_or(0);
+    let expected = count.checked_add(usize::from(has_key) + usize::from(has_history));
+    if expected != Some(blobs.len()) {
+        return refused("the request's byte arguments do not match its header");
+    }
+    let mut rest = blobs.iter().copied();
+    let audit_key = if has_key { rest.next() } else { None };
+    let checkpoints: Vec<&[u8]> = rest.by_ref().take(count).collect();
+    let checkpoints_jsonl = if has_history { rest.next() } else { None };
+    let profile = match header.get("profile") {
+        None | Some(Value::Null) => None,
+        Some(Value::String(name)) => Some(name.as_str()),
+        Some(_) => return refused("the header's profile is not a string"),
+    };
+    LogSession::new(&LogRequest { profile, audit_key, checkpoints, checkpoints_jsonl })
+}
+
 fn malformed(detail: &str) -> Value {
     Refusal::new(REQUEST_MALFORMED, "request", detail).to_value()
 }
@@ -249,6 +290,19 @@ fn dispatch(op: u32, frames: &[&[u8]]) -> Value {
     };
     let blobs = frames.get(1..).unwrap_or_default();
     let flag = |name: &str| header.get(name).and_then(Value::as_bool).unwrap_or(false);
+    if op == OP_CHECK_ITEM {
+        let (Some(log), Some(content), 2) = (blobs.first().copied(), blobs.get(1).copied(), blobs.len()) else {
+            return malformed("a check_item request carries a log and a content");
+        };
+        let (Some(index), Some(member), Some(item_key)) = (
+            header.get("index").and_then(Value::as_u64),
+            header.get("member").and_then(Value::as_str),
+            header.get("item_key").and_then(Value::as_str),
+        ) else {
+            return malformed("the header carries no index, member or item_key");
+        };
+        return crate::log::check_item(&CheckItemRequest { log, index, member, item_key, content });
+    }
     let Some(record) = blobs.first().copied() else {
         return malformed("the request carries no record");
     };

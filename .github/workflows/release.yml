@@ -190,7 +190,7 @@ jobs:
       - name: It passes its Node tests (every published vector, the standard library only)
         env:
           VMR_CHECK_WASM: ${{ env.WASM }}
-        run: node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs
+        run: node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs vmr/crates/vmr-check/js/test/log.test.mjs
 
       - name: Package
         run: |

@@ -199,6 +199,67 @@ impl<'p> LogReader<'p> {
     }
 }
 
+/// What reading a log up to one entry gave ([`EntryFinder`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Found {
+    /// The entry, every line up to it accepted.
+    Entry(AuditEntry),
+    /// A line up to it, or the log's end, was refused.
+    Refused(Error),
+    /// The log ended, every line accepted, before the entry: it holds `held`
+    /// entries.
+    Missing {
+        /// The entries the log holds.
+        held: u64,
+    },
+}
+
+/// A log read until entry `index` (§4.4): every line up to it is checked as
+/// [`LogReader`] checks it, and nothing after it is read. What a disclosure's
+/// check reads (`vmr log check-item`, the browser checker's `checkItem`).
+#[derive(Debug)]
+pub struct EntryFinder<'p> {
+    reader: LogReader<'p>,
+    index: u64,
+    found: Option<Found>,
+}
+
+impl<'p> EntryFinder<'p> {
+    /// A search for entry `index` of a log whose entries are `profile`'s.
+    pub fn new(profile: &'p dyn EntryProfile, index: u64) -> EntryFinder<'p> {
+        EntryFinder { reader: LogReader::new(profile), index, found: None }
+    }
+
+    /// Read the next bytes of the log: `true` once the answer is known (the
+    /// entry, or a refusal), when the rest need not be read.
+    pub fn feed(&mut self, bytes: &[u8]) -> bool {
+        if self.found.is_some() {
+            return true;
+        }
+        match self.reader.feed(bytes) {
+            Ok(entries) => {
+                if let Some(entry) = entries.into_iter().find(|e| e.index == self.index) {
+                    self.found = Some(Found::Entry(entry));
+                }
+            }
+            Err(refused) => self.found = Some(Found::Refused(refused)),
+        }
+        self.found.is_some()
+    }
+
+    /// The answer, at the end of the log or once known.
+    pub fn finish(self) -> Found {
+        if let Some(found) = self.found {
+            return found;
+        }
+        let held = self.reader.len();
+        match self.reader.finish() {
+            Err(refused) => Found::Refused(refused),
+            Ok(_) => Found::Missing { held },
+        }
+    }
+}
+
 /// The leaf hashes of entries a reader accepted, in index order.
 pub fn leaves_of(entries: &[AuditEntry]) -> Vec<[u8; DIGEST_LEN]> {
     entries.iter().map(|e| hash_leaf(e.canonical.as_bytes())).collect()

@@ -8,16 +8,18 @@
 //
 // Bad input never throws: it returns { refusal: { id, input, detail } }.
 // A call throws only on misuse: an argument of the wrong type, or a hasher
-// used after finish().
+// or a log verifier used after finish().
 
 const OP_VERSION = 1;
 const OP_VERIFY = 2;
 const OP_INSPECT = 3;
 const OP_STORE_FOR_EMBEDDED_KEY = 4;
 const OP_CHECK_FILES = 5;
+const OP_CHECK_ITEM = 6;
 
-// The hasher copies a chunk into the module through one buffer of this size,
-// so a chunk of any size never grows the module's memory (QA N2).
+// The hasher and the log verifier copy a chunk into the module through one
+// buffer of this size, so a chunk of any size never grows the module's
+// memory (QA N2).
 const HASH_BUFFER = 1024 * 1024;
 
 const encoder = new TextEncoder();
@@ -84,9 +86,9 @@ function hex(bytes) {
 }
 
 function checker(ex) {
-  // Copy `parts` into one framed request in the module's memory: each part a
-  // u32 little-endian length and its bytes.
-  function call(op, header, blobs) {
+  // Copy the header and `blobs` into one framed request in the module's
+  // memory: each part a u32 little-endian length and its bytes.
+  function request(header, blobs) {
     const parts = [encoder.encode(JSON.stringify(header)), ...blobs];
     const total = parts.reduce((n, p) => n + 4 + p.length, 0);
     const ptr = ex.vmr_alloc(total);
@@ -98,8 +100,25 @@ function checker(ex) {
       memory.set(part, at + 4);
       at += 4 + part.length;
     }
+    return [ptr, total];
+  }
+
+  function call(op, header, blobs) {
+    const [ptr, total] = request(header, blobs);
     // vmr_call takes the request buffer back; the answer is a new one.
     return JSON.parse(answer(ex.vmr_call(op, ptr, total)));
+  }
+
+  // Feed `chunk` to `update(ptr, len)` through the one buffer `state` holds,
+  // a piece at a time; stop when `update` returns false.
+  function feed(state, chunk, update) {
+    if (state.buffer === 0) state.buffer = ex.vmr_alloc(HASH_BUFFER);
+    for (let at = 0; at < chunk.length; at += HASH_BUFFER) {
+      const piece = chunk.subarray(at, at + HASH_BUFFER);
+      new Uint8Array(ex.memory.buffer, state.buffer, piece.length).set(piece);
+      if (update(state.buffer, piece.length) === false) return false;
+    }
+    return true;
   }
 
   // Read an answer buffer (u32 little-endian length, then the bytes), return
@@ -194,26 +213,97 @@ function checker(ex) {
     /** A streaming SHA-256: update(chunk) any number of times, then finish(). */
     fileHasher() {
       let hasher = ex.vmr_hasher_new();
-      let buffer = 0;
+      const state = { buffer: 0 };
       return {
         update(chunk) {
           if (hasher === null) throw new Error("vmr-check: the hasher is spent: finish() was called");
           const c = bytes(chunk, "chunk");
-          if (buffer === 0) buffer = ex.vmr_alloc(HASH_BUFFER);
-          for (let at = 0; at < c.length; at += HASH_BUFFER) {
-            const piece = c.subarray(at, at + HASH_BUFFER);
-            new Uint8Array(ex.memory.buffer, buffer, piece.length).set(piece);
-            ex.vmr_hasher_update(hasher, buffer, piece.length);
-          }
+          feed(state, c, (ptr, len) => ex.vmr_hasher_update(hasher, ptr, len));
         },
         finish() {
           if (hasher === null) throw new Error("vmr-check: the hasher is spent: finish() was called");
           const h = hasher;
           hasher = null;
-          if (buffer !== 0) ex.vmr_free(buffer, HASH_BUFFER);
+          if (state.buffer !== 0) ex.vmr_free(state.buffer, HASH_BUFFER);
           return answer(ex.vmr_hasher_finish(h));
         },
       };
+    },
+
+    /**
+     * An audit log checked as it streams in, as `vmr log verify` checks it:
+     * update(chunk) any number of times, then finish(). `auditKey` is the
+     * audit key's public key file (string or Uint8Array), `checkpoints` an
+     * array of checkpoint documents (Uint8Array), `checkpointsJsonl` a
+     * checkpoint history (Uint8Array), `profile` "core" (the default),
+     * "khalm-vmr.enforcer" or "vmr.agent". update() returns false once the
+     * answer is known (a refusal), when the rest of the log need not be read.
+     * finish() -> { outcome: "verified" | "chain_only" | "failed", entries,
+     * root, checkpoints, uncovered, checked, refusal, summary, notes, ... },
+     * or { refusal: { id, input, detail } } for an input it cannot use.
+     */
+    logVerifier(args = {}) {
+      const a = object(args, "logVerifier");
+      const auditKey = optional(a.auditKey, "auditKey", document);
+      const checkpoints =
+        a.checkpoints === undefined ? [] : array(a.checkpoints, "checkpoints").map((c, i) => bytes(c, `checkpoints[${i}]`));
+      const history = optional(a.checkpointsJsonl, "checkpointsJsonl", bytes);
+      if (a.profile !== undefined && typeof a.profile !== "string") {
+        throw new TypeError("vmr-check: logVerifier: profile must be a string");
+      }
+      if (auditKey === undefined && (checkpoints.length > 0 || history !== undefined)) {
+        throw new TypeError("vmr-check: logVerifier: checkpoints and checkpointsJsonl need the auditKey they are checked under");
+      }
+      const header = {
+        profile: a.profile === undefined ? "core" : wellFormed(a.profile),
+        audit_key: auditKey !== undefined,
+        checkpoints: checkpoints.length,
+        checkpoints_jsonl: history !== undefined,
+      };
+      const blobs = [];
+      if (auditKey !== undefined) blobs.push(auditKey);
+      blobs.push(...checkpoints);
+      if (history !== undefined) blobs.push(history);
+      const [ptr, total] = request(header, blobs);
+      // vmr_log_new takes the request buffer back.
+      let session = ex.vmr_log_new(ptr, total);
+      let wanted = true;
+      const state = { buffer: 0 };
+      return {
+        update(chunk) {
+          if (session === null) throw new Error("vmr-check: the log verifier is spent: finish() was called");
+          const c = bytes(chunk, "chunk");
+          if (wanted) wanted = feed(state, c, (p, len) => ex.vmr_log_update(session, p, len) !== 0);
+          return wanted;
+        },
+        finish() {
+          if (session === null) throw new Error("vmr-check: the log verifier is spent: finish() was called");
+          const s = session;
+          session = null;
+          if (state.buffer !== 0) ex.vmr_free(state.buffer, HASH_BUFFER);
+          return JSON.parse(answer(ex.vmr_log_finish(s)));
+        },
+      };
+    },
+
+    /**
+     * Whether `content` under `itemKey` (64 hex digits, as `vmr log disclose`
+     * prints it) gives the digest entry `index` of `log` carries in `member`,
+     * every line up to the entry checked: what `vmr log check-item` says.
+     * -> { matches, index, kind, label, in_entry, computed, not_checked } or a
+     * refusal. Whether a signed checkpoint covers the entry is logVerifier's.
+     */
+    checkItem(args) {
+      const a = object(args, "checkItem");
+      const log = bytes(a.log, "log");
+      const content = bytes(a.content, "content");
+      if (!Number.isSafeInteger(a.index) || a.index < 0) {
+        throw new TypeError("vmr-check: checkItem: index must be a whole number from 0");
+      }
+      if (typeof a.member !== "string" || typeof a.itemKey !== "string") {
+        throw new TypeError("vmr-check: checkItem: member and itemKey must be strings");
+      }
+      return call(OP_CHECK_ITEM, { index: a.index, member: wellFormed(a.member), item_key: wellFormed(a.itemKey) }, [log, content]);
     },
 
     /**

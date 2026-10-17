@@ -43,6 +43,21 @@ pub const ATTESTATION_LEVEL_UNKNOWN: &str = "attestation_level.unknown";
 /// A request whose framing is broken: only a caller that bypasses
 /// js/vmr-check.js can send one.
 pub const REQUEST_MALFORMED: &str = "request.malformed";
+/// `logVerifier`: a profile this build does not read a log under (the
+/// profiles are `vmr_audit_log::verify::PROFILES`).
+pub const PROFILE_UNKNOWN: &str = "profile.unknown";
+/// `logVerifier`: an audit key that is not a public key file as `vmr key
+/// export` writes it (`vmr` refuses the same file with exit 1).
+pub const AUDIT_KEY_UNUSABLE: &str = "audit_key.unusable";
+/// `logVerifier`: a checkpoint history with no line (`vmr` refuses it with
+/// exit 1).
+pub const CHECKPOINT_HISTORY_EMPTY: &str = "checkpoint_history.empty";
+/// `checkItem`: an item key that is not 64 hexadecimal characters.
+pub const CHECK_ITEM_ITEM_KEY: &str = "check_item.item_key";
+/// `checkItem`: a log that ends, every line accepted, before the entry.
+pub const CHECK_ITEM_NO_ENTRY: &str = "check_item.no_entry";
+/// `checkItem`: an entry that carries no digest in the member named.
+pub const CHECK_ITEM_NO_DIGEST: &str = "check_item.no_digest";
 
 /// An input a call cannot use.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -50,8 +65,9 @@ pub struct Refusal {
     /// The stable id of the refusal.
     pub id: String,
     /// The argument at fault: `record`, `trust_store`, `authority_store`,
-    /// `pack`, `at`, `files`, `expected_fingerprint`, `attestation_level` or
-    /// `request`.
+    /// `pack`, `at`, `files`, `expected_fingerprint`, `attestation_level`,
+    /// `profile`, `audit_key`, `checkpoints_jsonl`, `log`, `index`, `member`,
+    /// `item_key` or `request`.
     pub input: &'static str,
     /// What is wrong, in the refusing library's words.
     pub detail: String,
@@ -69,6 +85,17 @@ impl Refusal {
             "id": display_safe(&self.id),
             "input": self.input,
             "detail": display_safe(&self.detail),
+        }})
+    }
+
+    /// The fail shape of a refusal whose `detail` is terminal-safe already
+    /// (vmr-audit-log's messages are escaped once, as `vmr` prints them):
+    /// only the id goes through `display_safe`, so nothing is escaped twice.
+    pub fn to_value_safe_detail(&self) -> Value {
+        json!({ "refusal": {
+            "id": display_safe(&self.id),
+            "input": self.input,
+            "detail": self.detail,
         }})
     }
 }

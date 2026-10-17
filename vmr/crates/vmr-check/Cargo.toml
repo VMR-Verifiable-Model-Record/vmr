@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "KHALM-VMR's browser checker: the open Verifiable Model Record verifier, policy evaluator and model-file check, built for wasm32-unknown-unknown with plain C exports and a hand-written ES module. Offline: no clock, no network, no randomness, no embedded key."
+description = "KHALM-VMR's browser checker: the open Verifiable Model Record verifier, policy evaluator, model-file check and audit-log check, built for wasm32-unknown-unknown with plain C exports and a hand-written ES module. Offline: no clock, no network, no randomness, no embedded key."
 
 # Two products from one crate (docs/BROWSER.md): `vmr-check.wasm`, the
 # cdylib built for wasm32-unknown-unknown, which js/vmr-check.js loads; and
@@ -29,6 +29,9 @@ crate-type = ["cdylib", "rlib"]
 vmr-record.workspace = true
 vmr-verify = { path = "../vmr-verify" }
 vmr-policy = { path = "../vmr-policy" }
+# The audit log's checks, the same code `vmr log verify` and `vmr log
+# check-item` run (its verify module, EntryFinder and the vmr.agent digest).
+vmr-audit-log = { path = "../vmr-audit-log" }
 p256.workspace = true
 sha2.workspace = true
 serde.workspace = true

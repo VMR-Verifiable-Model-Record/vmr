@@ -21,7 +21,7 @@
 use crate::cli::{LogCheckItemArgs, LogDiscloseArgs};
 use crate::error::{CliError, EXIT_VERIFICATION_FAILED};
 use crate::files::{self, shown};
-use crate::log_seal::{key_from_hex, read_content_secret, to_hex, CONTENT_SECRET_FILE, LOG_FILE};
+use crate::log_seal::{read_content_secret, to_hex, CONTENT_SECRET_FILE, LOG_FILE};
 use crate::output::Output;
 use crate::render::shown_value;
 use serde_json::Value;
@@ -29,7 +29,7 @@ use std::io::Read;
 use std::path::Path;
 use vmr_audit_log::entry::AuditEntry;
 use vmr_audit_log::json::parse_document;
-use vmr_audit_log::log::LogReader;
+use vmr_audit_log::log::{EntryFinder, Found};
 use vmr_audit_log::profile::{EntryProfile, CORE};
 use vmr_audit_log::profiles::vmr_agent::{self, digest, MemberType};
 
@@ -37,7 +37,8 @@ use vmr_audit_log::profiles::vmr_agent::{self, digest, MemberType};
 const READ_PIECE: usize = 1024 * 1024;
 
 /// Entry `index` of the log at `path`, read under `profile` with every line
-/// up to it checked: `Ok(Err(..))` is the format's refusal of a line (its id
+/// up to it checked (vmr-audit-log's `EntryFinder`, which the browser
+/// checker runs too): `Ok(Err(..))` is the format's refusal of a line (its id
 /// and message), `Err` a file that could not be read or a log too short.
 fn find_entry(
     path: &Path,
@@ -46,7 +47,7 @@ fn find_entry(
 ) -> Result<Result<AuditEntry, vmr_audit_log::Error>, CliError> {
     let cannot = |e: std::io::Error| CliError::input(format!("cannot read audit log {}: {e}", shown(path)));
     let mut file = std::fs::File::open(path).map_err(cannot)?;
-    let mut reader = LogReader::new(profile);
+    let mut finder = EntryFinder::new(profile, index);
     let mut piece = vec![0u8; READ_PIECE];
     loop {
         let n = match file.read(&mut piece) {
@@ -55,37 +56,31 @@ fn find_entry(
             Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
             Err(e) => return Err(cannot(e)),
         };
-        match reader.feed(piece.get(..n).unwrap_or(&[])) {
-            Ok(entries) => {
-                if let Some(entry) = entries.into_iter().find(|e| e.index == index) {
-                    return Ok(Ok(entry));
-                }
-            }
-            Err(refused) => return Ok(Err(refused)),
+        if finder.feed(piece.get(..n).unwrap_or(&[])) {
+            break;
         }
     }
-    let held = reader.len();
-    if let Err(refused) = reader.finish() {
-        return Ok(Err(refused));
+    match finder.finish() {
+        Found::Entry(entry) => Ok(Ok(entry)),
+        Found::Refused(refused) => Ok(Err(refused)),
+        Found::Missing { held } => {
+            Err(CliError::input(format!("audit log {} holds {held} entries: it has no entry {index}", shown(path))))
+        }
     }
-    Err(CliError::input(format!("audit log {} holds {held} entries: it has no entry {index}", shown(path))))
 }
 
 /// The digest string entry `entry` carries in `member`, or why it has none.
 fn digest_member<'e>(entry: &'e AuditEntry, member: &str) -> Result<&'e str, CliError> {
-    entry
-        .detail
-        .get(member)
-        .and_then(Value::as_str)
-        .filter(|d| digest::is_digest(d))
-        .ok_or_else(|| {
-            CliError::input(format!(
-                "entry {} ({}) has no digest member {}",
-                entry.index,
-                shown_value(&entry.kind),
-                shown_value(member)
-            ))
-        })
+    digest::digest_member(entry, member).ok_or_else(|| no_digest_member(entry, member))
+}
+
+fn no_digest_member(entry: &AuditEntry, member: &str) -> CliError {
+    CliError::input(format!(
+        "entry {} ({}) has no digest member {}",
+        entry.index,
+        shown_value(&entry.kind),
+        shown_value(member)
+    ))
 }
 
 /// Run `log disclose`.
@@ -143,7 +138,7 @@ fn content_of(args: &LogCheckItemArgs) -> Result<(Vec<u8>, String), CliError> {
 
 /// Run `log check-item`.
 pub fn check_item(args: &LogCheckItemArgs) -> Result<Output, CliError> {
-    let key = key_from_hex(&args.item_key).ok_or_else(|| {
+    let key = digest::ItemKey::from_hex(&args.item_key).ok_or_else(|| {
         CliError::input("--item-key is not an item key: 64 hexadecimal characters")
             .with_hint(concat!("pass the key `", crate::tool_name!(), " log disclose` printed"))
     })?;
@@ -161,10 +156,9 @@ pub fn check_item(args: &LogCheckItemArgs) -> Result<Output, CliError> {
             return Ok(Output { stdout: out, rich: None, code: EXIT_VERIFICATION_FAILED });
         }
     };
-    let carried = digest_member(&entry, &args.member)?;
-    let computed = digest::ItemKey::from_bytes(key).digest(&content);
-    let label = digest::label(&entry.kind, &args.member, entry.index);
-    let matches = computed == carried;
+    let checked =
+        digest::check_item(&entry, &args.member, &key, &content).ok_or_else(|| no_digest_member(&entry, &args.member))?;
+    let digest::ItemCheck { carried, computed, label, matches } = checked;
     let mut out = if matches {
         format!(
             "Item matches: entry {}'s {} is the digest of this content under this item key\n",
@@ -182,7 +176,7 @@ pub fn check_item(args: &LogCheckItemArgs) -> Result<Output, CliError> {
     line(&mut out, "Log", &log);
     line(&mut out, "Entry", &format!("{} ({}), label {}", entry.index, shown_value(&entry.kind), shown_value(&label)));
     line(&mut out, "Content", &what);
-    line(&mut out, "In the entry", &shown_value(carried));
+    line(&mut out, "In the entry", &shown_value(&carried));
     line(&mut out, "Computed", &computed);
     line(
         &mut out,

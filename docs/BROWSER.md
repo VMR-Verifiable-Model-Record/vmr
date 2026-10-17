@@ -6,6 +6,10 @@ verifier as `vmr record verify` on the reviewer's own computer: nothing is
 uploaded, there is no account, and no key is trusted by default. Every trust
 decision is in the trust store the reviewer brings or builds.
 
+The same page checks an audit log from **any writer** (any agent runtime,
+any vendor) as `vmr log verify` does, with the same code: see
+[Audit logs](#audit-logs).
+
 This page is the interface the site's page is written against. The crate is
 `vmr/crates/vmr-check`; the two files a page loads are:
 
@@ -312,6 +316,124 @@ not detected.
 KHALM engine's) is refused as `check_files.unsupported_profile`: its model
 hash is the engine state's, not a digest of files.
 
+## Audit logs
+
+An audit log in the audit-log format v0.1
+([`specs/audit-log-format-v0.1.md`](../specs/audit-log-format-v0.1.md)) is
+checked as `vmr log verify` and `vmr log check-item` check it
+([`docs/CLI.md`](CLI.md) §3.11, §3.15), with the same code: the checks and the
+statements of what was checked live in `vmr-audit-log` (its `verify` module,
+`EntryFinder` and the `vmr.agent` digest check), and the CLI and this module
+only read and render. Whose log it is does not matter: the profile names the
+vocabulary of its kinds, and nothing else changes.
+
+### `vmr.logVerifier({ auditKey, checkpoints, checkpointsJsonl, profile })`
+
+```js
+const lv = vmr.logVerifier({ auditKey, checkpoints: [cp], profile: "vmr.agent" });
+for (let at = 0; at < file.size; at += 1 << 20) {
+  if (!lv.update(new Uint8Array(await file.slice(at, at + (1 << 20)).arrayBuffer()))) break;
+}
+const result = lv.finish();
+```
+
+| Argument | Type | |
+|---|---|---|
+| `auditKey` | string or `Uint8Array`, optional | the audit key's public key file, as `vmr key export` writes it (`--audit-key`) |
+| `checkpoints` | array of `Uint8Array`, optional | checkpoint documents (`--checkpoint`, any number) |
+| `checkpointsJsonl` | `Uint8Array`, optional | a checkpoint history, one checkpoint a line, as `vmr log seal` writes `checkpoints.jsonl` (`--checkpoints`) |
+| `profile` | string, optional | `core` (the default), `khalm-vmr.enforcer` or `vmr.agent` (`--profile`) |
+
+`update(chunk)` takes the log in chunks of any size, any number of times, so a
+multi-gigabyte log streams. The module holds the line in progress, the tree's
+frontier, the root at each checkpoint's size and, under `vmr.agent`, the notes
+pass within its caps, never the log; a chunk is copied in through one 1 MiB
+buffer. Any chunking gives the same result. `update` returns `false` once the
+answer is known (a refused line): the rest of the log need not be read.
+Checkpoints are checked first, in `vmr`'s order; a refused one is the answer,
+and the log is not read.
+
+Result:
+
+```js
+{
+  outcome,      // "verified" | "chain_only" | "failed": the page's headline
+  profile,      // the profile's name
+  headline,     // vmr's first line after "Audit log verified: " (absent when failed)
+  entries,      // the log's entries; when failed, those accepted before the refusal, or null if the log was not read
+  root,         // the log's Merkle root, "sha256:..." (null when failed)
+  audit_key,    // the pinned key's id, or null
+  checkpoints,  // [{ source, tree_size, issued_at, covers_whole_log }]; issued_at is the writer's clock, not checked
+  uncovered,    // { from, to }: the entries no checkpoint covers, or null
+  checked,      // the statements of what was checked, as vmr log verify prints them ("Label: text")
+  refusal,      // { id, detail } when failed, else null
+  summary,      // vmr.agent only, else null: the writer's statements, labelled so
+  notes         // vmr.agent only: where the entries break the rules between entries
+}
+```
+
+| `outcome` | Meaning | `vmr` |
+|---|---|---|
+| `verified` | every line is a canonical entry in its place, the chain holds, and every checkpoint given verified under the audit key and is of this log | exit 0, with a checkpoint |
+| `chain_only` | the same, with no audit key or no checkpoint given: **no signature was checked**, and the chain shows only that the lines agree with one another, not who wrote them | exit 0, no checkpoint |
+| `failed` | a line, a checkpoint, or a checkpoint against the log was refused | exit 3 |
+
+What the result claims is what was checked (format §5.1, a MUST):
+
+- Under `core`, `checked` says that nothing about what the entries mean was
+  checked. `khalm-vmr.enforcer` and `vmr.agent` check each entry's kind and
+  detail against their rules, and say that they do not check that what an
+  entry records happened.
+- With `chain_only`, `headline` and `checked` say that no signature was
+  checked, and `uncovered` names every entry.
+- `uncovered` names the entries after the largest checkpoint: the chain links
+  them, and no signature covers them.
+- **`summary` and `notes`** (`vmr.agent`) are the writer's statements, not
+  verified facts: `summary.statements_of` is `"the log's writer"`, and
+  `summary.heading` is the heading `vmr` prints over them. They count the
+  sessions, the calls proposed and refused (by gate), the approvals, the events
+  the writer says it lost (`events.dropped`: the log is incomplete) and the
+  torn tails it moved aside; `summary.lines` gives them as `vmr` prints them.
+  The first 20 notes are kept (`notes_total` counts all), each `{ index, kind,
+  session_id, call, message }`. Neither changes `outcome`.
+
+Refusal ids are the format's (`audit_entry.*`, `audit_log.*`, `checkpoint.*`)
+and `vmr`'s own: `log_verify.checkpoint_not_in_log` (a checkpoint that
+verified but is not of this log) and `log_verify.checkpoints_out_of_order`. A
+checkpoint is named by its argument: `checkpoints[0]`, `checkpointsJsonl line
+3`.
+
+An input that cannot be used gives the usual fail shape instead,
+`{ refusal: { id, input, detail } }` with no `outcome`, where `vmr` exits 1:
+`profile.unknown`, `audit_key.unusable` and `checkpoint_history.empty`.
+
+**Display safety.** Every string from a log goes through `display_safe`. The
+format's refusal messages and the notes' messages are escaped once by
+`vmr-audit-log`, as `vmr` prints them, and are not escaped again; the other
+strings (the `summary` members, session ids, `issued_at`) are escaped here.
+
+### `vmr.checkItem({ log, index, member, itemKey, content })`
+
+The auditor's side of a `vmr.agent` disclosure (profile §3): whether the
+content under the item key gives the digest entry `index` carries in `member`.
+It needs no secret. Every line of `log` up to the entry is checked as
+`logVerifier` checks it, under the core profile.
+
+| Argument | Type | |
+|---|---|---|
+| `log` | `Uint8Array` | the log, at least up to the entry |
+| `index` | number | the entry's index, a whole number from 0 |
+| `member` | string | the digest member, such as `arguments_digest` |
+| `itemKey` | string | the item key `vmr log disclose` printed: 64 hex digits |
+| `content` | `Uint8Array` | the disclosed content's bytes |
+
+Result: `{ matches, index, kind, label, in_entry, computed, not_checked }`.
+`not_checked` says that whether a signed checkpoint covers the entry is
+`logVerifier`'s answer. Refusals: `check_item.item_key` (not 64 hex digits),
+`check_item.no_entry` (the log ends before the entry), `check_item.no_digest`
+(the entry carries no digest in that member), or, with `input` `log`, the
+format's id for a line refused before the entry.
+
 ## Errors
 
 **Bad input never throws.** A call that cannot use an input returns:
@@ -322,7 +444,7 @@ hash is the engine state's, not a digest of files.
 
 | Field | What it holds |
 |---|---|
-| `input` | the argument at fault: `record`, `trust_store`, `authority_store`, `pack`, `at`, `files`, `expected_fingerprint`, `attestation_level` or `request` |
+| `input` | the argument at fault: `record`, `trust_store`, `authority_store`, `pack`, `at`, `files`, `expected_fingerprint`, `attestation_level`, `profile`, `audit_key`, `checkpoints_jsonl`, `log`, `index`, `member`, `item_key` or `request` |
 | `id` | the refusing library's stable id wherever one exists (see below) |
 | `detail` | the library's words, through `display_safe` |
 
@@ -343,6 +465,10 @@ Where `id` comes from:
   - `check_files.unsupported_profile`;
   - `store.fingerprint_mismatch` and `store.integrity`;
   - `attestation_level.unknown`;
+  - `profile.unknown`, `audit_key.unusable` and `checkpoint_history.empty`
+    (`logVerifier`);
+  - `check_item.item_key`, `check_item.no_entry` and `check_item.no_digest`
+    (`checkItem`);
   - `request.malformed`: only a caller that bypasses `vmr-check.js` can cause
     it.
 
@@ -356,7 +482,11 @@ report with `outcome` `failed` that names the first failing check.
 - a file entry that is not `{ name: string, sha256: string, size: number }`;
 - `authorityStore` or `requireSignedPack` without a `pack`;
 - `storeForEmbeddedKey` without an `expectedFingerprint` string;
-- a hasher used after `finish()`.
+- `checkpoints` or `checkpointsJsonl` without an `auditKey`, or a `profile`
+  that is not a string;
+- a `checkItem` index that is not a whole number from 0, or a `member` or
+  `itemKey` that is not a string;
+- a hasher or a log verifier used after `finish()`.
 
 `load` rejects for a module it cannot fetch or instantiate, or one whose
 SHA-256 is not `expectedSha256`.
@@ -369,6 +499,8 @@ SHA-256 is not `expectedSha256`.
 | What the native libraries answer for those vectors | `vmr/crates/vmr-check/tests/data/parity.json`, generated and pinned by `vmr/crates/vmr-check/tests/parity.rs` |
 | The same answers as `vmr` | `vmr/crates/vmr-check/tests/cli_agreement.rs` |
 | The calls, misuse and mutated input that must never trap | `vmr/crates/vmr-check/js/test/api.test.mjs`, `vmr/crates/vmr-check/tests/api.rs`, `vmr/crates/vmr-check/tests/robustness.rs` |
+| Audit logs: every whole-log vector, the example agent log at any chunking, a changed byte, the README's disclosure | `vmr/crates/vmr-check/js/test/log.test.mjs`, `vmr/crates/vmr-check/tests/log.rs` |
+| `vmr log verify`'s output unchanged by the move into `vmr-audit-log` | `vmr/crates/vmr-cli/tests/cli_log_verify.rs`, `vmr/crates/vmr-cli/tests/cli_log_seal.rs` |
 
 The parity test covers these vectors:
 
@@ -385,7 +517,7 @@ To build and test:
 ```
 cargo build --release -p vmr-check --target wasm32-unknown-unknown --manifest-path vmr/Cargo.toml
 VMR_CHECK_WASM=vmr/target/wasm32-unknown-unknown/release/vmr_check.wasm \
-  node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs
+  node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs vmr/crates/vmr-check/js/test/log.test.mjs
 ```
 
 Regenerate the parity file only when a library's answer is meant to change.

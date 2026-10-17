@@ -5,8 +5,10 @@
 //  lib.rs — vmr-check
 //
 //  The open format's libraries, wrapped for a browser: vmr-verify's verifier,
-//  vmr-policy's pack evaluator, and vmr-record's key fingerprint and
-//  named-set digest (spec §7.2–7.3). Built for wasm32-unknown-unknown it is
+//  vmr-policy's pack evaluator, vmr-record's key fingerprint and named-set
+//  digest (spec §7.2–7.3), and vmr-audit-log's check of an audit log and of a
+//  disclosed item (`log.rs`, the code `vmr log verify` and `vmr log
+//  check-item` run). Built for wasm32-unknown-unknown it is
 //  `vmr-check.wasm`, which js/vmr-check.js (hand-written, no dependencies)
 //  loads and calls through the plain C exports of `ffi.rs`.
 //
@@ -45,6 +47,7 @@ pub mod api;
 pub mod files;
 pub mod hasher;
 pub mod inspect;
+pub mod log;
 pub mod pack;
 pub mod refusal;
 pub mod safe;

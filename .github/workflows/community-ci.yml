@@ -106,7 +106,7 @@ jobs:
           VMR_CHECK_WASM: vmr/target/wasm32-unknown-unknown/release/vmr_check.wasm
         run: |
           node --version
-          node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs
+          node --test vmr/crates/vmr-check/js/test/parity.test.mjs vmr/crates/vmr-check/js/test/api.test.mjs vmr/crates/vmr-check/js/test/log.test.mjs
 
       - name: Save the cargo cache (main only)
         if: github.ref == 'refs/heads/main' && steps.cache.outputs.cache-hit != 'true'

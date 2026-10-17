@@ -117,6 +117,22 @@ impl ItemKey {
         &self.0
     }
 
+    /// The key written as 64 hexadecimal characters (either case), as a
+    /// holder discloses it; `None` for any other text.
+    pub fn from_hex(text: &str) -> Option<ItemKey> {
+        let bytes = text.as_bytes();
+        if bytes.len() != 2 * KEY_LEN {
+            return None;
+        }
+        let mut out = [0u8; KEY_LEN];
+        for (slot, pair) in out.iter_mut().zip(bytes.chunks(2)) {
+            let hi = char::from(*pair.first()?).to_digit(16)?;
+            let lo = char::from(*pair.get(1)?).to_digit(16)?;
+            *slot = u8::try_from(hi * 16 + lo).ok()?;
+        }
+        Some(ItemKey(out))
+    }
+
     /// The digest of `content` (§3): `hmac-sha256:` and the lower-case
     /// hexadecimal of `HMAC-SHA-256(item key, content)`. `content` is the
     /// bytes as the runtime received them, or [`json_content`] of a value it
@@ -148,4 +164,45 @@ pub fn json_content(value: &Value) -> Vec<u8> {
 /// hexadecimal digits.
 pub fn is_digest(text: &str) -> bool {
     text.strip_prefix(DIGEST_PREFIX).is_some_and(crate::types::is_lower_hex_64)
+}
+
+/// The digest string `entry` carries in `member`, when it carries one of
+/// §2's digest type there.
+pub fn digest_member<'e>(entry: &'e crate::entry::AuditEntry, member: &str) -> Option<&'e str> {
+    entry.detail.get(member).and_then(Value::as_str).filter(|d| is_digest(d))
+}
+
+/// A disclosed item checked against its entry (§3, its informative
+/// paragraph): the digest the entry carries, the one the content gives under
+/// the item key, and whether they are the same.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ItemCheck {
+    /// The item key's label, `<kind>/<member>/<index>`.
+    pub label: String,
+    /// The digest the entry carries in the member.
+    pub carried: String,
+    /// The digest of the content under the item key.
+    pub computed: String,
+    /// Whether the two are the same.
+    pub matches: bool,
+}
+
+/// Check that `content` under `item_key` gives the digest `entry` carries in
+/// `member`; `None` when the entry carries no digest there. It needs no
+/// secret: the item key opens this one digest and no other. That a signed
+/// checkpoint covers the entry is not checked here.
+pub fn check_item(
+    entry: &crate::entry::AuditEntry,
+    member: &str,
+    item_key: &ItemKey,
+    content: &[u8],
+) -> Option<ItemCheck> {
+    let carried = digest_member(entry, member)?;
+    let computed = item_key.digest(content);
+    Some(ItemCheck {
+        label: label(&entry.kind, member, entry.index),
+        matches: computed == carried,
+        carried: carried.to_string(),
+        computed,
+    })
 }

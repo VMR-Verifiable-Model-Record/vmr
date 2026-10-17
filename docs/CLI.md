@@ -46,9 +46,9 @@ time, `kernel32.dll`, all part of Windows. An engine library built before this c
 against the DLL runtime and no longer links (`LNK1120` after `LNK4098`):
 rebuild it with CMake, then `cargo clean -p vmr-ffi`.
 
-`vmr --version` tells the builds apart: `vmr 0.1.6 (KHALM-VMR, a reference
+`vmr --version` tells the builds apart: `vmr 0.1.7 (KHALM-VMR, a reference
 implementation of the Verifiable Model Record standard; record format v0.1)`
-for the default build, `vmr 0.1.6 (KHALM-VMR, implements the Verifiable
+for the default build, `vmr 0.1.7 (KHALM-VMR, implements the Verifiable
 Model Record standard; record format v0.1; engine build: record emit also
 takes a KHALM engine brain)` for the engine build; both builds carry the same
 version number, and the record format they implement is the same. The default

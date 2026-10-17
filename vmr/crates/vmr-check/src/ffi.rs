@@ -27,6 +27,7 @@
 
 use crate::api;
 use crate::hasher::FileHasher;
+use crate::log::LogSession;
 
 /// The getrandom source of the wasm build: always `UNSUPPORTED`.
 pub fn no_randomness(_dest: &mut [u8]) -> Result<(), getrandom::Error> {
@@ -123,6 +124,52 @@ pub unsafe extern "C" fn vmr_hasher_finish(hasher: *mut FileHasher) -> *mut u8 {
     // `vmr_hasher_new` made; taking it back consumes it exactly once.
     let hasher = unsafe { Box::from_raw(hasher) };
     handed_out(hasher.finish().as_bytes())
+}
+
+/// A new log check (`logVerifier()`) from the framed request in the buffer
+/// `ptr`/`len`, which this call takes back (the script must not free it).
+///
+/// # Safety
+/// `ptr` and `len` must be exactly a buffer `vmr_alloc(len)` handed out and
+/// the script has not returned yet.
+#[no_mangle]
+pub unsafe extern "C" fn vmr_log_new(ptr: *mut u8, len: usize) -> *mut LogSession {
+    // SAFETY: as in `vmr_call`: the buffer is a live `Box<[u8]>` of `len`
+    // bytes from `vmr_alloc`, owned by this call from here and dropped when
+    // it returns.
+    let request = unsafe { Box::from_raw(std::ptr::slice_from_raw_parts_mut(ptr, len)) };
+    Box::into_raw(Box::new(api::log_session(&request)))
+}
+
+/// Add the next chunk `ptr`/`len` of the log to the session `session`: 1
+/// while the log is still wanted, 0 once the answer is known. The chunk stays
+/// the script's.
+///
+/// # Safety
+/// `session` must be a pointer `vmr_log_new` returned that `vmr_log_finish`
+/// has not consumed, and `ptr`/`len` a live buffer from `vmr_alloc(len)`.
+#[no_mangle]
+pub unsafe extern "C" fn vmr_log_update(session: *mut LogSession, ptr: *const u8, len: usize) -> u32 {
+    // SAFETY: as in `vmr_hasher_update`: `session` points to a live boxed
+    // `LogSession` no other reference reaches, and `ptr`/`len` are `len`
+    // initialised bytes of a live buffer nothing writes during this call.
+    let (session, chunk) = unsafe { (&mut *session, std::slice::from_raw_parts(ptr, len)) };
+    u32::from(session.update(chunk))
+}
+
+/// The session's answer as an answer buffer (JSON); consumes the session.
+///
+/// # Safety
+/// `session` must be a pointer `vmr_log_new` returned that this function has
+/// not consumed.
+#[no_mangle]
+pub unsafe extern "C" fn vmr_log_finish(session: *mut LogSession) -> *mut u8 {
+    // SAFETY: `session` is the live box `vmr_log_new` made; taking it back
+    // consumes it exactly once.
+    let session = unsafe { Box::from_raw(session) };
+    let answer = serde_json::to_vec(&session.finish())
+        .unwrap_or_else(|_| b"{\"refusal\":{\"id\":\"request.malformed\"}}".to_vec());
+    handed_out(&answer)
 }
 
 #[cfg(test)]
